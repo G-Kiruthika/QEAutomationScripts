@@ -1,9 +1,10 @@
-{Import necessary modules}
+# Import necessary modules
+from Pages.LoginPage import LoginPage
 
 class TestLoginFunctionality:
-    def __init__(self, page):
-        self.page = page
-        self.login_page = LoginPage(page)
+    def __init__(self, driver):
+        self.driver = driver
+        self.login_page = LoginPage(driver)
 
     async def test_empty_fields_validation(self):
         await self.login_page.navigate()
@@ -12,4 +13,12 @@ class TestLoginFunctionality:
 
     async def test_remember_me_functionality(self):
         await self.login_page.navigate()
-        await self.login_page.fill_email('
+        await self.login_page.fill_email('')
+
+    def test_TC_LOGIN_001(self):
+        """Test invalid login and error message for TC_LOGIN_001"""
+        username = 'invalid_user'
+        password = 'invalid_pass'
+        expected_error = 'Invalid username or password. Please try again.'
+        result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
+        assert result, f"Expected error message '{expected_error}', but got something else."
