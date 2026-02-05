@@ -45,3 +45,17 @@ class TestLoginFunctionality:
         self.login_page.navigate_to_login_screen()
         assert self.login_page.is_login_screen_displayed(), "Login screen is not displayed."
         assert not self.login_page.is_remember_me_checkbox_present(), "'Remember Me' checkbox should not be present."
+
+    def test_forgot_username_recovery(self):
+        """
+        TC_LOGIN_003
+        1. Navigate to the login screen.
+        2. Click on 'Forgot Username' link.
+        3. Follow the instructions to recover username.
+        4. Retrieve and assert the username.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.click_forgot_username()
+        self.login_page.recover_username('user@example.com')
+        retrieved_username = self.login_page.get_retrieved_username()
+        assert retrieved_username is not None and retrieved_username != '', "Username was not retrieved successfully."
