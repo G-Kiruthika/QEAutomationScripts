@@ -42,9 +42,8 @@ class TestLoginFunctionality:
         2. Verify login screen is displayed.
         3. Check that 'Remember Me' checkbox is not present.
         """
-        self.login_page.navigate_to_login_screen()
-        assert self.login_page.is_login_screen_displayed(), "Login screen is not displayed."
-        assert not self.login_page.is_remember_me_checkbox_present(), "'Remember Me' checkbox should not be present."
+        self.login_page.go_to_login_page()
+        self.login_page.assert_remember_me_checkbox_not_present()
 
     def test_forgot_username_recovery(self):
         """
