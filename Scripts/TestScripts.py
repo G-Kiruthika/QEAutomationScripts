@@ -30,7 +30,7 @@ class TestLoginFunctionality:
         3. Click login.
         4. Verify error message 'Invalid username or password. Please try again.' is displayed.
         """
-        self.login_page.go_to_login_page()
-        self.login_page.enter_credentials('invalid_user@example.com', 'wrong_password')
+        self.login_page.navigate_to_login()
+        self.login_page.enter_invalid_credentials('invalid_user@example.com', 'wrong_password')
         self.login_page.submit_login()
-        assert self.login_page.is_error_message_displayed("Invalid username or password. Please try again."), "Expected error message not displayed."
+        assert self.login_page.verify_error_message("Invalid username or password. Please try again."), "Expected error message not displayed."
