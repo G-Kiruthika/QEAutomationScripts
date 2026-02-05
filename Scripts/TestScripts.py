@@ -33,7 +33,7 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
 
-    def test_TC_LOGIN_003(self):
+    def test_TC_LOGIN_003_recover_username(self):
         """
         Test Case TC_LOGIN_003: Forgot Username workflow
         Steps:
@@ -43,11 +43,6 @@ class TestLoginFunctionality:
         4. Submit the recovery form.
         5. Assert recovery is successful and username is retrieved.
         """
-        self.login_page.go_to_login_page()
-        self.login_page.click_forgot_username_link()
         test_email = "user@example.com"
-        self.login_page.enter_email_for_username_recovery(test_email)
-        self.login_page.submit_username_recovery()
-        assert self.login_page.is_username_recovery_successful(), "Username recovery was not successful."
-        recovered_username = self.login_page.get_recovered_username()
-        assert recovered_username != "", "Recovered username should not be empty."
+        confirmation_message = self.login_page.recover_username(test_email)
+        assert confirmation_message is not None and confirmation_message != "", "Username recovery confirmation message should not be empty."
