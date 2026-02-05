@@ -35,3 +35,12 @@ class TestLoginFunctionality:
             password="invalidpassword",
             expected_error="Invalid username or password. Please try again."
         )
+
+    def test_remember_me_checkbox_absent_tc_login_002(self):
+        """
+        Test Case TC_LOGIN_002:
+        - Navigate to login screen
+        - Assert that the 'Remember Me' checkbox is NOT present
+        """
+        self.login_page.navigate_to_login()
+        assert self.login_page.is_remember_me_checkbox_absent(), "'Remember Me' checkbox should NOT be present on the login page"
