@@ -25,6 +25,7 @@ class LoginPage:
     REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
     LOGIN_SUBMIT_BUTTON = (By.ID, "login-submit")
     FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")  # Added for TC_LOGIN_003
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
     EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
@@ -109,7 +110,16 @@ class LoginPage:
         except TimeoutException:
             raise AssertionError("Error message not displayed after invalid login attempt.")
 
-    # Additional utility methods can be implemented here as needed.
+    def click_forgot_username_link(self):
+        """
+        Clicks the 'Forgot Username' link to initiate the username recovery workflow (TC_LOGIN_003).
+        Navigates to the Forgot Username page.
+        """
+        link = WebDriverWait(self.driver, self.timeout).until(
+            EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK),
+            message="'Forgot Username' link not clickable on Login Page."
+        )
+        link.click()
 
 # Example usage in a test (not part of the PageClass, for illustration only):
 #
