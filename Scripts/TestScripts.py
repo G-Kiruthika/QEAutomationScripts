@@ -38,6 +38,18 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
 
+    def test_TC_LOGIN_002_comprehensive(self):
+        """
+        Test Case TC_LOGIN_002 Comprehensive: Navigate to login screen, assert screen is displayed, verify 'Remember Me' checkbox is absent.
+        Steps:
+        1. Navigate to the login screen.
+        2. Assert login screen is displayed.
+        3. Assert that 'Remember Me' checkbox is not present.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.assert_login_screen_displayed()
+        self.login_page.assert_remember_me_checkbox_absent()
+
     def test_TC_LOGIN_003(self):
         """
         Test Case TC_LOGIN_003: Forgot Username workflow
