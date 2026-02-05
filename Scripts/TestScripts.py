@@ -44,3 +44,16 @@ class TestLoginFunctionality:
         """
         self.login_page.navigate_to_login()
         assert self.login_page.is_remember_me_checkbox_absent(), "'Remember Me' checkbox should NOT be present on the login page"
+
+    def test_forgot_username_tc_login_003(self):
+        """
+        Test Case TC_LOGIN_003:
+        - Navigate to login screen
+        - Click on 'Forgot Username' link
+        - Follow instructions to recover username
+        - Assert that the username is retrieved and present
+        """
+        self.login_page.navigate_to_login()
+        recovery_info = "testuser@example.com"  # Use a valid email or phone as per app
+        recovered_username = self.login_page.forgot_username_workflow(recovery_info)
+        assert recovered_username is not None and recovered_username != "", "Recovered username should be present"
