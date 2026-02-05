@@ -16,12 +16,16 @@ class TestLoginFunctionality:
         await self.login_page.fill_email('')
 
     def test_TC_LOGIN_001(self):
-        """Test invalid login and error message for TC_LOGIN_001"""
-        username = 'invalid_user'
-        password = 'invalid_pass'
-        expected_error = 'Invalid username or password. Please try again.'
-        result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
-        assert result, f"Expected error message '{expected_error}', but got something else."
+        """
+        Test Case TC_LOGIN_001: Invalid login and error message verification
+        Steps:
+        1. Navigate to the login screen.
+        2. Enter invalid username and password.
+        3. Assert error message is displayed.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.login('invalid_user', 'invalid_pass')
+        self.login_page.assert_invalid_login_error_message('Invalid username or password. Please try again.')
 
     def test_TC_LOGIN_002(self):
         """
