@@ -1,209 +1,152 @@
-# LoginPage.py
-"""
-Page Object Model for the Login Page
-Author: [Your Name]
-Description: This class encapsulates the interactions and verifications for the Login Page,
-using locators defined in Locators.json. It includes methods to navigate to the login screen
-and to verify the absence of the 'Remember Me' checkbox, as required by TC_LOGIN_002.
-"""
-
+import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import pickle
 
 class LoginPage:
     """
-    Page Object for the Login Screen
+    PageClass for LoginPage interactions and validations.
+    Covers navigation, field entry, login, remember-me, session persistence, and validation/error checks for test automation.
     """
-
-    # Locators (from Locators.json)
     URL = "https://example-ecommerce.com/login"
     EMAIL_FIELD = (By.ID, "login-email")
     PASSWORD_FIELD = (By.ID, "login-password")
-    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
-    LOGIN_SUBMIT_BUTTON = (By.ID, "login-submit")
-    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    LOGIN_BUTTON = (By.ID, "login-submit")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
-    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
-    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
-    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[contains(text(), 'Mandatory fields are required')]")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")  # Assumed locator
 
-    def __init__(self, driver: WebDriver, timeout: int = 10):
+    def __init__(self, driver: WebDriver):
         """
-        Initializes the LoginPage with a Selenium WebDriver instance.
-        :param driver: Selenium WebDriver
-        :param timeout: Default wait timeout for elements
+        Initialize with Selenium WebDriver instance.
         """
         self.driver = driver
-        self.timeout = timeout
 
-    def go_to_login_page(self):
+    def navigate_to_login(self):
         """
-        Navigates the browser to the login page URL and waits for the login form to be visible.
+        Navigate to login page and verify display.
         """
         self.driver.get(self.URL)
-        WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of_element_located(self.EMAIL_FIELD),
-            message="Login email field not visible after navigating to login page."
-        )
+        assert self.driver.current_url.startswith(self.URL), "Login page not displayed"
 
-    def is_remember_me_checkbox_present(self) -> bool:
+    def leave_email_empty(self):
         """
-        Checks if the 'Remember Me' checkbox is present on the login page.
-        :return: True if present, False otherwise
+        Clear the email field and verify it is empty.
         """
-        try:
-            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-            return True
-        except NoSuchElementException:
-            return False
-
-    def assert_remember_me_checkbox_absent(self):
-        """
-        Asserts that the 'Remember Me' checkbox is NOT present on the login page.
-        Raises AssertionError if the checkbox is found.
-        """
-        if self.is_remember_me_checkbox_present():
-            raise AssertionError(
-                "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
-            )
+        email_input = self.driver.find_element(*self.EMAIL_FIELD)
+        email_input.clear()
+        assert email_input.get_attribute("value") == "", "Email field is not empty"
 
     def enter_email(self, email: str):
         """
-        Enters the provided email address into the email field.
-        :param email: Email address to enter
+        Enter email in the field and verify value.
         """
-        email_elem = WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of_element_located(self.EMAIL_FIELD),
-            message="Email field not visible on login page."
-        )
-        email_elem.clear()
-        email_elem.send_keys(email)
+        email_input = self.driver.find_element(*self.EMAIL_FIELD)
+        email_input.clear()
+        email_input.send_keys(email)
+        assert email_input.get_attribute("value") == email, "Email not accepted in the field"
+
+    def leave_password_empty(self):
+        """
+        Clear the password field and verify it is empty.
+        """
+        password_input = self.driver.find_element(*self.PASSWORD_FIELD)
+        password_input.clear()
+        assert password_input.get_attribute("value") == "", "Password field is not empty"
 
     def enter_password(self, password: str):
         """
-        Enters the provided password into the password field.
-        :param password: Password to enter
+        Enter password in the field and verify value.
         """
-        password_elem = WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of_element_located(self.PASSWORD_FIELD),
-            message="Password field not visible on login page."
-        )
-        password_elem.clear()
-        password_elem.send_keys(password)
+        password_input = self.driver.find_element(*self.PASSWORD_FIELD)
+        password_input.clear()
+        password_input.send_keys(password)
+        assert password_input.get_attribute("value") == password, "Password not accepted in the field"
 
     def click_login(self):
         """
-        Clicks the Login button to submit the form.
+        Click the login button to submit credentials.
         """
-        login_btn = WebDriverWait(self.driver, self.timeout).until(
-            EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON),
-            message="Login button not clickable on login page."
-        )
+        login_btn = self.driver.find_element(*self.LOGIN_BUTTON)
         login_btn.click()
+        time.sleep(1)
 
-    def is_dashboard_header_visible(self) -> bool:
+    def verify_validation_error(self):
         """
-        Checks if the dashboard header is visible after login.
-        :return: True if dashboard header is visible, False otherwise
+        Verify that validation errors are displayed for empty fields.
         """
+        error_texts = []
         try:
-            WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.DASHBOARD_HEADER),
-                message="Dashboard header not visible after login."
-            )
-            return True
-        except Exception:
-            return False
-
-    def is_user_profile_icon_visible(self) -> bool:
-        """
-        Checks if the user profile icon is visible after login.
-        :return: True if user profile icon is visible, False otherwise
-        """
+            error_elem = self.driver.find_element(*self.VALIDATION_ERROR)
+            error_texts.append(error_elem.text)
+        except NoSuchElementException:
+            pass
         try:
-            WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.USER_PROFILE_ICON),
-                message="User profile icon not visible after login."
-            )
-            return True
-        except Exception:
-            return False
+            prompt_elem = self.driver.find_element(*self.EMPTY_FIELD_PROMPT)
+            error_texts.append(prompt_elem.text)
+        except NoSuchElementException:
+            pass
+        assert any([
+            "Email and password are required" in t or
+            "Password field is required" in t or
+            "Please enter your password" in t or
+            "Mandatory fields are required" in t for t in error_texts
+        ]), "Validation error not displayed as expected"
 
-    def get_error_message(self) -> str:
+    def verify_no_authentication_attempt(self):
         """
-        Returns the error message text if displayed.
-        :return: Error message string, or empty string if not displayed
+        Verify user remains on login page and authentication is not processed.
         """
-        try:
-            error_elem = WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.ERROR_MESSAGE)
-            )
-            return error_elem.text
-        except Exception:
-            return ""
-
-    def get_validation_error(self) -> str:
-        """
-        Returns the validation error text if displayed.
-        :return: Validation error string, or empty string if not displayed
-        """
-        try:
-            val_elem = WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.VALIDATION_ERROR)
-            )
-            return val_elem.text
-        except Exception:
-            return ""
-
-    def is_empty_field_prompt_visible(self) -> bool:
-        """
-        Checks if the empty field prompt is visible.
-        :return: True if prompt is visible, False otherwise
-        """
-        try:
-            WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT)
-            )
-            return True
-        except Exception:
-            return False
-
-    def assert_login_failed_due_to_empty_email(self):
-        """
-        Asserts that login fails when email field is empty.
-        - Ensures dashboard/profile icon are NOT visible.
-        - Ensures validation error or empty field prompt is displayed.
-        - Ensures user remains on login page.
-        Raises AssertionError if any condition fails.
-        """
-        if self.is_dashboard_header_visible():
-            raise AssertionError("Dashboard header should NOT be visible after failed login.")
-        if self.is_user_profile_icon_visible():
-            raise AssertionError("User profile icon should NOT be visible after failed login.")
-
-        validation_error = self.get_validation_error()
-        error_message = self.get_error_message()
-        empty_prompt = self.is_empty_field_prompt_visible()
-
-        if not (validation_error or error_message or empty_prompt):
-            raise AssertionError("No validation error, error message, or empty field prompt displayed for empty email.")
-
         current_url = self.driver.current_url
-        if self.URL not in current_url:
-            raise AssertionError(f"User was redirected away from login page: {current_url}")
+        assert current_url.startswith(self.URL), "User navigated away from login page, authentication may have been processed"
+        try:
+            dashboard_header = self.driver.find_element(By.CSS_SELECTOR, "h1.dashboard-title")
+            assert False, "Dashboard header found, authentication should not have been processed"
+        except NoSuchElementException:
+            pass
+        try:
+            user_icon = self.driver.find_element(By.CSS_SELECTOR, ".user-profile-name")
+            assert False, "User profile icon found, authentication should not have been processed"
+        except NoSuchElementException:
+            pass
 
-# Example usage in a test (not part of the PageClass, for illustration only):
-#
-# def test_login_empty_email(driver):
-#     login_page = LoginPage(driver)
-#     login_page.go_to_login_page()
-#     login_page.enter_email("")
-#     login_page.enter_password("ValidPass123!")
-#     login_page.click_login()
-#     login_page.assert_login_failed_due_to_empty_email()
-#
-# This will verify negative login behavior for empty email field.
+    # --- New Functions for TC-LOGIN-007 ---
+
+    def check_remember_me(self):
+        """
+        Check the 'Remember Me' checkbox if not already checked.
+        """
+        checkbox = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+        if not checkbox.is_selected():
+            checkbox.click()
+        assert checkbox.is_selected(), "Remember Me checkbox is not checked!"
+
+    def save_cookies(self, filepath: str = "cookies.pkl"):
+        """
+        Save cookies after login for session persistence.
+        """
+        with open(filepath, "wb") as file:
+            pickle.dump(self.driver.get_cookies(), file)
+
+    def load_cookies(self, filepath: str = "cookies.pkl"):
+        """
+        Load cookies to restore session.
+        """
+        with open(filepath, "rb") as file:
+            cookies = pickle.load(file)
+        self.driver.get(self.URL)
+        for cookie in cookies:
+            self.driver.add_cookie(cookie)
+        self.driver.refresh()
+
+    def is_logged_in(self):
+        """
+        Verify automatic login/session persistence by checking dashboard presence.
+        """
+        try:
+            dashboard_header = self.driver.find_element(By.CSS_SELECTOR, "h1.dashboard-title")
+            return dashboard_header.is_displayed()
+        except NoSuchElementException:
+            return False
