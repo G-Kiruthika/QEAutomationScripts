@@ -72,41 +72,44 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_005(self):
         """
-        Test Case TC-LOGIN-005: Valid email, empty password, verify validation error and that login is not processed
+        Test Case TC-LOGIN-005: Valid email, password field empty, verify validation error and no authentication attempt
         Steps:
         1. Navigate to the login page (URL: https://ecommerce.example.com/login)
         2. Enter valid registered email address (testuser@example.com)
-        3. Leave the password field empty
+        3. Leave password field empty
         4. Click the Login button
-        5. Assert validation error is displayed for empty password
-        6. Verify login is not processed (user remains on login page, no authentication)
+        5. Assert validation error is displayed: 'Password field is required' or 'Please enter your password'
+        6. Verify user remains on login page, no authentication attempt made
         """
         self.login_page.go_to_login_page()
         self.login_page.enter_email('testuser@example.com')
-        self.login_page.enter_password('')
+        self.login_page.clear_password()
         self.login_page.click_login()
-        # Check for validation error in one of the possible ways
-        error_message = self.login_page.get_error_message()
-        validation_error = self.login_page.get_validation_error()
-        empty_prompt = self.login_page.is_empty_field_prompt_visible()
-        assert (
-            ('password' in error_message.lower() and error_message.strip() != '') or
-            ('password' in validation_error.lower() and validation_error.strip() != '') or
-            empty_prompt
-        ), (
-            f"Expected password validation error or prompt, but got: error_message='{error_message}', validation_error='{validation_error}', empty_prompt={empty_prompt}"
-        )
-        self.login_page.assert_login_not_processed()
+        assert self.login_page.is_password_field_empty(), "Password field is not empty after clearing."
+        assert self.login_page.is_validation_error_for_password_required(), "Validation error for empty password was not displayed."
+        assert self.login_page.is_login_not_processed(), "User did not remain on the login page; authentication may have been attempted."
 
-    def test_TC_LOGIN_006(self):
+    def test_TC_LOGIN_007(self):
         """
-        Test Case TC-LOGIN-006: Both email and password fields empty, validate error and page state
+        Test Case TC-LOGIN-007: Verify session persistence with 'Remember Me' checked
         Steps:
-        1. Navigate to the login page (URL: https://ecommerce.example.com/login)
-        2. Leave email and password fields empty
-        3. Click the Login button
-        4. Assert validation error 'Email and password are required' is displayed
-        5. Verify login is not processed (user remains on login page, no authentication)
+        1. Navigate to login page
+        2. Enter valid credentials (testuser@example.com / ValidPass123!)
+        3. Check 'Remember Me'
+        4. Log in
+        5. Close and reopen browser
+        6. Go to app URL
+        7. Verify user is still logged in (dashboard visible)
         """
+        app_url = "https://ecommerce.example.com/dashboard"
+        # Step 1-4: Login with Remember Me checked
         self.login_page.go_to_login_page()
-        self.login_page.assert_login_failed_due_to_empty_email_and_password()
+        self.login_page.login_with_remember_me("testuser@example.com", "ValidPass123!")
+        # Step 5: Close and reopen browser
+        self.driver.quit()
+        from selenium import webdriver
+        self.driver = webdriver.Chrome()
+        self.login_page = LoginPage(self.driver)
+        # Step 6-7: Verify session persistence
+        session_persistent = self.login_page.verify_session_persistence(app_url)
+        assert session_persistent, "Session did not persist after browser restart with 'Remember Me' checked."
