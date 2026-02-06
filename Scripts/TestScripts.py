@@ -70,18 +70,30 @@ class TestLoginFunctionality:
         assert error_message == 'Invalid email or password', f"Expected error message 'Invalid email or password', but got '{error_message}'."
         assert self.login_page.is_on_login_page(), "User did not remain on the login page after invalid login attempt."
 
-    def test_TC_LOGIN_004(self):
+    def test_TC_LOGIN_005(self):
         """
-        Test Case TC-LOGIN-004: Negative login with empty email
+        Test Case TC-LOGIN-005: Valid email, empty password, verify validation error and that login is not processed
         Steps:
-        1. Navigate to the login page
-        2. Leave the email field empty
-        3. Enter a valid password ('ValidPass123!')
+        1. Navigate to the login page (URL: https://ecommerce.example.com/login)
+        2. Enter valid registered email address (testuser@example.com)
+        3. Leave the password field empty
         4. Click the Login button
-        5. Assert that login fails due to empty email using LoginPage.assert_login_failed_due_to_empty_email()
+        5. Assert validation error is displayed for empty password
+        6. Verify login is not processed (user remains on login page, no authentication)
         """
         self.login_page.go_to_login_page()
-        self.login_page.enter_email("")
-        self.login_page.enter_password("ValidPass123!")
+        self.login_page.enter_email('testuser@example.com')
+        self.login_page.enter_password('')
         self.login_page.click_login()
-        self.login_page.assert_login_failed_due_to_empty_email()
+        # Check for validation error in one of the possible ways
+        error_message = self.login_page.get_error_message()
+        validation_error = self.login_page.get_validation_error()
+        empty_prompt = self.login_page.is_empty_field_prompt_visible()
+        assert (
+            ('password' in error_message.lower() and error_message.strip() != '') or
+            ('password' in validation_error.lower() and validation_error.strip() != '') or
+            empty_prompt
+        ), (
+            f"Expected password validation error or prompt, but got: error_message='{error_message}', validation_error='{validation_error}', empty_prompt={empty_prompt}"
+        )
+        self.login_page.assert_login_not_processed()
