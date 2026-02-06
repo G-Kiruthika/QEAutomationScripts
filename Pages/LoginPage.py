@@ -3,8 +3,8 @@
 Page Object Model for the Login Page
 Author: [Your Name]
 Description: This class encapsulates the interactions and verifications for the Login Page,
-using locators defined in Locators.json. It includes methods to navigate to the login screen
-and to verify the absence of the 'Remember Me' checkbox, as required by TC_LOGIN_002.
+using locators defined in Locators.json. It includes methods to navigate to the login screen,
+verify the absence of the 'Remember Me' checkbox, and now supports the 'Forgot Username' workflow as required by TC_LOGIN_003.
 """
 
 from selenium.webdriver.common.by import By
@@ -30,6 +30,10 @@ class LoginPage:
     EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    FORGOT_USERNAME_LINK = (By.CSS_SELECTOR, "a.forgot-username-link")  # Assuming locator
+    USERNAME_RECOVERY_INPUT = (By.ID, "username-recovery-input")        # Assuming locator
+    USERNAME_RECOVERY_SUBMIT = (By.ID, "username-recovery-submit")      # Assuming locator
+    USERNAME_RECOVERY_RESULT = (By.CSS_SELECTOR, "div.username-recovery-result") # Assuming locator
 
     def __init__(self, driver: WebDriver, timeout: int = 10):
         """
@@ -71,13 +75,38 @@ class LoginPage:
                 "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
             )
 
-    # Additional utility methods can be implemented here as needed.
+    # TC_LOGIN_003 additions
+    def click_forgot_username_link(self):
+        """
+        Clicks the 'Forgot Username' link on the login page.
+        """
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.element_to_be_clickable(self.FORGOT_USERNAME_LINK),
+            message="Forgot Username link not clickable."
+        )
+        self.driver.find_element(*self.FORGOT_USERNAME_LINK).click()
 
-# Example usage in a test (not part of the PageClass, for illustration only):
-#
-# def test_remember_me_checkbox_absence(driver):
+    def recover_username(self, recovery_info):
+        """
+        Follows the instructions to recover the username.
+        :param recovery_info: The information needed to recover the username (e.g., email or phone)
+        """
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.USERNAME_RECOVERY_INPUT),
+            message="Username recovery input not visible."
+        )
+        self.driver.find_element(*self.USERNAME_RECOVERY_INPUT).send_keys(recovery_info)
+        self.driver.find_element(*self.USERNAME_RECOVERY_SUBMIT).click()
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.USERNAME_RECOVERY_RESULT),
+            message="Username recovery result not visible."
+        )
+        return self.driver.find_element(*self.USERNAME_RECOVERY_RESULT).text
+
+# Example usage in a test:
+# def test_username_recovery(driver):
 #     login_page = LoginPage(driver)
 #     login_page.go_to_login_page()
-#     login_page.assert_remember_me_checkbox_absent()
-#
-# This will navigate to the login screen and verify the absence of the 'Remember Me' checkbox.
+#     login_page.click_forgot_username_link()
+#     result = login_page.recover_username('user@example.com')
+#     assert 'Username retrieved' in result
