@@ -1,10 +1,8 @@
 # LoginPage.py
 """
 Page Object Model for the Login Page
-Author: [Your Name]
-Description: This class encapsulates the interactions and verifications for the Login Page,
-using locators defined in Locators.json. It includes methods to navigate to the login screen
-and to verify the absence of the 'Remember Me' checkbox, as required by TC_LOGIN_002.
+Author: Automation Team
+Description: This class encapsulates the interactions and verifications for the Login Page, using locators defined in Locators.json. It includes methods to navigate to the login screen, enter credentials, submit login, and verify error messages as required by TC_LOGIN_001.
 """
 
 from selenium.webdriver.common.by import By
@@ -22,14 +20,8 @@ class LoginPage:
     URL = "https://example-ecommerce.com/login"
     EMAIL_FIELD = (By.ID, "login-email")
     PASSWORD_FIELD = (By.ID, "login-password")
-    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")
-    LOGIN_SUBMIT_BUTTON = (By.ID, "login-submit")
-    FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, "a.forgot-password-link")
+    LOGIN_SUBMIT = (By.ID, "login-submit")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
-    VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
-    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
-    DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
-    USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
 
     def __init__(self, driver: WebDriver, timeout: int = 10):
         """
@@ -50,34 +42,37 @@ class LoginPage:
             message="Login email field not visible after navigating to login page."
         )
 
-    def is_remember_me_checkbox_present(self) -> bool:
+    def enter_credentials(self, username: str, password: str):
         """
-        Checks if the 'Remember Me' checkbox is present on the login page.
-        :return: True if present, False otherwise
+        Enters the username and password into the login form fields.
+        :param username: The username/email to enter
+        :param password: The password to enter
+        """
+        email_input = self.driver.find_element(*self.EMAIL_FIELD)
+        password_input = self.driver.find_element(*self.PASSWORD_FIELD)
+        email_input.clear()
+        email_input.send_keys(username)
+        password_input.clear()
+        password_input.send_keys(password)
+
+    def submit_login(self):
+        """
+        Clicks the login submit button to attempt login.
+        """
+        self.driver.find_element(*self.LOGIN_SUBMIT).click()
+
+    def get_error_message(self) -> str:
+        """
+        Retrieves the error message displayed after a failed login attempt.
+        :return: The error message text
         """
         try:
-            self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
-            return True
-        except NoSuchElementException:
-            return False
-
-    def assert_remember_me_checkbox_absent(self):
-        """
-        Asserts that the 'Remember Me' checkbox is NOT present on the login page.
-        Raises AssertionError if the checkbox is found.
-        """
-        if self.is_remember_me_checkbox_present():
-            raise AssertionError(
-                "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
+            error_elem = WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located(self.ERROR_MESSAGE),
+                message="Error message not visible after invalid login."
             )
+            return error_elem.text
+        except NoSuchElementException:
+            return ""
 
     # Additional utility methods can be implemented here as needed.
-
-# Example usage in a test (not part of the PageClass, for illustration only):
-#
-# def test_remember_me_checkbox_absence(driver):
-#     login_page = LoginPage(driver)
-#     login_page.go_to_login_page()
-#     login_page.assert_remember_me_checkbox_absent()
-#
-# This will navigate to the login screen and verify the absence of the 'Remember Me' checkbox.
