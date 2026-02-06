@@ -69,3 +69,21 @@ class TestLoginFunctionality:
         error_message = self.login_page.get_error_message()
         assert error_message == 'Invalid email or password', f"Expected error message 'Invalid email or password', but got '{error_message}'."
         assert self.login_page.is_on_login_page(), "User did not remain on the login page after invalid login attempt."
+
+    def test_TC_LOGIN_005(self):
+        """
+        Test Case TC-LOGIN-005: Valid email, password field empty, verify validation error and no authentication attempt
+        Steps:
+        1. Navigate to the login page (URL: https://example-ecommerce.com/login)
+        2. Enter valid registered email address (testuser@example.com)
+        3. Leave password field empty
+        4. Click the Login button
+        5. Assert validation error is displayed: 'Password field is required' or 'Please enter your password' or 'Mandatory fields are required'
+        6. Verify user remains on login page, no authentication attempt made
+        """
+        self.login_page.navigate_to_login()
+        self.login_page.enter_email('testuser@example.com')
+        self.login_page.leave_password_empty()
+        self.login_page.click_login()
+        self.login_page.verify_validation_error()
+        self.login_page.verify_no_authentication_attempt()
