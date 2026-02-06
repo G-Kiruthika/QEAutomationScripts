@@ -168,3 +168,28 @@ class TestLoginFunctionality:
             error_message = self.login_page.verify_login_failure()
             assert error_message is not None, "Login failed but no error message was shown."
             assert 'error' in error_message.lower(), "Expected an error message indicating login failure."
+
+    def test_TC_LOGIN_016(self):
+        """
+        Test Case TC-LOGIN-016: Case-insensitive email login and case-sensitive password validation
+        Steps:
+        1. Navigate to login page
+        2. Enter email with different case (Registered: 'testuser@example.com', Entered: 'TestUser@Example.com')
+        3. Enter correct password ('ValidPass123!')
+        4. Click Login button
+        5. Assert login succeeds (email should be case-insensitive)
+        6. Enter correct email ('testuser@example.com') and wrong-case password ('validpass123!')
+        7. Click Login button
+        8. Assert login fails (password should be case-sensitive)
+        """
+        # Step 1-5: Case-insensitive email login
+        self.login_page.login_and_validate_success_case_insensitive_email(
+            registered_email='testuser@example.com',
+            entered_email='TestUser@Example.com',
+            password='ValidPass123!'
+        )
+        # Step 6-8: Case-sensitive password validation
+        self.login_page.login_and_validate_failure_wrong_case_password(
+            email='testuser@example.com',
+            wrong_case_password='validpass123!'
+        )
