@@ -2,11 +2,12 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
+import pickle
 
 class LoginPage:
     """
     PageClass for LoginPage interactions and validations.
-    Covers navigation, field entry, login, and validation/error checks for test automation.
+    Covers navigation, field entry, login, remember-me, session persistence, and validation/error checks for test automation.
     """
     URL = "https://example-ecommerce.com/login"
     EMAIL_FIELD = (By.ID, "login-email")
@@ -15,6 +16,7 @@ class LoginPage:
     ERROR_MESSAGE = (By.CSS_SELECTOR, "div.alert-danger")
     VALIDATION_ERROR = (By.CSS_SELECTOR, ".invalid-feedback")
     EMPTY_FIELD_PROMPT = (By.XPATH, "//*[contains(text(), 'Mandatory fields are required')]")
+    REMEMBER_ME_CHECKBOX = (By.ID, "remember-me")  # Assumed locator
 
     def __init__(self, driver: WebDriver):
         """
@@ -53,6 +55,15 @@ class LoginPage:
         password_input = self.driver.find_element(*self.PASSWORD_FIELD)
         password_input.clear()
         assert password_input.get_attribute("value") == "", "Password field is not empty"
+
+    def enter_password(self, password: str):
+        """
+        Enter password in the field and verify value.
+        """
+        password_input = self.driver.find_element(*self.PASSWORD_FIELD)
+        password_input.clear()
+        password_input.send_keys(password)
+        assert password_input.get_attribute("value") == password, "Password not accepted in the field"
 
     def click_login(self):
         """
@@ -100,3 +111,42 @@ class LoginPage:
             assert False, "User profile icon found, authentication should not have been processed"
         except NoSuchElementException:
             pass
+
+    # --- New Functions for TC-LOGIN-007 ---
+
+    def check_remember_me(self):
+        """
+        Check the 'Remember Me' checkbox if not already checked.
+        """
+        checkbox = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+        if not checkbox.is_selected():
+            checkbox.click()
+        assert checkbox.is_selected(), "Remember Me checkbox is not checked!"
+
+    def save_cookies(self, filepath: str = "cookies.pkl"):
+        """
+        Save cookies after login for session persistence.
+        """
+        with open(filepath, "wb") as file:
+            pickle.dump(self.driver.get_cookies(), file)
+
+    def load_cookies(self, filepath: str = "cookies.pkl"):
+        """
+        Load cookies to restore session.
+        """
+        with open(filepath, "rb") as file:
+            cookies = pickle.load(file)
+        self.driver.get(self.URL)
+        for cookie in cookies:
+            self.driver.add_cookie(cookie)
+        self.driver.refresh()
+
+    def is_logged_in(self):
+        """
+        Verify automatic login/session persistence by checking dashboard presence.
+        """
+        try:
+            dashboard_header = self.driver.find_element(By.CSS_SELECTOR, "h1.dashboard-title")
+            return dashboard_header.is_displayed()
+        except NoSuchElementException:
+            return False
