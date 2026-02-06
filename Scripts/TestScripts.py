@@ -1,5 +1,6 @@
 # Import necessary modules
 from Pages.LoginPage import LoginPage
+from Pages.ForgotUsernamePage import ForgotUsernamePage
 
 class TestLoginFunctionality:
     def __init__(self, driver):
@@ -38,3 +39,25 @@ class TestLoginFunctionality:
         """
         self.login_page.navigate_to_login()
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_003(self):
+        """
+        Test Case TC_LOGIN_003: Forgot Username workflow
+        Steps:
+        1. Navigate to the login screen.
+        2. Click on 'Forgot Username' link.
+        3. Follow the instructions to recover username (provide sample email: 'user@example.com').
+        4. Assert that the username is retrieved (success message appears).
+        If not, retrieve and print error message.
+        """
+        forgot_username_page = ForgotUsernamePage(self.driver)
+        forgot_username_page.navigate_to_login_page()
+        forgot_username_page.click_forgot_username_link()
+        forgot_username_page.enter_email('user@example.com')
+        forgot_username_page.submit_recovery()
+        if forgot_username_page.is_success_message_displayed():
+            assert forgot_username_page.get_success_message() == 'Your username has been sent to your email address.'
+        else:
+            error_msg = forgot_username_page.get_error_message()
+            print(f"Error retrieving username: {error_msg}")
+            assert False, f"Failed to retrieve username: {error_msg}"
