@@ -39,10 +39,10 @@ class TestLoginFunctionality:
         Steps:
         1. Navigate to the login screen.
         2. Click on 'Forgot Username' link.
-        3. Follow instructions to recover username.
-        4. Assert username is retrieved.
+        3. Follow the instructions to recover username.
+        4. Assert that the username is retrieved.
         """
         self.login_page.go_to_login_page()
-        self.login_page.click_forgot_username_link()
-        result = self.login_page.recover_username('user@example.com')
-        assert 'Username retrieved' in result, f"Expected 'Username retrieved' in result, got: {result}"
+        self.login_page.click_forgot_username()
+        self.login_page.follow_username_recovery_instructions()
+        assert self.login_page.is_username_retrieved(), "Username was not retrieved successfully."
