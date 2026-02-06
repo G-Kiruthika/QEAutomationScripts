@@ -16,7 +16,7 @@ class TestLoginFunctionality:
         await self.login_page.fill_email('')
 
     def test_TC_LOGIN_001(self):
-        """Test invalid login and error message for TC-LOGIN-001"""
+        """Test invalid login and error message for TC_LOGIN_001"""
         username = 'invalid_user'
         password = 'invalid_pass'
         expected_error = 'Invalid username or password. Please try again.'
@@ -33,18 +33,39 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
 
-    def test_TC_LOGIN_001_valid(self):
+    def test_TC_LOGIN_002_invalid_email(self):
         """
-        Test Case TC-LOGIN-001: Valid Login
+        Test Case TC-LOGIN-002 (Invalid Email):
         Steps:
-        1. Navigate to the login page.
-        2. Enter valid email (testuser@example.com) and password (ValidPass123!).
-        3. Click Login.
-        4. Verify dashboard header and user profile icon are visible.
+        1. Navigate to the login page
+        2. Enter invalid/non-existent email (invalid@example.com)
+        3. Enter valid password (ValidPass123!)
+        4. Click the Login button
+        5. Assert error message 'Invalid email or password' is displayed
+        6. Verify user remains on login page
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('invalid@example.com')
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.click_login()
+        assert self.login_page.get_error_message() == 'Invalid email or password', "Error message 'Invalid email or password' was not displayed."
+        assert self.login_page.is_on_login_page(), "User did not remain on the login page after invalid login attempt."
+
+    def test_TC_LOGIN_003(self):
+        """
+        Test Case TC-LOGIN-003: Valid email, invalid password, verify error and page state
+        Steps:
+        1. Navigate to the login page (URL: https://ecommerce.example.com/login)
+        2. Enter valid registered email address (testuser@example.com)
+        3. Enter incorrect password (WrongPassword123)
+        4. Click the Login button
+        5. Assert error message 'Invalid email or password' is displayed
+        6. Verify user remains on login page
         """
         self.login_page.go_to_login_page()
         self.login_page.enter_email('testuser@example.com')
-        self.login_page.enter_password('ValidPass123!')
+        self.login_page.enter_password('WrongPassword123')
         self.login_page.click_login()
-        assert self.login_page.is_dashboard_header_visible(), 'Dashboard header not visible after login.'
-        assert self.login_page.is_user_profile_icon_visible(), 'User profile icon not visible after login.'
+        error_message = self.login_page.get_error_message()
+        assert error_message == 'Invalid email or password', f"Expected error message 'Invalid email or password', but got '{error_message}'."
+        assert self.login_page.is_on_login_page(), "User did not remain on the login page after invalid login attempt."
