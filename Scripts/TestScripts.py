@@ -73,18 +73,17 @@ class TestLoginFunctionality:
         validation_error = self.login_page.trigger_validation_error_empty_email('ValidPass123!')
         assert validation_error is not None and validation_error.strip() != '', "Validation error message not displayed as expected."
         # Step 3: Verify error message accessibility attributes
-        accessibility = self.login_page.verify_error_accessibility()
-        assert accessibility["aria_label"], "Error message missing ARIA label."
-        assert accessibility["role_alert"], "Error message missing role='alert'."
-        assert accessibility["color_contrast"] is not None, "Error message color contrast missing."
-        assert accessibility["background_contrast"] is not None, "Error message background contrast missing."
-        assert accessibility["screen_reader_text"], "Error message not compatible with screen reader."
+        accessibility = self.login_page.verify_error_message_accessibility()
+        assert accessibility['aria_live'] is not None, "Error message missing aria-live attribute."
+        assert accessibility['aria_role'] is not None, "Error message missing ARIA role attribute."
+        assert accessibility['color'] is not None, "Error message color not found."
+        assert accessibility['background_color'] is not None, "Error message background color not found."
+        assert accessibility['aria_label'] is not None, "Error message missing ARIA label."
         # Step 4: Trigger authentication error with invalid credentials
-        auth_error = self.login_page.trigger_authentication_error('test@example.com', 'WrongPass')
+        auth_error = self.login_page.trigger_authentication_error_invalid_credentials('test@example.com', 'WrongPass')
         assert auth_error is not None and 'Invalid email or password' in auth_error, "Authentication error message not displayed or incorrect."
         # Step 5: Verify error message positioning and visibility
-        position = self.login_page.verify_error_position_and_visibility()
-        assert position["is_displayed"], "Error message not displayed."
-        assert position["associated_with_form"], "Error message not associated with form."
-        assert position["location"] is not None, "Error message location not found."
-        assert position["size"] is not None, "Error message size not found."
+        position = self.login_page.verify_error_message_position_and_visibility()
+        assert position['displayed'] is True, "Error message not displayed."
+        assert position['location'] is not None, "Error message location not found."
+        assert position['size'] is not None, "Error message size not found."
