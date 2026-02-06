@@ -35,13 +35,14 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_003(self):
         """
-        Test Case TC_LOGIN_003: Automate the 'Forgot Username' workflow.
+        Test Case TC_LOGIN_003: Forgot Username Workflow
         Steps:
         1. Navigate to the login screen.
         2. Click on 'Forgot Username' link.
         3. Follow the instructions to recover username.
+        4. Assert that username is retrieved and not empty.
         """
         self.login_page.go_to_login_page()
-        self.login_page.click_forgot_username()
-        self.login_page.follow_username_recovery_instructions('user@example.com')
-        # If no exceptions are raised, assume success.
+        self.login_page.click_forgot_username_link()
+        username = self.login_page.follow_username_recovery_instructions()
+        assert username is not None and username != "", "Username should be retrieved and not empty after recovery workflow."
