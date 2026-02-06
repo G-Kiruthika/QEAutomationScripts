@@ -70,20 +70,18 @@ class TestLoginFunctionality:
         assert error_message == 'Invalid email or password', f"Expected error message 'Invalid email or password', but got '{error_message}'."
         assert self.login_page.is_on_login_page(), "User did not remain on the login page after invalid login attempt."
 
-    def test_TC_LOGIN_005(self):
+    def test_TC_LOGIN_004(self):
         """
-        Test Case TC-LOGIN-005: Valid email, password field empty, verify validation error and no authentication attempt
+        Test Case TC-LOGIN-004: Negative login with empty email
         Steps:
-        1. Navigate to the login page (URL: https://example-ecommerce.com/login)
-        2. Enter valid registered email address (testuser@example.com)
-        3. Leave password field empty
+        1. Navigate to the login page
+        2. Leave the email field empty
+        3. Enter a valid password ('ValidPass123!')
         4. Click the Login button
-        5. Assert validation error is displayed: 'Password field is required' or 'Please enter your password' or 'Mandatory fields are required'
-        6. Verify user remains on login page, no authentication attempt made
+        5. Assert that login fails due to empty email using LoginPage.assert_login_failed_due_to_empty_email()
         """
-        self.login_page.navigate_to_login()
-        self.login_page.enter_email('testuser@example.com')
-        self.login_page.leave_password_empty()
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email("")
+        self.login_page.enter_password("ValidPass123!")
         self.login_page.click_login()
-        self.login_page.verify_validation_error()
-        self.login_page.verify_no_authentication_attempt()
+        self.login_page.assert_login_failed_due_to_empty_email()
