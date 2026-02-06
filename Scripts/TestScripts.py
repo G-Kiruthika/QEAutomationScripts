@@ -36,5 +36,5 @@ class TestLoginFunctionality:
         1. Navigate to the login screen.
         2. Assert that 'Remember Me' checkbox is not present.
         """
-        self.login_page.go_to_login_page()
+        self.login_page.navigate_to_login()
         self.login_page.assert_remember_me_checkbox_absent()
