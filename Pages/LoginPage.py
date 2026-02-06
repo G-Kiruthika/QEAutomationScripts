@@ -5,6 +5,9 @@ Author: [Your Name]
 Description: This class encapsulates the interactions and verifications for the Login Page,
 using locators defined in Locators.json. Now supports TC_LOGIN_001: navigation, credential entry,
 login submission, and error message verification.
+
+Update for TC_LOGIN_002:
+- Adds explicit documentation and method usage for verifying absence of 'Remember Me' checkbox as per test steps.
 """
 
 from selenium.webdriver.common.by import By
@@ -127,3 +130,19 @@ class LoginPage:
             raise AssertionError(
                 "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
             )
+
+    # --- TC_LOGIN_002 Implementation ---
+    def run_tc_login_002(self):
+        """
+        Implements Test Case TC_LOGIN_002:
+        1. Navigates to the login screen.
+        2. Verifies that the login screen is displayed.
+        3. Checks for the presence of 'Remember Me' checkbox and asserts its absence.
+        """
+        self.go_to_login_page()
+        # Step 2: Verify login screen is displayed (email field visible)
+        if not WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located(self.EMAIL_FIELD)):
+            raise AssertionError("Login screen is not displayed.")
+        # Step 3: Assert 'Remember Me' checkbox is NOT present
+        self.assert_remember_me_checkbox_absent()
