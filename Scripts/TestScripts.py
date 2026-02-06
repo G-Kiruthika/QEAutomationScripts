@@ -57,24 +57,39 @@ class TestLoginFunctionality:
         # Final system stability check
         assert not self.login_page._is_element_present('crash_indicator', 'crash_indicator'), "System crashed after rapid login attempts."
 
-    def test_TC_LOGIN_020(self):
+    def test_TC_LOGIN_019(self):
         """
-        Test Case TC-LOGIN-020: Minimum valid email and password, boundary error check
+        Test Case TC-LOGIN-019: Validation, Accessibility, and Error Handling for Login Page
         Steps:
         1. Navigate to the login page (https://ecommerce.example.com/login)
-        2. Enter minimum valid email (a@b.co)
-        3. Enter minimum valid password (Pass123!)
-        4. Click Login
-        5. Verify login result and no boundary errors
+        2. Trigger validation error by leaving email empty and entering valid password (ValidPass123!)
+        3. Verify error message accessibility attributes (ARIA, color contrast, screen reader)
+        4. Trigger authentication error with invalid credentials (test@example.com, WrongPass)
+        5. Verify error message positioning and visibility
         """
+        # Step 1: Navigate to login page
         self.login_page.navigate_to_login('https://ecommerce.example.com/login')
-        self.login_page.enter_email('a@b.co')
-        self.login_page.enter_password('Pass123!')
+        # Step 2: Trigger validation error by leaving email empty
+        self.login_page.enter_email("")
+        self.login_page.enter_password("ValidPass123!")
         self.login_page.click_login()
-        # Check if login is successful or failed appropriately
-        login_success = self.login_page.is_login_successful()
-        # Ensure no boundary errors
-        no_boundary_errors = self.login_page.has_no_boundary_errors()
-        assert no_boundary_errors, 'Boundary errors detected (empty field or validation error) after login.'
-        # Optionally, check result
-        assert login_success or not login_success, 'Login result not determined.'
+        validation_error = self.login_page.get_validation_error()
+        assert validation_error is not None and validation_error.strip() != '', "Validation error message not displayed as expected."
+        # Step 3: Verify error message accessibility attributes
+        accessibility = self.login_page.check_error_accessibility()
+        assert accessibility is not None, "Accessibility attributes not found."
+        assert accessibility.get("aria_label"), "Error message missing ARIA label."
+        assert accessibility.get("aria_live"), "Error message missing ARIA live attribute."
+        assert accessibility.get("role"), "Error message missing role attribute."
+        assert accessibility.get("color"), "Error message color not found."
+        # Step 4: Trigger authentication error with invalid credentials
+        self.login_page.enter_email("test@example.com")
+        self.login_page.enter_password("WrongPass")
+        self.login_page.click_login()
+        auth_error = self.login_page.get_error_message()
+        assert auth_error is not None and 'Invalid email or password' in auth_error, "Authentication error message not displayed or incorrect."
+        # Step 5: Verify error message positioning and visibility
+        position = self.login_page.is_error_positioned_correctly()
+        assert position is not None, "Error message position not found."
+        assert position.get("x") is not None and position.get("y") is not None, "Error message location not found."
+        assert position.get("width") is not None and position.get("height") is not None, "Error message size not found."
