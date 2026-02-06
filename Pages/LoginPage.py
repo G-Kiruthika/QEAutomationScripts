@@ -71,7 +71,6 @@ class LoginPage:
                 "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
             )
 
-    # --- TC-LOGIN-001: Added Methods Below ---
     def enter_email(self, email: str):
         """
         Enters the provided email address into the email field.
@@ -173,17 +172,38 @@ class LoginPage:
         except Exception:
             return False
 
-    # --- End TC-LOGIN-001 Additions ---
+    def assert_login_failed_due_to_empty_email(self):
+        """
+        Asserts that login fails when email field is empty.
+        - Ensures dashboard/profile icon are NOT visible.
+        - Ensures validation error or empty field prompt is displayed.
+        - Ensures user remains on login page.
+        Raises AssertionError if any condition fails.
+        """
+        if self.is_dashboard_header_visible():
+            raise AssertionError("Dashboard header should NOT be visible after failed login.")
+        if self.is_user_profile_icon_visible():
+            raise AssertionError("User profile icon should NOT be visible after failed login.")
+
+        validation_error = self.get_validation_error()
+        error_message = self.get_error_message()
+        empty_prompt = self.is_empty_field_prompt_visible()
+
+        if not (validation_error or error_message or empty_prompt):
+            raise AssertionError("No validation error, error message, or empty field prompt displayed for empty email.")
+
+        current_url = self.driver.current_url
+        if self.URL not in current_url:
+            raise AssertionError(f"User was redirected away from login page: {current_url}")
 
 # Example usage in a test (not part of the PageClass, for illustration only):
 #
-# def test_login_success(driver):
+# def test_login_empty_email(driver):
 #     login_page = LoginPage(driver)
 #     login_page.go_to_login_page()
-#     login_page.enter_email("testuser@example.com")
+#     login_page.enter_email("")
 #     login_page.enter_password("ValidPass123!")
 #     login_page.click_login()
-#     assert login_page.is_dashboard_header_visible()
-#     assert login_page.is_user_profile_icon_visible()
+#     login_page.assert_login_failed_due_to_empty_email()
 #
-# This will navigate to the login screen, perform login, and verify dashboard/profile icon.
+# This will verify negative login behavior for empty email field.
