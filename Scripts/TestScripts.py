@@ -25,10 +25,28 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_002(self):
         """
-        Test Case TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
+        Test Case TC-LOGIN-002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
         Steps:
         1. Navigate to the login screen.
         2. Assert that 'Remember Me' checkbox is not present.
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_002_invalid_email(self):
+        """
+        Test Case TC-LOGIN-002 (Invalid Email):
+        Steps:
+        1. Navigate to the login page
+        2. Enter invalid/non-existent email (invalid@example.com)
+        3. Enter valid password (ValidPass123!)
+        4. Click the Login button
+        5. Assert error message 'Invalid email or password' is displayed
+        6. Verify user remains on login page
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('invalid@example.com')
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.click_login()
+        assert self.login_page.is_error_message_displayed('Invalid email or password'), "Error message 'Invalid email or password' was not displayed."
+        assert self.login_page.is_on_login_page(), "User did not remain on the login page after invalid login attempt."
