@@ -16,7 +16,7 @@ class TestLoginFunctionality:
         await self.login_page.fill_email('')
 
     def test_TC_LOGIN_001(self):
-        """Test invalid login and error message for TC_LOGIN_001"""
+        """Test invalid login and error message for TC-LOGIN-001"""
         username = 'invalid_user'
         password = 'invalid_pass'
         expected_error = 'Invalid username or password. Please try again.'
@@ -25,7 +25,7 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_002(self):
         """
-        Test Case TC-LOGIN-002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
+        Test Case TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
         Steps:
         1. Navigate to the login screen.
         2. Assert that 'Remember Me' checkbox is not present.
@@ -33,20 +33,20 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
 
-    def test_TC_LOGIN_002_invalid_email(self):
+    def test_TC_LOGIN_001_valid_login(self):
         """
-        Test Case TC-LOGIN-002 (Invalid Email):
+        Test Case TC-LOGIN-001: Valid login flow
         Steps:
         1. Navigate to the login page
-        2. Enter invalid/non-existent email (invalid@example.com)
-        3. Enter valid password (ValidPass123!)
+        2. Enter valid email address: testuser@example.com
+        3. Enter valid password: ValidPass123!
         4. Click the Login button
-        5. Assert error message 'Invalid email or password' is displayed
-        6. Verify user remains on login page
+        5. Verify user is authenticated and redirected to dashboard/home page
+        6. Verify user session is established
         """
         self.login_page.go_to_login_page()
-        self.login_page.enter_email('invalid@example.com')
+        self.login_page.enter_email('testuser@example.com')
         self.login_page.enter_password('ValidPass123!')
         self.login_page.click_login()
-        assert self.login_page.is_error_message_displayed('Invalid email or password'), "Error message 'Invalid email or password' was not displayed."
-        assert self.login_page.is_on_login_page(), "User did not remain on the login page after invalid login attempt."
+        assert self.login_page.is_authenticated_and_redirected(), "Failed to authenticate and redirect."
+        assert self.login_page.is_user_session_established(), "User session not established after login."
