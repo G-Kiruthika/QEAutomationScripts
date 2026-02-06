@@ -88,3 +88,21 @@ class TestLoginFunctionality:
         assert self.login_page.is_password_field_empty(), "Password field is not empty after clearing."
         assert self.login_page.is_validation_error_for_password_required(), "Validation error for empty password was not displayed."
         assert self.login_page.is_login_not_processed(), "User did not remain on the login page; authentication may have been attempted."
+
+    def test_TC_LOGIN_006(self):
+        """
+        Test Case TC-LOGIN-006: Login with empty email and password fields, verify validation errors and no authentication attempt
+        Steps:
+        1. Navigate to the login page (URL: https://ecommerce.example.com/login)
+        2. Leave email field empty
+        3. Leave password field empty
+        4. Click the Login button
+        5. Assert validation error is displayed: 'Email and password are required', 'Password field is required', 'Please enter your password', or 'Mandatory fields are required'
+        6. Verify user remains on login page, no authentication attempt made
+        """
+        self.login_page.navigate_to_login()
+        self.login_page.leave_email_empty()
+        self.login_page.leave_password_empty()
+        self.login_page.click_login()
+        self.login_page.verify_validation_error()
+        self.login_page.verify_no_authentication_attempt()
