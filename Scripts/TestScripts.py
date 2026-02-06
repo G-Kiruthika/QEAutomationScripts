@@ -1,10 +1,12 @@
 # Import necessary modules
 from Pages.LoginPage import LoginPage
+from Pages.ForgotPasswordPage import ForgotPasswordPage
 
 class TestLoginFunctionality:
     def __init__(self, driver):
         self.driver = driver
         self.login_page = LoginPage(driver)
+        self.forgot_password_page = ForgotPasswordPage(driver)
 
     async def test_empty_fields_validation(self):
         await self.login_page.navigate()
@@ -125,3 +127,28 @@ class TestLoginFunctionality:
         self.driver.get('https://ecommerce.example.com/dashboard')
         # Step 9: Verify user is logged in (dashboard visible)
         assert self.login_page.is_logged_in(), "Session did not persist after browser restart with 'Remember Me' checked."
+
+    def test_TC_LOGIN_009(self):
+        """
+        Test Case TC-LOGIN-009: Forgot Password link and recovery page verification
+        Steps:
+        1. Navigate to login page (URL: https://ecommerce.example.com/login)
+        2. Verify 'Forgot Password' link is visible
+        3. Verify 'Forgot Password' link is clickable
+        4. Click 'Forgot Password' link
+        5. Verify navigation to password recovery page (URL: https://ecommerce.example.com/forgot-password)
+        6. Verify password recovery page displays email input field and submit button
+        """
+        # Step 1: Navigate to login page
+        self.login_page.navigate_to_login()
+        # Step 2: Verify 'Forgot Password' link is visible
+        self.login_page.verify_forgot_password_link_visible()
+        # Step 3: Verify 'Forgot Password' link is clickable
+        self.login_page.verify_forgot_password_link_clickable()
+        # Step 4: Click 'Forgot Password' link
+        self.login_page.click_forgot_password_link()
+        # Step 5: Verify navigation to password recovery page
+        self.forgot_password_page.verify_on_forgot_password_page()
+        # Step 6: Verify password recovery page displays email input field and submit button
+        self.forgot_password_page.verify_email_input_present()
+        self.forgot_password_page.verify_submit_button_present()
