@@ -124,24 +124,3 @@ class LoginPage:
             return True
         except TimeoutException:
             return False
-
-    # --- ADDED FOR TC-LOGIN-016 ---
-    def login_and_validate_success_case_insensitive_email(self, registered_email: str, entered_email: str, password: str):
-        """
-        Navigates to login page, enters email (case-insensitive), enters password, clicks login, and validates login success.
-        """
-        self.navigate_to_login()
-        self.enter_email(entered_email)
-        self.enter_password(password)
-        self.click_login()
-        self.verify_authentication_result(expect_success=True)
-
-    def login_and_validate_failure_wrong_case_password(self, email: str, wrong_case_password: str):
-        """
-        Navigates to login page, enters correct email, enters password with wrong case, clicks login, and validates login failure.
-        """
-        self.navigate_to_login()
-        self.enter_email(email)
-        self.enter_password(wrong_case_password)
-        self.click_login()
-        self.verify_authentication_result(expect_success=False)
