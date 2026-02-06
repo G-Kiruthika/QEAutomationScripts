@@ -32,3 +32,17 @@ class TestLoginFunctionality:
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_001_page_methods(self):
+        """
+        Appended method for TC_LOGIN_001 using PageClass atomic methods.
+        Steps:
+        1. Navigate to the login screen.
+        2. Enter invalid credentials.
+        3. Submit login.
+        4. Verify error message.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_credentials('invalid_user', 'invalid_pass')
+        self.login_page.submit_login()
+        assert self.login_page.is_error_message_displayed('Invalid username or password. Please try again.'), "Error message not displayed as expected."
