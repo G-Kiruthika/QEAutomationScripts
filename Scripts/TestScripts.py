@@ -1,10 +1,12 @@
 # Import necessary modules
 from Pages.LoginPage import LoginPage
+from Pages.ForgotUsernamePage import ForgotUsernamePage
 
 class TestLoginFunctionality:
     def __init__(self, driver):
         self.driver = driver
         self.login_page = LoginPage(driver)
+        self.forgot_username_page = ForgotUsernamePage(driver)
 
     async def test_empty_fields_validation(self):
         await self.login_page.navigate()
@@ -86,3 +88,23 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         assert self.login_page.is_login_screen_displayed(), "Login screen is not displayed."
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_003_forgot_username_workflow(self):
+        """
+        Test Case TC_LOGIN_003: Automate 'Forgot Username' workflow.
+        Steps:
+        1. Navigate to the login screen.
+        2. Click on 'Forgot Username' link.
+        3. Follow the instructions to recover username.
+        4. Verify confirmation message after recovery.
+        """
+        # Step 1: Navigate to the login screen
+        self.login_page.navigate_to_login_screen('https://example.com/login')
+        # Step 2: Click 'Forgot Username' link
+        self.login_page.click_forgot_username()
+        # Step 3: Recover username
+        test_email = 'user@example.com'
+        self.forgot_username_page.recover_username(test_email)
+        # Step 4: Verify confirmation message
+        confirmation_msg = self.forgot_username_page.get_confirmation_message()
+        assert 'Username recovery instructions are followed and username is retrieved.' in confirmation_msg, "Confirmation message not as expected."
