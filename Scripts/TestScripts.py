@@ -46,3 +46,17 @@ class TestLoginFunctionality:
         self.login_page.enter_credentials('invalid_user', 'invalid_pass')
         self.login_page.submit_login()
         self.login_page.assert_invalid_login_error()
+
+    def test_TC_LOGIN_003(self):
+        """
+        Test Case TC_LOGIN_003: Forgot Username Workflow
+        Steps:
+        1. Navigate to the login screen.
+        2. Click on 'Forgot Username' link.
+        3. Follow the instructions to recover username.
+        4. Assert that the recovered username is as expected.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.click_forgot_username_link()
+        recovered_username = self.login_page.follow_username_recovery_instructions()
+        assert recovered_username == "expected_username", f"Expected username 'expected_username', but got {recovered_username}"
