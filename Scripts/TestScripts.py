@@ -20,7 +20,9 @@ class TestLoginFunctionality:
         username = 'invalid_user'
         password = 'invalid_pass'
         expected_error = 'Invalid username or password. Please try again.'
-        result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
+        self.login_page.go_to_login_page()
+        self.login_page.login_with_invalid_credentials(username, password)
+        result = self.login_page.verify_invalid_login_error(expected_error)
         assert result, f"Expected error message '{expected_error}', but got something else."
 
     def test_TC_LOGIN_002(self):
@@ -32,3 +34,19 @@ class TestLoginFunctionality:
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_001_pageclass(self):
+        """
+        TC_LOGIN_001: Navigate to login, enter invalid credentials, submit, and verify error message using PageClass methods.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter invalid credentials and submit.
+        3. Verify the error message is as expected.
+        """
+        username = 'invalid_user'
+        password = 'invalid_pass'
+        expected_error = 'Invalid username or password. Please try again.'
+        self.login_page.go_to_login_page()
+        self.login_page.login_with_invalid_credentials(username, password)
+        result = self.login_page.verify_invalid_login_error(expected_error)
+        assert result, f"Expected error message '{expected_error}', but got something else."
