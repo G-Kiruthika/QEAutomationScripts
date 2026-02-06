@@ -25,7 +25,7 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_002(self):
         """
-        Test Case TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
+        Test Case TC-LOGIN-002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
         Steps:
         1. Navigate to the login screen.
         2. Assert that 'Remember Me' checkbox is not present.
@@ -33,20 +33,18 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
 
-    def test_TC_LOGIN_001_valid_login(self):
+    def test_TC_LOGIN_001_valid(self):
         """
-        Test Case TC-LOGIN-001: Valid login flow
+        Test Case TC-LOGIN-001: Valid Login
         Steps:
-        1. Navigate to the login page
-        2. Enter valid email address: testuser@example.com
-        3. Enter valid password: ValidPass123!
-        4. Click the Login button
-        5. Verify user is authenticated and redirected to dashboard/home page
-        6. Verify user session is established
+        1. Navigate to the login page.
+        2. Enter valid email (testuser@example.com) and password (ValidPass123!).
+        3. Click Login.
+        4. Verify dashboard header and user profile icon are visible.
         """
         self.login_page.go_to_login_page()
         self.login_page.enter_email('testuser@example.com')
         self.login_page.enter_password('ValidPass123!')
         self.login_page.click_login()
-        assert self.login_page.is_authenticated_and_redirected(), "Failed to authenticate and redirect."
-        assert self.login_page.is_user_session_established(), "User session not established after login."
+        assert self.login_page.is_dashboard_header_visible(), 'Dashboard header not visible after login.'
+        assert self.login_page.is_user_profile_icon_visible(), 'User profile icon not visible after login.'
