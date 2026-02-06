@@ -3,13 +3,13 @@
 Page Object Model for the Login Page
 Author: [Your Name]
 Description: This class encapsulates the interactions and verifications for the Login Page,
-using locators defined in Locators.json. It includes methods to navigate to the login screen
-and to verify the absence of the 'Remember Me' checkbox, as required by TC_LOGIN_002.
+using locators defined in Locators.json. Now supports TC_LOGIN_001: navigation, credential entry,
+login submission, and error message verification.
 """
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -50,6 +50,63 @@ class LoginPage:
             message="Login email field not visible after navigating to login page."
         )
 
+    def enter_email(self, email: str):
+        """
+        Enters the provided email into the email field.
+        """
+        email_elem = WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.EMAIL_FIELD),
+            message="Email field not visible."
+        )
+        email_elem.clear()
+        email_elem.send_keys(email)
+
+    def enter_password(self, password: str):
+        """
+        Enters the provided password into the password field.
+        """
+        password_elem = WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.PASSWORD_FIELD),
+            message="Password field not visible."
+        )
+        password_elem.clear()
+        password_elem.send_keys(password)
+
+    def submit_login(self):
+        """
+        Clicks the login submit button.
+        """
+        submit_btn = WebDriverWait(self.driver, self.timeout).until(
+            EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON),
+            message="Login submit button not clickable."
+        )
+        submit_btn.click()
+
+    def get_error_message(self) -> str:
+        """
+        Returns the error message displayed after login attempt.
+        :return: Error message text or empty string if not present.
+        """
+        try:
+            error_elem = WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located(self.ERROR_MESSAGE),
+                message="Error message not visible."
+            )
+            return error_elem.text.strip()
+        except (TimeoutException, NoSuchElementException):
+            return ""
+
+    def assert_error_message(self, expected_message: str):
+        """
+        Asserts that the error message matches the expected text.
+        Raises AssertionError if not matched.
+        """
+        actual_message = self.get_error_message()
+        if actual_message != expected_message:
+            raise AssertionError(
+                f"Expected error message: '{expected_message}', but got: '{actual_message}'"
+            )
+
     def is_remember_me_checkbox_present(self) -> bool:
         """
         Checks if the 'Remember Me' checkbox is present on the login page.
@@ -70,14 +127,3 @@ class LoginPage:
             raise AssertionError(
                 "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
             )
-
-    # Additional utility methods can be implemented here as needed.
-
-# Example usage in a test (not part of the PageClass, for illustration only):
-#
-# def test_remember_me_checkbox_absence(driver):
-#     login_page = LoginPage(driver)
-#     login_page.go_to_login_page()
-#     login_page.assert_remember_me_checkbox_absent()
-#
-# This will navigate to the login screen and verify the absence of the 'Remember Me' checkbox.
