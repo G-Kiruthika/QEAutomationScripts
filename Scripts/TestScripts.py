@@ -46,3 +46,17 @@ class TestLoginFunctionality:
         self.login_page.enter_credentials('invalid_user', 'invalid_pass')
         self.login_page.submit_login()
         assert self.login_page.is_error_message_displayed('Invalid username or password. Please try again.'), "Error message not displayed as expected."
+
+    def test_tc_login_001_atomic_methods(self):
+        """
+        Test Case TC_LOGIN_001 using only atomic PageClass methods.
+        Steps:
+        1. Navigate to the login screen.
+        2. Enter invalid credentials.
+        3. Submit login form.
+        4. Verify error message.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_invalid_credentials('invalid_user', 'wrong_pass')
+        self.login_page.submit_login_form()
+        assert self.login_page.verify_error_message('Invalid username or password. Please try again.'), "Expected error message was not displayed."
