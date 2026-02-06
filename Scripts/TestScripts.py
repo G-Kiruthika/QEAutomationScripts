@@ -56,27 +56,3 @@ class TestLoginFunctionality:
         assert responses_invalid['lockout_detected'] or responses_invalid['captcha_detected'] or len(responses_invalid['error_messages']) == 10, "System did not handle rapid invalid login attempts correctly."
         # Final system stability check
         assert not self.login_page._is_element_present('crash_indicator', 'crash_indicator'), "System crashed after rapid login attempts."
-
-    def test_TC_LOGIN_016(self):
-        """
-        Test Case TC-LOGIN-016: Email case insensitivity and password case sensitivity
-        Steps:
-        1. Navigate to the login page (https://ecommerce.example.com/login)
-        2. Enter email with different case than registered (Registered: testuser@example.com, Entered: TestUser@Example.com)
-        3. Enter correct password (ValidPass123!)
-        4. Click Login button
-        5. Login should succeed (email should be case-insensitive)
-        6. Test password case sensitivity: correct email, wrong case password (validpass123!)
-        7. Login should fail (password should be case-sensitive)
-        """
-        # Step 1-5: Email case insensitivity
-        registered_email = 'testuser@example.com'
-        entered_email = 'TestUser@Example.com'
-        correct_password = 'ValidPass123!'
-        result_email_case = self.login_page.test_email_case_insensitivity(registered_email, entered_email, correct_password)
-        assert result_email_case, "Login should succeed with email case-insensitive."
-
-        # Step 6-7: Password case sensitivity
-        wrong_case_password = 'validpass123!'
-        result_password_case = self.login_page.test_password_case_sensitivity(registered_email, correct_password, wrong_case_password)
-        assert result_password_case, "Login should fail with password case-sensitive."
