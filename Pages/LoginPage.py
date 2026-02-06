@@ -3,8 +3,9 @@
 Page Object Model for the Login Page
 Author: [Your Name]
 Description: This class encapsulates the interactions and verifications for the Login Page,
-using locators defined in Locators.json. It includes methods to navigate to the login screen
-and to verify the absence of the 'Remember Me' checkbox, as required by TC_LOGIN_002.
+using locators defined in Locators.json. It includes methods to navigate to the login screen,
+verify the absence of the 'Remember Me' checkbox, enter credentials, submit the login form,
+and verify error messages as required by TC_LOGIN_001.
 """
 
 from selenium.webdriver.common.by import By
@@ -71,13 +72,49 @@ class LoginPage:
                 "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
             )
 
-    # Additional utility methods can be implemented here as needed.
+    def enter_invalid_credentials(self, username: str, password: str):
+        """
+        Enters invalid username and/or password into the login form.
+        :param username: Invalid username string
+        :param password: Invalid password string
+        """
+        email_elem = WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.EMAIL_FIELD),
+            message="Login email field not visible for credential entry."
+        )
+        password_elem = self.driver.find_element(*self.PASSWORD_FIELD)
+        email_elem.clear()
+        password_elem.clear()
+        email_elem.send_keys(username)
+        password_elem.send_keys(password)
+
+    def submit_login_form(self):
+        """
+        Submits the login form by clicking the login button.
+        """
+        login_button = self.driver.find_element(*self.LOGIN_SUBMIT_BUTTON)
+        login_button.click()
+
+    def verify_error_message(self, expected_message: str) -> bool:
+        """
+        Verifies that the error message displayed matches the expected message.
+        :param expected_message: The expected error message string
+        :return: True if the message matches, False otherwise
+        """
+        error_elem = WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.ERROR_MESSAGE),
+            message="Error message not visible after invalid login attempt."
+        )
+        actual_message = error_elem.text.strip()
+        return actual_message == expected_message
 
 # Example usage in a test (not part of the PageClass, for illustration only):
 #
-# def test_remember_me_checkbox_absence(driver):
+# def test_invalid_login(driver):
 #     login_page = LoginPage(driver)
 #     login_page.go_to_login_page()
-#     login_page.assert_remember_me_checkbox_absent()
+#     login_page.enter_invalid_credentials('invalid_user', 'wrong_pass')
+#     login_page.submit_login_form()
+#     assert login_page.verify_error_message("Invalid username or password. Please try again."), "Error message mismatch"
 #
-# This will navigate to the login screen and verify the absence of the 'Remember Me' checkbox.
+# This will navigate to the login screen, attempt login with invalid credentials, and verify the error message.
