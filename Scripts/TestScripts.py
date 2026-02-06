@@ -91,42 +91,37 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_007(self):
         """
-        Test Case TC-LOGIN-007: Remember Me - Session Persistence
+        Test Case TC-LOGIN-007: Verify session persistence with 'Remember Me' checked
         Steps:
-        1. Navigate to the login page
-        2. Enter valid email and password
-        3. Check the 'Remember Me' checkbox
+        1. Navigate to login page
+        2. Enter valid credentials (testuser@example.com / ValidPass123!)
+        3. Check 'Remember Me'
         4. Log in
         5. Save cookies
-        6. Close and reopen browser (simulate by new driver instance)
+        6. Close and reopen browser
         7. Load cookies
-        8. Navigate to the app URL
-        9. Verify user is automatically logged in and redirected to dashboard
+        8. Navigate to app URL
+        9. Verify user is logged in (dashboard visible)
         """
-        # Step 1-4: Login with Remember Me
-        self.login_page.go_to_login_page()
+        # Step 1: Navigate to login page
+        self.login_page.navigate_to_login()
+        # Step 2: Enter valid credentials
         self.login_page.enter_email('testuser@example.com')
-        self.login_page.enter_password('ValidPassword123!')
+        self.login_page.enter_password('ValidPass123!')
+        # Step 3: Check 'Remember Me'
         self.login_page.check_remember_me()
+        # Step 4: Log in
         self.login_page.click_login()
-        assert self.login_page.is_logged_in(), "Login failed with valid credentials and Remember Me checked."
-
         # Step 5: Save cookies
-        cookies = self.login_page.get_cookies()
-
-        # Step 6: Simulate browser close and reopen (new driver instance)
+        self.login_page.save_cookies('cookies.pkl')
+        # Step 6: Close and reopen browser
         self.driver.quit()
         from selenium import webdriver
-        self.driver = webdriver.Chrome()  # Or whichever driver is appropriate
+        self.driver = webdriver.Chrome()
         self.login_page = LoginPage(self.driver)
-
         # Step 7: Load cookies
-        self.login_page.driver.get("https://example-ecommerce.com")  # Must open domain before adding cookies
-        for cookie in cookies:
-            self.driver.add_cookie(cookie)
-
-        # Step 8: Navigate to the app URL (dashboard)
-        self.login_page.driver.get("https://example-ecommerce.com/dashboard")
-
-        # Step 9: Verify user is automatically logged in and redirected to dashboard
-        assert self.login_page.is_logged_in(), "User was not automatically logged in after loading cookies."
+        self.login_page.load_cookies('cookies.pkl')
+        # Step 8: Navigate to app URL
+        self.driver.get('https://ecommerce.example.com/dashboard')
+        # Step 9: Verify user is logged in (dashboard visible)
+        assert self.login_page.is_logged_in(), "Session did not persist after browser restart with 'Remember Me' checked."
