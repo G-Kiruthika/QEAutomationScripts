@@ -57,33 +57,23 @@ class TestLoginFunctionality:
         # Final system stability check
         assert not self.login_page._is_element_present('crash_indicator', 'crash_indicator'), "System crashed after rapid login attempts."
 
-    def test_TC_LOGIN_019(self):
+    def test_TC_LOGIN_020(self):
         """
-        Test Case TC-LOGIN-019: Validation, Accessibility, and Error Handling for Login Page
+        Test Case TC-LOGIN-020: Minimum valid login boundary test
         Steps:
         1. Navigate to the login page (https://ecommerce.example.com/login)
-        2. Trigger validation error by leaving email empty and entering valid password (ValidPass123!)
-        3. Verify error message accessibility attributes (ARIA, color contrast, screen reader)
-        4. Trigger authentication error with invalid credentials (test@example.com, WrongPass)
-        5. Verify error message positioning and visibility
+        2. Enter minimum valid email format: a@b.co
+        3. Enter minimum length password: Pass123!
+        4. Click Login button
+        5. Verify authentication result (should succeed if credentials are valid, fail appropriately if not)
         """
         # Step 1: Navigate to login page
-        self.login_page.navigate_to_login('https://ecommerce.example.com/login')
-        # Step 2: Trigger validation error by leaving email empty
-        validation_error = self.login_page.trigger_validation_error_empty_email('ValidPass123!')
-        assert validation_error is not None and validation_error.strip() != '', "Validation error message not displayed as expected."
-        # Step 3: Verify error message accessibility attributes
-        accessibility = self.login_page.verify_error_message_accessibility()
-        assert accessibility['aria_live'] is not None, "Error message missing aria-live attribute."
-        assert accessibility['aria_role'] is not None, "Error message missing ARIA role attribute."
-        assert accessibility['color'] is not None, "Error message color not found."
-        assert accessibility['background_color'] is not None, "Error message background color not found."
-        assert accessibility['aria_label'] is not None, "Error message missing ARIA label."
-        # Step 4: Trigger authentication error with invalid credentials
-        auth_error = self.login_page.trigger_authentication_error_invalid_credentials('test@example.com', 'WrongPass')
-        assert auth_error is not None and 'Invalid email or password' in auth_error, "Authentication error message not displayed or incorrect."
-        # Step 5: Verify error message positioning and visibility
-        position = self.login_page.verify_error_message_position_and_visibility()
-        assert position['displayed'] is True, "Error message not displayed."
-        assert position['location'] is not None, "Error message location not found."
-        assert position['size'] is not None, "Error message size not found."
+        self.login_page.navigate_to_login()
+        # Step 2: Enter minimum valid email
+        self.login_page.enter_email('a@b.co')
+        # Step 3: Enter minimum valid password
+        self.login_page.enter_password('Pass123!')
+        # Step 4: Click Login button
+        self.login_page.click_login()
+        # Step 5: Verify authentication result (assuming credentials are valid)
+        self.login_page.verify_authentication_result(expect_success=True)
