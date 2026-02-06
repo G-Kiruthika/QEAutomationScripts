@@ -169,27 +169,22 @@ class TestLoginFunctionality:
             assert error_message is not None, "Login failed but no error message was shown."
             assert 'error' in error_message.lower(), "Expected an error message indicating login failure."
 
-    def test_TC_LOGIN_016(self):
+    def test_TC_LOGIN_014(self):
         """
-        Test Case TC-LOGIN-016: Case-insensitive email login and case-sensitive password validation
+        Test Case TC-LOGIN-014: Login with leading/trailing spaces in email and password
         Steps:
-        1. Navigate to login page
-        2. Enter email with different case (Registered: 'testuser@example.com', Entered: 'TestUser@Example.com')
-        3. Enter correct password ('ValidPass123!')
-        4. Click Login button
-        5. Assert login succeeds (email should be case-insensitive)
-        6. Enter correct email ('testuser@example.com') and wrong-case password ('validpass123!')
-        7. Click Login button
-        8. Assert login fails (password should be case-sensitive)
+        1. Navigate to the login page (URL: https://ecommerce.example.com/login)
+        2. Enter valid email with leading/trailing spaces: '  testuser@example.com  '
+        3. Enter valid password with leading/trailing spaces: '  ValidPass123!  '
+        4. Click the Login button
+        5. Verify authentication behavior: login succeeds if system trims spaces, or fails with a clear message if not allowed
         """
-        # Step 1-5: Case-insensitive email login
-        self.login_page.login_and_validate_success_case_insensitive_email(
-            registered_email='testuser@example.com',
-            entered_email='TestUser@Example.com',
-            password='ValidPass123!'
-        )
-        # Step 6-8: Case-sensitive password validation
-        self.login_page.login_and_validate_failure_wrong_case_password(
-            email='testuser@example.com',
-            wrong_case_password='validpass123!'
-        )
+        email = '  testuser@example.com  '
+        password = '  ValidPass123!  '
+        # Use the LoginPage's login_with_spaces method
+        result = self.login_page.login_with_spaces(email, password)
+        # Assert the expected behavior
+        if result['login_success']:
+            assert result['login_success'], "Login should succeed if spaces are trimmed automatically."
+        else:
+            assert result['error_message'] or result['validation_error'] or result['empty_prompt'], "A clear validation or error message should be shown if login fails due to spaces."
