@@ -17,24 +17,22 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_001(self):
         """
-        Test invalid login and error message for TC_LOGIN_001
+        TC_LOGIN_001: Invalid login and error message
         Steps:
-        1. Navigate to the login screen.
-        2. Enter an invalid username and/or password.
-        3. Submit login.
-        4. Verify error message 'Invalid username or password. Please try again.'
+        1. Navigate to the login screen
+        2. Enter invalid username/password
+        3. Submit login
+        4. Verify error message
         """
         self.login_page.go_to_login_page()
-        self.login_page.enter_credentials('invalid_user', 'invalid_pass')
+        self.login_page.enter_email('invalid_user@example.com')
+        self.login_page.enter_password('invalid_pass')
         self.login_page.submit_login()
-        self.login_page.verify_error_message('Invalid username or password. Please try again.')
+        self.login_page.assert_error_message('Invalid username or password. Please try again.')
 
     def test_TC_LOGIN_002(self):
         """
-        Test Case TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
-        Steps:
-        1. Navigate to the login screen.
-        2. Assert that 'Remember Me' checkbox is not present.
+        TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
