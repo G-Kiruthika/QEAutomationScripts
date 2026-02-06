@@ -56,3 +56,35 @@ class TestLoginFunctionality:
         assert responses_invalid['lockout_detected'] or responses_invalid['captcha_detected'] or len(responses_invalid['error_messages']) == 10, "System did not handle rapid invalid login attempts correctly."
         # Final system stability check
         assert not self.login_page._is_element_present('crash_indicator', 'crash_indicator'), "System crashed after rapid login attempts."
+
+    def test_TC_LOGIN_019(self):
+        """
+        Test Case TC-LOGIN-019: Validation, Accessibility, and Error Handling for Login Page
+        Steps:
+        1. Navigate to the login page (https://ecommerce.example.com/login)
+        2. Trigger validation error by leaving email empty and entering valid password (ValidPass123!)
+        3. Verify error message accessibility attributes (ARIA, color contrast, screen reader)
+        4. Trigger authentication error with invalid credentials (test@example.com, WrongPass)
+        5. Verify error message positioning and visibility
+        """
+        # Step 1: Navigate to login page
+        self.login_page.navigate_to_login('https://ecommerce.example.com/login')
+        # Step 2: Trigger validation error by leaving email empty
+        validation_error = self.login_page.trigger_validation_error_empty_email('ValidPass123!')
+        assert validation_error is not None and validation_error.strip() != '', "Validation error message not displayed as expected."
+        # Step 3: Verify error message accessibility attributes
+        accessibility = self.login_page.verify_error_accessibility()
+        assert accessibility["aria_label"], "Error message missing ARIA label."
+        assert accessibility["role_alert"], "Error message missing role='alert'."
+        assert accessibility["color_contrast"] is not None, "Error message color contrast missing."
+        assert accessibility["background_contrast"] is not None, "Error message background contrast missing."
+        assert accessibility["screen_reader_text"], "Error message not compatible with screen reader."
+        # Step 4: Trigger authentication error with invalid credentials
+        auth_error = self.login_page.trigger_authentication_error('test@example.com', 'WrongPass')
+        assert auth_error is not None and 'Invalid email or password' in auth_error, "Authentication error message not displayed or incorrect."
+        # Step 5: Verify error message positioning and visibility
+        position = self.login_page.verify_error_position_and_visibility()
+        assert position["is_displayed"], "Error message not displayed."
+        assert position["associated_with_form"], "Error message not associated with form."
+        assert position["location"] is not None, "Error message location not found."
+        assert position["size"] is not None, "Error message size not found."
