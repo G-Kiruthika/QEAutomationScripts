@@ -103,3 +103,37 @@ class LoginPage:
         # This method should be implemented in test scripts using session/cookie management.
         # Placeholder for downstream automation agent.
         pass
+
+    def login_with_sql_injection_attempt(self, username: str, password: str) -> dict:
+        """
+        Attempts login with SQL injection strings and validates that access is denied.
+        Args:
+            username (str): SQL injection string for username field.
+            password (str): SQL injection string for password field.
+        Returns:
+            dict: Results including error message, unauthorized access status, and dashboard visibility.
+        """
+        self.enter_email(username)
+        self.enter_password(password)
+        self.click_login()
+        time.sleep(1)
+        error_msg = None
+        validation_msg = None
+        dashboard_visible = self.is_dashboard_header_displayed()
+        profile_visible = self.is_user_profile_icon_displayed()
+        try:
+            error_msg = self.get_error_message()
+        except Exception:
+            error_msg = None
+        try:
+            validation_msg = self.get_validation_error()
+        except Exception:
+            validation_msg = None
+        unauthorized_access = not dashboard_visible and not profile_visible
+        return {
+            "error_message": error_msg,
+            "validation_message": validation_msg,
+            "unauthorized_access": unauthorized_access,
+            "dashboard_visible": dashboard_visible,
+            "profile_visible": profile_visible
+        }
