@@ -90,7 +90,7 @@ class TestLogin(unittest.TestCase):
         self.assertIsNotNone(max_length_error, "Should show validation error for exceeding max password length.")
         driver.quit()
 
-    # --- Appended test for TC-LOGIN-07 ---
+    # --- Appended test for TC_LOGIN_07 ---
     def test_TC_LOGIN_07_login_with_empty_fields(self):
         """TC-LOGIN-07: Attempt login with both email and password fields empty."""
         driver = webdriver.Chrome()
@@ -118,7 +118,7 @@ class TestLogin(unittest.TestCase):
         self.assertTrue(logged_in, "Login with special characters should succeed if credentials are valid.")
         driver.quit()
 
-    # --- Appended test for TC-LOGIN-08 ---
+    # --- Appended test for TC_LOGIN_08 ---
     def test_TC_LOGIN_08_remember_me_session_persistence(self):
         """TC-LOGIN-08: Login with 'Remember Me' checked and verify session persistence after browser restart."""
         driver = webdriver.Chrome()
@@ -139,4 +139,31 @@ class TestLogin(unittest.TestCase):
         login_page.go_to_login_page()
         session_persistent = login_page.is_logged_in()
         self.assertTrue(session_persistent, "Session should persist after browser restart if 'Remember Me' was checked.")
+        driver.quit()
+
+    # --- TC-LOGIN-09: Max-length email test ---
+    def test_TC_LOGIN_09_max_length_email(self):
+        """TC-LOGIN-09: Login with max-length email (254 chars), valid password, and assert login success or error."""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.go_to_login_page()
+        max_email = login_page.enter_max_length_email()
+        login_page.enter_password("ValidPassword123!")
+        login_page.click_login()
+        logged_in = login_page.is_logged_in()
+        error_message = login_page.get_login_error_message()
+        self.assertTrue(logged_in or error_message is not None, "Login with max-length email should succeed if registered, or show appropriate error.")
+        driver.quit()
+
+    # --- TC-LOGIN-10: SQL injection test ---
+    def test_TC_LOGIN_10_sql_injection(self):
+        """TC-LOGIN-10: Login with SQL injection strings in email and password fields, assert secure failure."""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.go_to_login_page()
+        login_page.enter_sql_injection_email()
+        login_page.enter_sql_injection_password()
+        login_page.click_login()
+        secure = login_page.assert_no_sql_error_or_unauthorized_access()
+        self.assertTrue(secure, "Login with SQL injection should fail securely (no SQL error or unauthorized access).")
         driver.quit()
