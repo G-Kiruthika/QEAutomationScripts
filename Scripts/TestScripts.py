@@ -62,3 +62,29 @@ class TestLoginFunctionality:
         self.login_page.enter_password('WrongPass')
         self.login_page.click_login()
         assert self.login_page.verify_error_message('Invalid username or password. Please try again.'), "Error message not displayed for invalid credentials."
+
+    def test_TC_LOGIN_003_empty_fields_error(self):
+        """
+        Test Case TC_LOGIN_003: Submit empty login fields and verify error/validation message.
+        Steps:
+        1. Navigate to the login page.
+        2. Leave username and password fields empty.
+        3. Click the Login button.
+        4. Verify error message prompting to fill in required fields.
+        """
+        self.login_page.login_with_empty_fields_and_verify_error()
+
+    def test_TC_LOGIN_004_remember_me_auto_login(self):
+        """
+        Test Case TC_LOGIN_004: Login with 'Remember Me', close/reopen browser, verify auto-login.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter valid credentials and check 'Remember Me'.
+        3. Click the Login button.
+        4. Close and reopen browser, navigate to site.
+        5. Verify user is auto-logged in.
+        """
+        # Credentials as per test data
+        email = 'user1'
+        password = 'Pass@123'
+        self.login_page.login_with_remember_me_and_verify_auto_login(email, password)
