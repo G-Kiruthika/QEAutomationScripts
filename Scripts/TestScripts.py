@@ -55,5 +55,45 @@ class LoginTests(unittest.TestCase):
         except Exception as e:
             self.fail(f'Unexpected error in Multiple Failed Login Attempts test: {str(e)}')
 
+    def test_TC_LOGIN_03_empty_fields_validation(self):
+        """
+        TC_LOGIN_03: Empty Fields Validation
+        1. Navigate to login page
+        2. Leave username and password fields empty
+        3. Click the 'Login' button
+        4. Assert error message displayed: 'Fields cannot be empty'.
+        """
+        try:
+            self.login_page.open()
+            result = self.login_page.login_with_empty_fields()
+            self.assertIsNotNone(result, 'No error or prompt message returned for empty fields.')
+            self.assertIn('empty', result.lower(), f'Expected "Fields cannot be empty" error, got: {result}')
+        except (NoSuchElementException, TimeoutException) as e:
+            self.fail(f'Empty fields validation test failed due to exception: {str(e)}')
+        except Exception as e:
+            self.fail(f'Unexpected error in Empty Fields Validation test: {str(e)}')
+
+    def test_TC_LOGIN_04_maximum_input_length(self):
+        """
+        TC_LOGIN_04: Maximum Input Length Validation
+        1. Navigate to login page
+        2. Enter username and password with maximum allowed characters (50)
+        3. Click the 'Login' button
+        4. Assert login succeeds or fails as per credentials validity.
+        """
+        try:
+            self.login_page.open()
+            max_username = 'a' * 50
+            max_password = 'b' * 50
+            result = self.login_page.login_with_max_input(max_username, max_password)
+            self.assertIn('login_success', result, 'Result missing login_success key.')
+            # Accept both success or error, but ensure error_message is handled
+            if not result['login_success']:
+                self.assertIsNotNone(result['error_message'], 'No error message for maximum input.')
+        except (NoSuchElementException, TimeoutException) as e:
+            self.fail(f'Maximum input length test failed due to exception: {str(e)}')
+        except Exception as e:
+            self.fail(f'Unexpected error in Maximum Input Length test: {str(e)}')
+
 if __name__ == '__main__':
     unittest.main()
