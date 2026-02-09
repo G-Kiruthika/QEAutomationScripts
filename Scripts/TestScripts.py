@@ -86,3 +86,34 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         session_persistent = self.login_page.is_session_persistent()
         assert session_persistent, "Session should persist after browser reopen when 'Remember Me' is checked."
+
+    def test_TC_LOGIN_001_actual(self):
+        """
+        Test Case TC_LOGIN_001 (Actual): Valid login with provided test data.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter valid email (user@example.com) and password (ValidPass123!).
+        3. Click the Login button.
+        4. Verify dashboard header or user profile icon is displayed.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('user@example.com')
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.click_login()
+        assert self.login_page.is_dashboard_header_displayed() or self.login_page.is_user_profile_icon_displayed(), "Dashboard header or user profile icon should be displayed after valid login."
+
+    def test_TC_LOGIN_002_actual(self):
+        """
+        Test Case TC_LOGIN_002 (Actual): Invalid login with provided test data.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter invalid email (invaliduser@example.com) and password (WrongPass!@#).
+        3. Click the Login button.
+        4. Verify error message 'Invalid email or password.' is displayed and user is not logged in.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('invaliduser@example.com')
+        self.login_page.enter_password('WrongPass!@#')
+        self.login_page.click_login()
+        assert self.login_page.is_error_message_displayed(), "Error message should be displayed for invalid login."
+        assert self.login_page.get_error_message_text() == 'Invalid email or password.', f"Expected error message 'Invalid email or password.', got: {self.login_page.get_error_message_text()}"
