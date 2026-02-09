@@ -103,3 +103,28 @@ class TestLogin(unittest.TestCase):
         error_message = login_page.get_error_message()
         self.assertTrue(empty_prompt_present or (error_message and ("email" in error_message.lower() or "password" in error_message.lower())), "Should show prompt or error message for empty email and password fields.")
         driver.quit()
+
+    # --- Appended test for TC_LOGIN_010 ---
+    def test_TC_LOGIN_010_special_char_login(self):
+        """TC_LOGIN_010: Login with special characters in email and password."""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        result = login_page.login_with_special_chars(email="user+test@example.com", password="!@#$%^&*()_+")
+        self.assertTrue(result, "Login with special characters should succeed if credentials are valid.")
+        driver.quit()
+
+    # --- Appended test for TC-LOGIN-08 ---
+    def test_TC_LOGIN_08_remember_me_session_persistence(self):
+        """TC-LOGIN-08: Login with 'Remember Me' checked and verify session persistence after browser restart."""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        result = login_page.login_with_remember_me(email="user@example.com", password="ValidPassword123!")
+        self.assertTrue(result, "Login with 'Remember Me' should succeed.")
+        driver.quit()
+
+        # Simulate browser restart and check session persistence
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        session_persistent = login_page.verify_session_persistence()
+        self.assertTrue(session_persistent, "Session should persist after browser restart if 'Remember Me' was checked.")
+        driver.quit()
