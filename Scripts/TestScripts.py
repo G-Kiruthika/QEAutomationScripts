@@ -142,3 +142,37 @@ class TestLoginFunctionality:
         """
         result = self.login_page.perform_login_with_short_username('ab', 'validPassword123')
         assert result, "Error message for short username not displayed or incorrect."
+
+    # --- Appended for TC_LOGIN_009 ---
+    def test_TC_LOGIN_009(self):
+        """
+        Test Case TC_LOGIN_009: Login with valid email and short password (below minimum length).
+        Steps:
+        1. Navigate to login page.
+        2. Enter valid email: user@example.com
+        3. Enter short password: 'ab'
+        4. Click Login.
+        5. Verify error message: 'Password must be at least 6 characters.'
+        """
+        email = 'user@example.com'
+        short_password = 'ab'
+        expected_error = 'Password must be at least 6 characters.'
+        result = self.login_page.perform_login_with_short_password(email, short_password, expected_error)
+        assert result, f"Error message '{expected_error}' was not displayed or incorrect."
+
+    # --- Appended for TC_LOGIN_010 ---
+    def test_TC_LOGIN_010(self):
+        """
+        Test Case TC_LOGIN_010: Login with unregistered email and valid password.
+        Steps:
+        1. Navigate to login page.
+        2. Enter unregistered email: unregistered@example.com
+        3. Enter valid password: validPassword123
+        4. Click Login.
+        5. Verify error message: 'User not found.'
+        """
+        unregistered_email = 'unregistered@example.com'
+        valid_password = 'validPassword123'
+        expected_error = 'User not found.'
+        result = self.login_page.perform_login_with_unregistered_user(unregistered_email, valid_password, expected_error)
+        assert result, f"Error message '{expected_error}' was not displayed or incorrect."
