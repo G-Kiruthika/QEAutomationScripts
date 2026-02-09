@@ -15,12 +15,27 @@ class TestLoginFunctionality:
         # Additional logic for closing and reopening browser can be implemented as needed
 
     def test_TC_LOGIN_001(self, driver):
-        # Existing test logic for TC_LOGIN_001
-        pass
+        """
+        TC_LOGIN_001: Navigate to login page, enter valid email and password, click login, assert dashboard is displayed
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.enter_email('user@example.com')
+        login_page.enter_password('ValidPass123!')
+        login_page.click_login()
+        assert login_page.is_dashboard_header_displayed(), "Dashboard should be displayed after successful login"
 
     def test_TC_LOGIN_002(self, driver):
-        # Existing test logic for TC_LOGIN_002
-        pass
+        """
+        TC_LOGIN_002: Navigate to login page, enter invalid email and password, click login, assert error message and user not logged in
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.enter_email('invaliduser@example.com')
+        login_page.enter_password('WrongPass!@#')
+        login_page.click_login()
+        assert login_page.get_error_message() == 'Invalid email or password.', "Expected error message for invalid credentials"
+        assert not login_page.is_dashboard_header_displayed(), "Dashboard should NOT be displayed for failed login"
 
     def test_TC_LOGIN_003(self, driver):
         """
