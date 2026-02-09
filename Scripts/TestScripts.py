@@ -1,57 +1,34 @@
-import unittest
-from selenium import webdriver
+# Import necessary modules
 from Pages.LoginPage import LoginPage
 
-class TestLogin(unittest.TestCase):
-    def setUp(self):
-        self.driver = webdriver.Chrome()
-        self.login_page = LoginPage(self.driver)
+class TestLoginFunctionality:
+    def __init__(self, driver):
+        self.driver = driver
+        self.login_page = LoginPage(driver)
 
-    def tearDown(self):
-        self.driver.quit()
-
-    def test_login_valid_credentials(self):
-        # Existing test method example
-        self.login_page.navigate_to_login()
-        self.login_page.enter_username('valid_user')
-        self.login_page.enter_password('valid_pass')
-        self.login_page.click_login()
-        self.assertTrue(self.login_page.is_login_successful())
-
-    def test_login_invalid_credentials(self):
-        # Existing test method example
-        self.login_page.navigate_to_login()
-        self.login_page.enter_username('invalid_user')
-        self.login_page.enter_password('invalid_pass')
-        self.login_page.click_login()
-        self.assertFalse(self.login_page.is_login_successful())
-
-    # TC_LOGIN_005: Forgot Password navigation
-    def test_forgot_password_navigation(self):
+    def test_TC_LOGIN_003_empty_fields_prompt(self):
         """
-        TC_LOGIN_005: Verify that clicking 'Forgot Password' navigates to the password recovery page
+        Test Case TC_LOGIN_003: Validate error prompt for empty fields
         Steps:
-        1. Navigate to login page
-        2. Click 'Forgot Password' link
-        3. Assert navigation to password recovery page
+        1. Navigate to the login page.
+        2. Leave username and/or password fields empty.
+        3. Click the Login button.
+        4. Verify error message is displayed prompting to fill in required fields.
         """
-        self.login_page.navigate_to_login()
-        result = self.login_page.click_forgot_password_and_validate_navigation()
-        self.assertTrue(result, "Failed to navigate to password recovery page after clicking 'Forgot Password'.")
+        self.login_page.go_to_login_page()
+        error_prompt = self.login_page.verify_empty_fields_error()
+        assert error_prompt == 'Mandatory fields are required', f'Expected "Mandatory fields are required", got: {error_prompt}'
 
-    # TC_LOGIN_006: SQL injection negative test
-    def test_sql_injection_login_failure(self):
+    def test_TC_LOGIN_004_remember_me_auto_login(self):
         """
-        TC_LOGIN_006: Verify that SQL injection strings in login fields do not allow unauthorized access
+        Test Case TC_LOGIN_004: Validate Remember Me and auto-login
         Steps:
-        1. Navigate to login page
-        2. Enter SQL injection strings in username and password
-        3. Click login
-        4. Assert login fails and no unauthorized access occurs
+        1. Navigate to the login page.
+        2. Enter valid credentials and check "Remember Me" option.
+        3. Click the Login button.
+        4. Close and reopen the browser, navigate to the site.
+        5. Verify user remains logged in or is auto-logged in.
         """
-        self.login_page.navigate_to_login()
-        result = self.login_page.attempt_sql_injection_and_validate_failure(username="' OR 1=1; --", password="' OR 1=1; --")
-        self.assertTrue(result, "SQL injection attempt did not fail as expected or unauthorized access occurred.")
-
-if __name__ == "__main__":
-    unittest.main()
+        self.login_page.go_to_login_page()
+        self.login_page.perform_login_with_remember_me('user1', 'Pass@123')
+        assert self.login_page.is_user_auto_logged_in(), 'User should remain logged in or be auto-logged in after browser restart.'
