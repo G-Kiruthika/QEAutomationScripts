@@ -134,20 +134,24 @@ class TestLoginPage(unittest.TestCase):
             captcha_msg = login_page.get_captcha_text()
             self.assertIsNotNone(captcha_msg, "CAPTCHA text should be present.")
 
-    # New test method for TC_LOGIN_005
-    def test_TC_LOGIN_005_forgot_password_navigation(self):
-        """TC_LOGIN_005: Click 'Forgot Password' link and verify navigation to password recovery page."""
+    # New test method for TC_LOGIN_001
+    def test_TC_LOGIN_001_valid_login(self):
+        """TC_LOGIN_001: Navigate to login page, enter valid email and password, click login, assert user is redirected to dashboard."""
         login_page = LoginPage(self.driver)
-        login_page.navigate_to_login_page()
-        result = login_page.click_forgot_password_and_verify()
-        self.assertTrue(result, "User should be redirected to password recovery page after clicking 'Forgot Password'.")
+        login_page.enter_username("user@example.com")
+        login_page.enter_password("ValidPass123!")
+        login_page.click_login()
+        self.assertTrue(login_page.is_login_successful(), "User should be redirected to dashboard after valid login.")
 
-    # New test method for TC_LOGIN_006
-    def test_TC_LOGIN_006_sql_injection_login(self):
-        """TC_LOGIN_006: Attempt SQL injection on login fields and assert login fails with no unauthorized access."""
+    # New test method for TC_LOGIN_002
+    def test_TC_LOGIN_002_invalid_login(self):
+        """TC_LOGIN_002: Navigate to login page, enter invalid email and password, click login, assert error message and user is not logged in."""
         login_page = LoginPage(self.driver)
-        login_page.navigate_to_login_page()
-        result = login_page.attempt_sql_injection_login()
-        self.assertTrue(result, "SQL injection login attempt should fail with no unauthorized access.")
+        login_page.enter_username("invaliduser@example.com")
+        login_page.enter_password("WrongPass!@#")
+        login_page.click_login()
+        error_message = login_page.get_login_error_message()
+        self.assertEqual(error_message, "Invalid email or password.", "Error message should be 'Invalid email or password.'")
+        self.assertFalse(login_page.is_login_successful(), "User should not be logged in after invalid login.")
 
-# Existing code...
+# End of TestLoginPage
