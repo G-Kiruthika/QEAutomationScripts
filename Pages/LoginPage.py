@@ -152,6 +152,20 @@ class LoginPage:
             "error_message": self.get_error_message() if not self.is_dashboard_header_displayed() else None
         }
 
+    def check_accessibility(self):
+        """
+        Placeholder for accessibility checks: screen reader compatibility, keyboard navigation, and color contrast.
+        This method should be extended by downstream automation agents using accessibility testing tools such as Axe or WAVE.
+        Returns:
+            dict: Accessibility check results (stubbed)
+        """
+        # Accessibility checks cannot be fully automated via Selenium; stubs provided for orchestration.
+        return {
+            "screen_reader_compatible": "stub",
+            "keyboard_navigation": "stub",
+            "color_contrast": "stub"
+        }
+
     # --- Methods added for TC_LOGIN_010 ---
     def login_with_failed_attempts(self, email: str, password: str, max_attempts: int = 5):
         """Attempts login with incorrect password up to max_attempts and checks for lockout/CAPTCHA."""
@@ -187,5 +201,17 @@ class LoginPage:
         try:
             lockout_elem = self.driver.find_element(By.XPATH, "//*[contains(text(),'account locked') or contains(text(),'too many attempts')]")
             return lockout_elem.is_displayed()
+        except Exception:
+            return False
+
+    def is_password_masked(self) -> bool:
+        """
+        Verifies that the password input is masked (type='password').
+        Returns:
+            bool: True if masked, False otherwise.
+        """
+        try:
+            password_elem = self.driver.find_element(*self.PASSWORD_FIELD)
+            return password_elem.get_attribute('type') == 'password'
         except Exception:
             return False
