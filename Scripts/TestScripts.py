@@ -2,9 +2,9 @@
 from Pages.LoginPage import LoginPage
 
 class TestLoginFunctionality:
-    def __init__(self, driver):
+    def __init__(self, driver, locators):
         self.driver = driver
-        self.login_page = LoginPage(driver)
+        self.login_page = LoginPage(driver, locators)
 
     async def test_empty_fields_validation(self):
         await self.login_page.navigate()
@@ -88,3 +88,30 @@ class TestLoginFunctionality:
         email = 'user1'
         password = 'Pass@123'
         self.login_page.login_with_remember_me_and_verify_auto_login(email, password)
+
+    def test_TC_LOGIN_005_forgot_password_navigation(self):
+        """
+        Test Case TC_LOGIN_005: Forgot Password navigation.
+        Steps:
+        1. Navigate to the login page.
+        2. Click on 'Forgot Password' link.
+        3. Assert user is redirected to password recovery page.
+        """
+        self.login_page.navigate_to_login_page()
+        result = self.login_page.navigate_to_forgot_password()
+        assert result, "User was not redirected to password recovery page."
+
+    def test_TC_LOGIN_006_sql_injection_login_failure(self):
+        """
+        Test Case TC_LOGIN_006: SQL injection login attempt fails.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter SQL injection string in username and password fields.
+        3. Click the Login button.
+        4. Assert login fails and no unauthorized access occurs.
+        """
+        self.login_page.navigate_to_login_page()
+        username = "' OR 1=1; --"
+        password = "' OR 1=1; --"
+        result = self.login_page.attempt_sql_injection(username, password)
+        assert result, "SQL injection did not trigger error as expected."
