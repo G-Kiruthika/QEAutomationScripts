@@ -16,19 +16,33 @@ class TestLoginFunctionality:
         await self.login_page.fill_email('')
 
     def test_TC_LOGIN_001(self):
-        """Test invalid login and error message for TC_LOGIN_001"""
-        username = 'invalid_user'
-        password = 'invalid_pass'
-        expected_error = 'Invalid username or password. Please try again.'
-        result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
-        assert result, f"Expected error message '{expected_error}', but got something else."
+        """
+        Test Case TC_LOGIN_001: Valid login.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter a valid email address (user@example.com).
+        3. Enter a valid password (ValidPass123!).
+        4. Click the login button.
+        5. Verify user is redirected to the dashboard.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('user@example.com')
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.click_login()
+        assert self.login_page.is_dashboard_displayed(), 'Dashboard was not displayed after valid login.'
 
     def test_TC_LOGIN_002(self):
         """
-        Test Case TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
+        Test Case TC_LOGIN_002: Invalid login.
         Steps:
-        1. Navigate to the login screen.
-        2. Assert that 'Remember Me' checkbox is not present.
+        1. Navigate to the login page.
+        2. Enter an invalid email address (wronguser@example.com).
+        3. Enter an invalid password (WrongPass456!).
+        4. Click the login button.
+        5. Verify error message for invalid credentials is displayed.
         """
         self.login_page.go_to_login_page()
-        self.login_page.assert_remember_me_checkbox_absent()
+        self.login_page.enter_email('wronguser@example.com')
+        self.login_page.enter_password('WrongPass456!')
+        self.login_page.click_login()
+        assert self.login_page.is_error_message_displayed(), 'Error message was not displayed for invalid credentials.'
