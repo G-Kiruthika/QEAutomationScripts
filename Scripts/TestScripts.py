@@ -60,3 +60,28 @@ class TestLogin(unittest.TestCase):
         login_page.enter_password("Pass@123")
         self.assertTrue(login_page.is_password_masked(), "Password input should be masked.")
         driver.quit()
+
+    # --- Newly added methods for TC_LOGIN_003 and TC_LOGIN_004 ---
+    def test_TC_LOGIN_003_leave_email_empty_and_validate_error(self):
+        """TC_LOGIN_003: Leave email empty, enter valid password, click login, verify 'Email is required.' error."""
+        driver = self._get_driver()
+        login_page = LoginPage(driver)
+        login_page.open()  # Step 1: Navigate to login page
+        self.assertTrue(login_page.is_login_page_displayed(), "Login page should be displayed.")
+        login_page.leave_email_empty()  # Step 2: Leave email field empty
+        login_page.enter_password("ValidPass123!")  # Step 3: Enter valid password
+        login_page.click_login()  # Step 4: Click login
+        self.assertTrue(login_page.validate_email_required_error(), "Error message 'Email is required.' should be displayed.")
+        driver.quit()
+
+    def test_TC_LOGIN_004_leave_password_empty_and_validate_error(self):
+        """TC_LOGIN_004: Enter valid email, leave password empty, click login, verify 'Password is required.' error."""
+        driver = self._get_driver()
+        login_page = LoginPage(driver)
+        login_page.open()  # Step 1: Navigate to login page
+        self.assertTrue(login_page.is_login_page_displayed(), "Login page should be displayed.")
+        login_page.enter_email("user@example.com")  # Step 2: Enter valid email
+        login_page.leave_password_empty()  # Step 3: Leave password field empty
+        login_page.click_login()  # Step 4: Click login
+        self.assertTrue(login_page.validate_password_required_error(), "Error message 'Password is required.' should be displayed.")
+        driver.quit()
