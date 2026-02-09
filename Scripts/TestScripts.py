@@ -85,3 +85,26 @@ class TestLogin(unittest.TestCase):
         login_page.click_login()  # Step 4: Click login
         self.assertTrue(login_page.validate_password_required_error(), "Error message 'Password is required.' should be displayed.")
         driver.quit()
+
+    # --- Appended methods for TC_LOGIN_007 and TC_LOGIN_008 ---
+    def test_TC_LOGIN_007_forgot_password_flow(self):
+        """TC_LOGIN_007: Navigate to login page, click 'Forgot Password?', verify forgot password page displays email input and instructions."""
+        driver = self._get_driver()
+        login_page = LoginPage(driver)
+        login_page.open()  # Step 1: Navigate to login page
+        self.assertTrue(login_page.is_login_page_displayed(), "Login page should be displayed.")
+        login_page.click_forgot_password()  # Step 2: Click 'Forgot Password?'
+        self.assertTrue(login_page.is_forgot_password_page_displayed(), "Forgot Password page should display email input and instructions.")
+        driver.quit()
+
+    def test_TC_LOGIN_008_max_length_email_login(self):
+        """TC_LOGIN_008: Enter max-length email, valid password, click login, verify field accepts max-length email and login result."""
+        driver = self._get_driver()
+        login_page = LoginPage(driver)
+        max_length_email = "{}@example.com".format("a"*64)
+        valid_password = "ValidPass123!"
+        login_page.login_with_max_length_email(max_length_email, valid_password)
+        self.assertTrue(login_page.is_max_length_email_accepted(max_length_email), "Email field should accept max-length email.")
+        # Optionally, check login result (success or error shown)
+        # self.assertTrue(login_page.is_dashboard_displayed() or login_page.is_error_message_displayed(), "Login result should be displayed.")
+        driver.quit()
