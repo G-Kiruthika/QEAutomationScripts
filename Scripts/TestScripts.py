@@ -65,3 +65,33 @@ class TestLoginFunctionality:
         assert self.login_page.is_error_message_displayed(), 'Error message should be displayed for invalid credentials.'
         error_text = self.login_page.get_error_message_text()
         assert 'invalid' in error_text.lower(), f'Expected error message to mention invalid credentials, got: {error_text}'
+
+    # TC_LOGIN_003: Empty fields validation
+    def test_TC_LOGIN_003_empty_fields(self):
+        """
+        Test Case TC_LOGIN_003: Submit empty fields and validate error message
+        Steps:
+        1. Navigate to the login page.
+        2. Leave username and password fields empty.
+        3. Click Login.
+        4. Verify error message prompting to fill in required fields.
+        """
+        self.login_page.go_to_login_page()
+        error_prompt = self.login_page.submit_empty_login_and_validate_error()
+        assert error_prompt is not None, 'Expected error prompt for empty fields.'
+        assert 'required' in error_prompt.lower(), f'Expected error message to mention required fields, got: {error_prompt}'
+
+    # TC_LOGIN_004: Remember Me and auto-login validation
+    def test_TC_LOGIN_004_remember_me_auto_login(self):
+        """
+        Test Case TC_LOGIN_004: Valid credentials, 'Remember Me', auto-login
+        Steps:
+        1. Navigate to the login page.
+        2. Enter valid credentials and check 'Remember Me'.
+        3. Click Login.
+        4. Close and reopen the browser, navigate to the site.
+        5. Verify user remains logged in or is auto-logged in.
+        """
+        self.login_page.go_to_login_page()
+        result = self.login_page.login_with_remember_me_and_validate_auto_login('user1', 'Pass@123')
+        assert result, 'Auto-login failed after browser restart with Remember Me checked.'
