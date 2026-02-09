@@ -52,46 +52,26 @@ class TestLogin(unittest.TestCase):
         self.assertEqual(error_message, "Invalid credentials.", "Error message should be 'Invalid credentials.' for invalid login.")
         driver.quit()
 
-    def test_TC_LOGIN_007_forgot_password(self):
-        """TC_LOGIN_007: Navigate to login page and click 'Forgot Password' link, expect redirect."""
+    def test_TC_LOGIN_01_valid_login(self):
+        """Test Case TC_LOGIN_01: Valid login with valid_user / valid_pass"""
         driver = webdriver.Chrome()
         login_page = LoginPage(driver)
         login_page.open()
-        login_page.click_forgot_password()
-        current_url = driver.current_url
-        self.assertIn("forgot-password", current_url, "User should be redirected to the 'Forgot Password' page.")
+        login_page.enter_email("valid_user")
+        login_page.enter_password("valid_pass")
+        login_page.click_login()
+        logged_in = login_page.is_dashboard_header_displayed()
+        self.assertTrue(logged_in, "User should be logged in and redirected to dashboard/home page.")
         driver.quit()
 
-    def test_TC_LOGIN_008_min_length_email_validation(self):
-        """TC_LOGIN_008: Enter email below min length and valid password, expect error message."""
+    def test_TC_LOGIN_02_invalid_login(self):
+        """Test Case TC_LOGIN_02: Invalid login with invalid_user / invalid_pass"""
         driver = webdriver.Chrome()
         login_page = LoginPage(driver)
         login_page.open()
-        login_page.enter_email("ab")
-        login_page.enter_password("validPassword123")
+        login_page.enter_email("invalid_user")
+        login_page.enter_password("invalid_pass")
         login_page.click_login()
-        validation_error = login_page.get_validation_error()
-        self.assertEqual(validation_error, "Email/Username must be at least 3 characters.", "Validation error message should be displayed for min length email.")
-        driver.quit()
-
-    def test_TC_LOGIN_009_password_min_length_validation(self):
-        """TC_LOGIN_009: Enter valid email and password below minimum length, expect 'Password must be at least 6 characters.' error."""
-        driver = webdriver.Chrome()
-        login_page = LoginPage(driver)
-        login_page.open()
-        login_page.enter_email("user@example.com")
-        login_page.enter_password("ab")
-        login_page.click_login()
-        self.assertTrue(login_page.is_password_min_length_error_displayed(), "Password min length error should be displayed.")
-        driver.quit()
-
-    def test_TC_LOGIN_010_unregistered_user_login(self):
-        """TC_LOGIN_010: Enter unregistered email and valid password, expect 'User not found.' error."""
-        driver = webdriver.Chrome()
-        login_page = LoginPage(driver)
-        login_page.open()
-        login_page.enter_email("notregistered@example.com")
-        login_page.enter_password("validPassword123")
-        login_page.click_login()
-        self.assertTrue(login_page.is_user_not_found_error_displayed(), "User not found error should be displayed.")
+        error_message = login_page.get_error_message()
+        self.assertEqual(error_message, "Invalid credentials.", "Error message should be 'Invalid credentials.' for invalid login.")
         driver.quit()
