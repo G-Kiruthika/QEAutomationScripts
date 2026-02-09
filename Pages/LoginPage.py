@@ -4,7 +4,7 @@ Page Object Model for the Login Page
 Author: [Your Name]
 Description: This class encapsulates the interactions and verifications for the Login Page,
 using locators defined in Locators.json. It includes methods to navigate to the login screen,
-enter credentials, submit login, verify dashboard, and verify error messages.
+enter credentials, submit login, verify dashboard, verify error messages, and handle 'Forgot Password'.
 """
 
 from selenium.webdriver.common.by import By
@@ -30,6 +30,7 @@ class LoginPage:
     EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    PASSWORD_RECOVERY_HEADER = (By.CSS_SELECTOR, "h1.password-recovery-title") # Add locator for password recovery page header if available
 
     def __init__(self, driver: WebDriver, timeout: int = 10):
         """
@@ -136,22 +137,48 @@ class LoginPage:
         except Exception:
             return ""
 
-    # Additional utility methods can be implemented here as needed.
+    # NEW METHODS ADDED FOR TC_LOGIN_005 AND TC_LOGIN_006
+    def click_forgot_password(self):
+        """
+        Clicks the 'Forgot Password' link on the login page.
+        """
+        forgot_link = WebDriverWait(self.driver, self.timeout).until(
+            EC.element_to_be_clickable(self.FORGOT_PASSWORD_LINK)
+        )
+        forgot_link.click()
 
-# Example usage in a test (not part of the PageClass, for illustration only):
-#
-# def test_valid_login(driver):
+    def is_password_recovery_page_displayed(self) -> bool:
+        """
+        Checks if the password recovery page is displayed after clicking 'Forgot Password'.
+        """
+        try:
+            WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located(self.PASSWORD_RECOVERY_HEADER)
+            )
+            return True
+        except Exception:
+            return False
+
+    def attempt_sql_injection_login(self, username: str, password: str) -> bool:
+        """
+        Attempts login with SQL injection strings and verifies that login fails (no unauthorized access).
+        Returns True if login fails and no dashboard is displayed.
+        """
+        self.enter_username(username)
+        self.enter_password(password)
+        self.click_login()
+        error_displayed = self.is_error_message_displayed()
+        dashboard_displayed = self.is_dashboard_displayed()
+        return error_displayed and not dashboard_displayed
+
+# Example usage for new test cases:
+# def test_forgot_password_navigation(driver):
 #     login_page = LoginPage(driver)
 #     login_page.go_to_login_page()
-#     login_page.enter_username('user1')
-#     login_page.enter_password('Pass@123')
-#     login_page.click_login()
-#     assert login_page.is_dashboard_displayed(), "Dashboard not displayed after login"
+#     login_page.click_forgot_password()
+#     assert login_page.is_password_recovery_page_displayed(), "Password recovery page not displayed."
 #
-# def test_invalid_login(driver):
+# def test_sql_injection_login(driver):
 #     login_page = LoginPage(driver)
 #     login_page.go_to_login_page()
-#     login_page.enter_username('invalidUser')
-#     login_page.enter_password('WrongPass')
-#     login_page.click_login()
-#     assert login_page.is_error_message_displayed(), "Error message not displayed for invalid login"
+#     assert login_page.attempt_sql_injection_login("' OR 1=1; --", "' OR 1=1; --"), "SQL injection login did not fail as expected."
