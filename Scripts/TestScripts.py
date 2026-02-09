@@ -31,3 +31,43 @@ def test_TC_LOGIN_008_max_length_email_and_valid_password(driver):
     except AssertionError:
         error_msg = login_page.get_error_message()
         assert error_msg is not None and error_msg != '', "No error message shown for max length email login failure"
+
+# TC_LOGIN_009: Test minimum allowed length login, valid password, and successful login/error handling.
+def test_TC_LOGIN_009_min_length_login_and_valid_password(driver):
+    login_page = LoginPage(driver)
+    login_page.navigate('https://example.com/login')
+    min_length_username = 'a@b.co'  # adjust as per system minimum
+    valid_password = 'ValidPassword123!'
+    login_page.enter_username(min_length_username)
+    login_page.enter_password(valid_password)
+    login_page.click_login()
+    # Check for either successful login or error message
+    try:
+        assert driver.current_url == 'https://example.com/dashboard', "Did not login successfully with min length username"
+    except AssertionError:
+        error_msg = login_page.get_error_message()
+        assert error_msg is not None and error_msg != '', "No error message shown for min length username login failure"
+
+# TC_LOGIN_010: Test valid email, incorrect password, repeated failed attempts, error messages, and lockout/CAPTCHA detection.
+def test_TC_LOGIN_010_valid_email_incorrect_password_lockout(driver):
+    login_page = LoginPage(driver)
+    login_page.navigate('https://example.com/login')
+    valid_email = 'user@example.com'
+    invalid_password = 'WrongPassword!'
+    max_attempts = 3  # adjust as per system lockout policy
+    lockout_detected = False
+    for attempt in range(1, max_attempts + 1):
+        login_page.enter_username(valid_email)
+        login_page.enter_password(invalid_password)
+        login_page.click_login()
+        error_msg = login_page.get_error_message()
+        assert error_msg is not None and error_msg != '', f"No error message shown for failed login attempt {attempt}"
+        # Check for CAPTCHA or lockout after last attempt
+        if attempt == max_attempts:
+            if login_page.is_captcha_present():
+                lockout_detected = True
+            elif login_page.is_account_locked():
+                lockout_detected = True
+            else:
+                lockout_detected = False
+    assert lockout_detected, "Account was not locked or CAPTCHA not shown after repeated failed attempts"
