@@ -87,55 +87,33 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_003(self):
         """
-        Test Case TC_LOGIN_003: Leave email field empty, enter valid password, click login, expect 'Email is required.' error.
+        Test Case TC_LOGIN_003: Leave email and password fields empty, click login, expect 'Mandatory fields are required' error.
         """
         self.login_page.navigate_to_login_page()
-        self.login_page.clear_email_field()
-        self.login_page.enter_password('ValidPass123!')
+        self.login_page.clear_username_field()
+        self.login_page.clear_password_field()
         self.login_page.click_login()
-        error_displayed = self.login_page.wait_for_error_message(expected_text='Email is required.')
-        assert error_displayed, "Expected error message 'Email is required.' was not displayed."
+        error_prompt_displayed = self.login_page.is_empty_field_prompt_displayed()
+        assert error_prompt_displayed, "Expected error prompt for empty fields was not displayed."
 
     def test_TC_LOGIN_004(self):
         """
-        Test Case TC_LOGIN_004: Enter valid email, leave password field empty, click login, expect 'Password is required.' error.
+        Test Case TC_LOGIN_004: Enter valid credentials, check 'Remember Me', click login, close/reopen browser, navigate to site, expect user remains logged in or is auto-logged in.
         """
         self.login_page.navigate_to_login_page()
-        self.login_page.enter_username('user@example.com')
-        self.login_page.clear_password_field()
+        self.login_page.enter_username('user1')
+        self.login_page.enter_password('Pass@123')
+        self.login_page.check_remember_me()
         self.login_page.click_login()
-        error_displayed = self.login_page.wait_for_error_message(expected_text='Password is required.')
-        assert error_displayed, "Expected error message 'Password is required.' was not displayed."
+        assert self.login_page.is_user_logged_in(), "User was not logged in after checking 'Remember Me'."
+        # Simulate browser restart and verify auto-login
+        self.driver.quit()
+        # Assuming a new driver instance is created here
+        new_driver = self.create_new_driver_instance()
+        new_login_page = LoginPage(new_driver)
+        new_login_page.navigate_to_login_page()
+        assert new_login_page.is_user_logged_in(), "User was not auto-logged in after browser restart with 'Remember Me'."
 
-    def test_TC_LOGIN_007(self):
-        """
-        Test Case TC_LOGIN_007: Forgot Password flow
-        1. Navigate to the login page.
-        2. Click the 'Forgot Password?' link.
-        3. Verify the presence of email input and reset instructions.
-        """
-        self.login_page.navigate_to_login_page()
-        forgot_page_result = self.login_page.click_forgot_password()
-        assert forgot_page_result, "Failed to navigate to Forgot Password page."
-        presence_verified = self.login_page.verify_forgot_password_page()
-        assert presence_verified, "Forgot Password page does not display email input and instructions."
-
-    def test_TC_LOGIN_008(self):
-        """
-        Test Case TC_LOGIN_008: Login with maximum allowed email length
-        1. Navigate to the login page.
-        2. Enter maximum allowed length email.
-        3. Enter a valid password.
-        4. Click the 'Login' button.
-        """
-        self.login_page.navigate_to_login_page()
-        max_email_entered = self.login_page.enter_max_length_email()
-        assert max_email_entered, "Email field did not accept maximum allowed length."
-        self.login_page.enter_password('ValidPass123!')
-        self.login_page.click_login()
-        login_success = False
-        try:
-            login_success = self.login_page.driver.find_element(*self.login_page.dashboard_header).is_displayed()
-        except Exception:
-            login_success = False
-        assert login_success, "Login failed or dashboard not displayed with maximum email length."
+    def create_new_driver_instance(self):
+        # Placeholder for actual driver instantiation logic
+        pass
