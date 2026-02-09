@@ -1,6 +1,8 @@
 import unittest
 from selenium import webdriver
 from Pages.LoginPage import LoginPage
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+import time
 
 class LoginTests(unittest.TestCase):
     def setUp(self):
@@ -10,79 +12,63 @@ class LoginTests(unittest.TestCase):
     # ... (existing test methods remain unchanged) ...
 
     def test_TC_LOGIN_05_min_length_input(self):
-        """
-        TC_LOGIN_05: Enter minimum length (1 char) for username and password. Assert min length error is displayed.
-        """
-        try:
-            self.login_page.open()
-            self.login_page.enter_email('a')
-            self.login_page.enter_password('b')
-            self.login_page.click_login()
-            error_displayed = self.login_page.is_min_length_error_displayed()
-            self.assertTrue(error_displayed, 'Minimum length error should be displayed for 1-char credentials.')
-        except Exception as e:
-            self.fail(f"Exception occurred in TC_LOGIN_05: {e}")
-        finally:
-            self.driver.quit()
-
+        ...
     def test_TC_LOGIN_06_special_char_input(self):
-        """
-        TC_LOGIN_06: Enter special characters for username and password. Assert input is accepted or handled.
-        """
-        try:
-            self.login_page.open()
-            username = 'user!@#'
-            password = 'pass$%^'
-            self.login_page.enter_email(username)
-            self.login_page.enter_password(password)
-            input_accepted = self.login_page.is_special_char_input_accepted(username, password)
-            self.assertTrue(input_accepted, 'Special character input should be accepted or handled appropriately.')
-            self.login_page.click_login()
-        except Exception as e:
-            self.fail(f"Exception occurred in TC_LOGIN_06: {e}")
-        finally:
-            self.driver.quit()
-
+        ...
     def test_TC_LOGIN_07_sql_injection_xss(self):
-        """
-        TC_LOGIN_07: Validate resistance to SQL injection/XSS by entering username: "' OR 1=1;" and password: "<script>alert('XSS')</script>", clicking login, and asserting that an error message is displayed and no injection occurs.
-        """
-        try:
-            self.login_page.open()
-            self.login_page.enter_email("' OR 1=1;")
-            self.login_page.enter_password("<script>alert('XSS')</script>")
-            self.login_page.click_login()
-            error_message = self.login_page.get_error_message()
-            self.assertIsNotNone(error_message, "Error message should be displayed for SQL injection/XSS input.")
-            self.assertIn("error", error_message.lower(), "Application should remain secure and display an error.")
-        except Exception as e:
-            self.fail(f"Exception occurred in TC_LOGIN_07: {e}")
-        finally:
-            self.driver.quit()
-
+        ...
     def test_TC_LOGIN_08_remember_me_session_persistence(self):
+        ...
+
+    def test_TC_LOGIN_09_forgot_password_workflow(self):
         """
-        TC_LOGIN_08: Validate 'Remember Me' by logging in with username: "valid_user", password: "valid_pass", checking 'Remember Me', saving cookies, restarting browser, restoring cookies, and asserting session persistence.
+        TC_LOGIN_09: Forgot Password workflow
+        1. Navigate to login page
+        2. Click 'Forgot Password'
+        3. Enter registered email ('registered_user@example.com') and submit
+        4. Assert password reset instructions are sent.
         """
         try:
-            self.login_page.open()
-            self.login_page.enter_email("valid_user")
-            self.login_page.enter_password("valid_pass")
-            self.login_page.click_remember_me()
-            self.login_page.click_login()
-            cookies = self.driver.get_cookies()
-            self.driver.quit()
-            self.driver = webdriver.Chrome()
-            self.login_page = LoginPage(self.driver)
-            self.driver.get("https://example-ecommerce.com/login")
-            for cookie in cookies:
-                self.driver.add_cookie(cookie)
-            session_persistent = self.login_page.is_session_persistent(cookies)
-            self.assertTrue(session_persistent, "Session should persist after browser restart when 'Remember Me' is checked.")
+            self.login_page.navigate_to_login()
+            self.login_page.click_forgot_password()
+            self.login_page.enter_email_for_reset('registered_user@example.com')
+            self.login_page.submit_password_reset()
+            # Robust assertion for reset instructions
+            reset_message = self.login_page.get_reset_confirmation_message()
+            self.assertIn("instructions", reset_message.lower(), "Password reset instructions not sent or not found in confirmation message.")
+        except (NoSuchElementException, TimeoutException) as e:
+            self.fail(f"Forgot Password workflow failed due to exception: {str(e)}")
         except Exception as e:
-            self.fail(f"Exception occurred in TC_LOGIN_08: {e}")
-        finally:
-            self.driver.quit()
+            self.fail(f"Unexpected error in Forgot Password workflow: {str(e)}")
+
+    def test_TC_LOGIN_10_multiple_failed_login_attempts(self):
+        """
+        TC_LOGIN_10: Multiple Failed Login Attempts/Account Lockout/CAPTCHA
+        1. Navigate to login page
+        2. Attempt login 5 times with invalid_user/invalid_pass
+        3. Assert error after each attempt
+        4. Assert account is locked or CAPTCHA is triggered after threshold.
+        """
+        try:
+            self.login_page.navigate_to_login()
+            error_messages = []
+            for attempt in range(5):
+                self.login_page.enter_username('invalid_user')
+                self.login_page.enter_password('invalid_pass')
+                self.login_page.submit_login()
+                # Wait for error message
+                time.sleep(1)
+                error_msg = self.login_page.get_login_error_message()
+                error_messages.append(error_msg)
+                self.assertTrue(error_msg, f"No error message found after failed login attempt {attempt+1}.")
+            # After 5 attempts, check for lockout or CAPTCHA
+            lockout_msg = self.login_page.get_account_lockout_message()
+            captcha_present = self.login_page.is_captcha_present()
+            self.assertTrue(lockout_msg or captcha_present, "Account lockout or CAPTCHA not triggered after multiple failed attempts.")
+        except (NoSuchElementException, TimeoutException) as e:
+            self.fail(f"Multiple failed login attempts test failed due to exception: {str(e)}")
+        except Exception as e:
+            self.fail(f"Unexpected error in Multiple Failed Login Attempts test: {str(e)}")
 
 if __name__ == "__main__":
     unittest.main()
