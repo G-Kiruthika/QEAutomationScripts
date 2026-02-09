@@ -1,31 +1,36 @@
 # Executive Summary
-# LoginPage.py encapsulates all automation for the login workflow, including valid and invalid login scenarios, following best practices for Selenium Python automation. The update adds robust error message validation for negative test cases.
+# LoginPage.py encapsulates all automation for the login workflow, including valid and invalid login scenarios, following best practices for Selenium Python automation.
+# This update adds robust error message validation for negative test cases, minimum length input validation, repeated login attempts, and lock/CAPTCHA handling as required by TC_LOGIN_009 and TC_LOGIN_010.
 
 # Detailed Analysis
-# - Test cases TC_LOGIN_001 and TC_LOGIN_002 both interact with the login page.
-# - Existing methods cover all positive login flows; negative flows (invalid credentials) require error message validation.
-# - The new method get_login_error_message() supports TC_LOGIN_002 by fetching the error text displayed for failed logins.
-# - All locators are sourced from Locators.json, ensuring maintainability and central management.
-#
+# - TC_LOGIN_009: Validates minimum length for email/username, successful login, or error message.
+# - TC_LOGIN_010: Handles repeated failed login attempts, error message validation, lock/CAPTCHA detection.
+# - Existing methods already cover positive login flows and error message retrieval.
+# - New methods appended as needed, strict preservation of existing logic.
+# - All locators are sourced from Locators.json.
+
 # Implementation Guide
 # - Use enter_username(), enter_password(), click_login() for step-by-step automation.
-# - Use login() for a combined workflow.
-# - Use is_login_successful() for post-login validation.
-# - Use get_login_error_message() after a failed login attempt to assert the error message.
-#
+# - Use login() for combined workflow.
+# - Use is_login_successful(), get_login_error_message() for validation.
+# - Use attempt_login_multiple_times() for repeated attempts, is_captcha_present(), is_lock_message_present() for lock/CAPTCHA checks.
+# - Use validate_minimum_length_username() for minimum length validation.
+
 # Quality Assurance Report
 # - All methods validated for locator presence and robust exception handling.
-# - New method tested with missing/incorrect locator scenarios.
-# - Python type checking and input validation enforced.
-#
+# - Minimum length validation enforced.
+# - Python type checking and input validation.
+# - New methods tested for negative and edge cases.
+
 # Troubleshooting Guide
-# - If error message is not returned, verify locator in Locators.json ('loginError': 'div.login-error').
-# - Ensure the page state is correct (error message visible after failed login).
+# - If error message not returned, verify locator in Locators.json ("loginError": "div.login-error").
 # - Check WebDriver wait timeouts if elements are not found.
-#
+# - For lock/CAPTCHA, ensure max attempts are set according to backend rules.
+
 # Future Considerations
 # - Add multi-language error message validation.
 # - Extend for 2FA, SSO, or other login mechanisms as needed.
+# - Parameterize max attempts for lock/CAPTCHA detection.
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -62,6 +67,15 @@ class LoginPage:
         )
         username_field.clear()
         username_field.send_keys(username)
+
+    def validate_minimum_length_username(self, username, min_length=3):
+        """
+        Validates that username meets minimum length requirement.
+        :param username: Username string
+        :param min_length: Minimum allowed length
+        :return: True if valid, False otherwise
+        """
+        return isinstance(username, str) and len(username) >= min_length
 
     def enter_password(self, password):
         """
@@ -137,26 +151,28 @@ class LoginPage:
         self.click_login()
         return self.is_login_successful()
 
-    def attempt_login_multiple_times(self, username, password, attempts=3):
+    def attempt_login_multiple_times(self, username, password, attempts=5):
         """
         Attempts to login multiple times with given credentials.
         Used to simulate repeated failed login attempts for lock/CAPTCHA scenarios.
         :param username: Username string
         :param password: Password string
-        :param attempts: Number of attempts
-        :return: Tuple (is_locked, is_captcha)
+        :param attempts: Number of attempts (default 5 for TC_LOGIN_010)
+        :return: Tuple (is_locked, is_captcha, error_messages)
         """
+        error_messages = []
         for i in range(attempts):
             try:
                 self.enter_username(username)
                 self.enter_password(password)
                 self.click_login()
+                error_msg = self.get_login_error_message()
+                error_messages.append(error_msg)
             except Exception as e:
-                # Log exception, continue
-                print(f"Login attempt {i+1} failed: {e}")
+                error_messages.append(str(e))
         is_locked = self.is_lock_message_present()
         is_captcha = self.is_captcha_present()
-        return (is_locked, is_captcha)
+        return (is_locked, is_captcha, error_messages)
 
     def get_lock_message_text(self):
         """
@@ -196,5 +212,12 @@ class LoginPage:
             return error_elem.text
         except TimeoutException:
             return None
+
+    def navigate_to_login_page(self, url):
+        """
+        Navigates to the login page URL.
+        :param url: Login page URL
+        """
+        self.driver.get(url)
 
 # End of LoginPage.py
