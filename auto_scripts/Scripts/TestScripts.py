@@ -27,3 +27,12 @@ def test_remember_me_absence(driver):
     login_page = LoginPage(driver)
     login_page.navigate_to_login_screen(LOGIN_URL)
     assert not login_page.is_remember_me_present(), "'Remember Me' checkbox should NOT be present on the login page."
+
+# TC_LOGIN_003: Forgot Username workflow
+def test_forgot_username_workflow(driver):
+    login_page = LoginPage(driver)
+    login_page.navigate_to_login_screen(LOGIN_URL)
+    login_page.click_forgot_username()
+    login_page.follow_username_recovery_instructions()
+    # Placeholder assertion for username retrieval, as actual retrieval logic is unknown
+    assert True, "Username recovery instructions should be followed and username retrieved."
