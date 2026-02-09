@@ -109,8 +109,13 @@ class TestLogin(unittest.TestCase):
         """TC_LOGIN_010: Login with special characters in email and password."""
         driver = webdriver.Chrome()
         login_page = LoginPage(driver)
-        result = login_page.login_with_special_chars(email="user+test@example.com", password="!@#$%^&*()_+")
-        self.assertTrue(result, "Login with special characters should succeed if credentials are valid.")
+        login_page.go_to_login_page()
+        login_page.enter_email("user+test@example.com")
+        login_page.enter_password("!@#$%^&*()_+")
+        login_page.click_login()
+        # Check if logged in
+        logged_in = login_page.is_logged_in()
+        self.assertTrue(logged_in, "Login with special characters should succeed if credentials are valid.")
         driver.quit()
 
     # --- Appended test for TC-LOGIN-08 ---
@@ -118,13 +123,20 @@ class TestLogin(unittest.TestCase):
         """TC-LOGIN-08: Login with 'Remember Me' checked and verify session persistence after browser restart."""
         driver = webdriver.Chrome()
         login_page = LoginPage(driver)
-        result = login_page.login_with_remember_me(email="user@example.com", password="ValidPassword123!")
-        self.assertTrue(result, "Login with 'Remember Me' should succeed.")
+        login_page.go_to_login_page()
+        login_page.enter_email("user@example.com")
+        login_page.enter_password("ValidPassword123!")
+        login_page.select_remember_me()
+        login_page.click_login()
+        # Check if logged in
+        logged_in = login_page.is_logged_in()
+        self.assertTrue(logged_in, "Login with 'Remember Me' should succeed.")
         driver.quit()
 
         # Simulate browser restart and check session persistence
         driver = webdriver.Chrome()
         login_page = LoginPage(driver)
-        session_persistent = login_page.verify_session_persistence()
+        login_page.go_to_login_page()
+        session_persistent = login_page.is_logged_in()
         self.assertTrue(session_persistent, "Session should persist after browser restart if 'Remember Me' was checked.")
         driver.quit()
