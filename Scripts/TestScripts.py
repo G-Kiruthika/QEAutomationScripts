@@ -111,3 +111,26 @@ class TestLoginFunctionality:
         login_page.navigate()
         login_page.login('valid_username', 'valid_password')
         assert login_page.is_password_field_masked(), "Password field is not masked as expected"
+
+    # --- Newly appended tests as per provided steps ---
+    def test_TC_LOGIN_003_email_empty(self, driver):
+        """
+        TC_LOGIN_003: Navigate to login page. Leave email empty. Enter valid password. Click login. Assert error message 'Email is required.'
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.enter_email('')
+        login_page.enter_password('ValidPass123!')
+        login_page.click_login()
+        assert login_page.get_error_message() == 'Email is required.'
+
+    def test_TC_LOGIN_004_password_empty(self, driver):
+        """
+        TC_LOGIN_004: Navigate to login page. Enter valid email. Leave password empty. Click login. Assert error message 'Password is required.'
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.enter_email('user@example.com')
+        login_page.enter_password('')
+        login_page.click_login()
+        assert login_page.get_error_message() == 'Password is required.'
