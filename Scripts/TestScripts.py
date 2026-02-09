@@ -32,3 +32,33 @@ class TestLoginFunctionality:
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_001_valid_login(self):
+        """
+        Test Case TC_LOGIN_001: Valid login flow
+        Steps:
+        1. Navigate to login page.
+        2. Enter valid email.
+        3. Enter valid password.
+        4. Click login.
+        5. Verify dashboard is displayed.
+        """
+        email = 'user@example.com'
+        password = 'ValidPass123!'
+        result = self.login_page.login_valid_user(email, password)
+        assert result, "Dashboard was not displayed after valid login."
+
+    def test_TC_LOGIN_002_invalid_login(self):
+        """
+        Test Case TC_LOGIN_002: Invalid login flow
+        Steps:
+        1. Navigate to login page.
+        2. Enter invalid email.
+        3. Enter invalid password.
+        4. Click login.
+        5. Verify error message is displayed.
+        """
+        email = 'wronguser@example.com'
+        password = 'WrongPass456!'
+        error_message = self.login_page.login_invalid_user(email, password)
+        assert error_message is not None and 'invalid credentials' in error_message.lower(), f"Expected error message for invalid credentials, got: {error_message}"
