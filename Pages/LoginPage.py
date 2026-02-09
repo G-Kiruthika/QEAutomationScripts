@@ -62,3 +62,63 @@ class LoginPage:
             return self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON)).is_displayed()
         except Exception:
             return False
+
+    def is_validation_error_displayed(self):
+        """
+        Checks if any field-level validation error is displayed (e.g., 'Email is required.', 'Password is required.')
+        Returns True if displayed, False otherwise.
+        """
+        try:
+            return self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR)).is_displayed()
+        except Exception:
+            return False
+
+    def get_validation_error_text(self):
+        """
+        Returns the text of the field-level validation error.
+        Returns empty string if not found.
+        """
+        try:
+            return self.wait.until(EC.visibility_of_element_located(self.VALIDATION_ERROR)).text
+        except Exception:
+            return ""
+
+    def is_empty_field_prompt_displayed(self):
+        """
+        Checks if the empty field prompt ('Mandatory fields are required') is displayed.
+        Returns True if displayed, False otherwise.
+        """
+        try:
+            return self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT)).is_displayed()
+        except Exception:
+            return False
+
+    def get_empty_field_prompt_text(self):
+        """
+        Returns the text of the empty field prompt.
+        Returns empty string if not found.
+        """
+        try:
+            return self.wait.until(EC.visibility_of_element_located(self.EMPTY_FIELD_PROMPT)).text
+        except Exception:
+            return ""
+
+    def clear_email(self):
+        """
+        Clears the email input field.
+        """
+        try:
+            email_input = self.wait.until(EC.visibility_of_element_located(self.EMAIL_FIELD))
+            email_input.clear()
+        except Exception:
+            pass
+
+    def clear_password(self):
+        """
+        Clears the password input field.
+        """
+        try:
+            password_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD))
+            password_input.clear()
+        except Exception:
+            pass
