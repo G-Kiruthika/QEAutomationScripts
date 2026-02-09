@@ -46,5 +46,23 @@ class TestScripts(unittest.TestCase):
         locked_or_captcha = self.login_page.is_account_locked_or_captcha_displayed()
         self.assertTrue(locked_or_captcha, "Account should be locked or CAPTCHA should be displayed after multiple failed login attempts.")
 
+    # TC_LOGIN_001: Valid login scenario
+    def test_TC_LOGIN_001_valid_login(self):
+        """Test login with valid credentials, expect dashboard display"""
+        self.login_page.open()
+        self.login_page.enter_email("user1")
+        self.login_page.enter_password("Pass@123")
+        self.login_page.click_login()
+        self.assertTrue(self.login_page.is_dashboard_displayed(), "Dashboard should be displayed after successful login.")
+
+    # TC_LOGIN_002: Invalid login scenario
+    def test_TC_LOGIN_002_invalid_login(self):
+        """Test login with invalid credentials, expect error message"""
+        self.login_page.open()
+        self.login_page.enter_email("invalidUser")
+        self.login_page.enter_password("WrongPass")
+        self.login_page.click_login()
+        self.assertTrue(self.login_page.is_error_message_displayed("Invalid credentials"), "Error message for invalid credentials should be displayed.")
+
 if __name__ == "__main__":
     unittest.main()
