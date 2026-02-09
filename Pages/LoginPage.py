@@ -15,7 +15,7 @@ class LoginPage:
     FORGOT_PASSWORD_LINK = (By.CSS_SELECTOR, 'a.forgot-password-link')
     ERROR_MESSAGE = (By.CSS_SELECTOR, 'div.alert-danger')
     VALIDATION_ERROR = (By.CSS_SELECTOR, '.invalid-feedback')
-    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[contains(text(),'Mandatory fields are required')]")
+    EMPTY_FIELD_PROMPT = (By.XPATH, "//*[contains(text,'Mandatory fields are required')]")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, 'h1.dashboard-title')
     USER_PROFILE_ICON = (By.CSS_SELECTOR, '.user-profile-name')
 
@@ -113,5 +113,28 @@ class LoginPage:
         try:
             dashboard_header = self.driver.find_element(*self.DASHBOARD_HEADER)
             return dashboard_header.is_displayed()
+        except Exception:
+            return False
+
+    # --- Appended for TC-LOGIN-08 ---
+    def select_remember_me(self):
+        """Select the 'Remember Me' checkbox if not already selected."""
+        checkbox = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+        if not checkbox.is_selected():
+            checkbox.click()
+
+    def is_remember_me_selected(self) -> bool:
+        """Check if the 'Remember Me' checkbox is selected."""
+        checkbox = self.driver.find_element(*self.REMEMBER_ME_CHECKBOX)
+        return checkbox.is_selected()
+
+    def verify_session_persistence(self) -> bool:
+        """
+        Stub method for session persistence verification after browser restart.
+        Actual implementation should be handled in test scripts.
+        """
+        # This method can be called after reopening browser and navigating to app
+        try:
+            return self.is_user_logged_in()
         except Exception:
             return False
