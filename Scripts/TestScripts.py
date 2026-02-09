@@ -108,3 +108,31 @@ class TestLogin(unittest.TestCase):
         # Optionally, check login result (success or error shown)
         # self.assertTrue(login_page.is_dashboard_displayed() or login_page.is_error_message_displayed(), "Login result should be displayed.")
         driver.quit()
+
+    # --- Appended methods for TC_LOGIN_009 and TC_LOGIN_010 ---
+    def test_TC_LOGIN_009_minimum_email_valid_password(self):
+        """TC_LOGIN_009: Enter minimum allowed email (a@b.co), valid password (ValidPass123!), click login, verify login succeeds or error shown."""
+        driver = self._get_driver()
+        login_page = LoginPage(driver)
+        login_page.open()
+        login_page.enter_email("a@b.co")
+        login_page.enter_password("ValidPass123!")
+        login_page.click_login()
+        # Assert dashboard displayed (login success) or error shown
+        self.assertTrue(login_page.is_dashboard_displayed() or login_page.is_error_message_displayed(), "Login should succeed or error should be shown for minimum email.")
+        driver.quit()
+
+    def test_TC_LOGIN_010_failed_attempts_account_lock_or_captcha(self):
+        """TC_LOGIN_010: Enter valid email (user@example.com), incorrect password (WrongPass!@#), attempt login 5 times, verify error each time, lock/CAPTCHA on last attempt."""
+        driver = self._get_driver()
+        login_page = LoginPage(driver)
+        email = "user@example.com"
+        password = "WrongPass!@#"
+        attempts = 5
+        # Attempt multiple failed logins
+        lock_or_captcha = login_page.attempt_multiple_failed_logins(email, password, attempts)
+        # Assert error message after failed attempts
+        self.assertTrue(login_page.is_error_message_displayed(), "Error message should be shown after each failed login attempt.")
+        # Assert lock or CAPTCHA on last attempt
+        self.assertTrue(login_page.is_account_locked() or login_page.is_captcha_displayed(), "Account should be locked or CAPTCHA should be displayed after maximum failed attempts.")
+        driver.quit()
