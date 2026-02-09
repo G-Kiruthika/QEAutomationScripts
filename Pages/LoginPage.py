@@ -3,8 +3,8 @@
 Page Object Model for the Login Page
 Author: [Your Name]
 Description: This class encapsulates the interactions and verifications for the Login Page,
-using locators defined in Locators.json. It includes methods to navigate to the login screen
-and to verify the absence of the 'Remember Me' checkbox, as required by TC_LOGIN_002.
+using locators defined in Locators.json. It includes methods to navigate to the login screen,
+enter credentials, submit login, verify dashboard, and verify error messages.
 """
 
 from selenium.webdriver.common.by import By
@@ -50,6 +50,59 @@ class LoginPage:
             message="Login email field not visible after navigating to login page."
         )
 
+    def enter_username(self, username: str):
+        """
+        Enters the username (email) into the email field.
+        """
+        email_input = WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.EMAIL_FIELD)
+        )
+        email_input.clear()
+        email_input.send_keys(username)
+
+    def enter_password(self, password: str):
+        """
+        Enters the password into the password field.
+        """
+        password_input = WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.PASSWORD_FIELD)
+        )
+        password_input.clear()
+        password_input.send_keys(password)
+
+    def click_login(self):
+        """
+        Clicks the login button to submit credentials.
+        """
+        login_button = WebDriverWait(self.driver, self.timeout).until(
+            EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON)
+        )
+        login_button.click()
+
+    def is_dashboard_displayed(self) -> bool:
+        """
+        Checks if the dashboard header is displayed after successful login.
+        """
+        try:
+            WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located(self.DASHBOARD_HEADER)
+            )
+            return True
+        except Exception:
+            return False
+
+    def is_error_message_displayed(self) -> bool:
+        """
+        Checks if error message is displayed after invalid login.
+        """
+        try:
+            WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located(self.ERROR_MESSAGE)
+            )
+            return True
+        except Exception:
+            return False
+
     def is_remember_me_checkbox_present(self) -> bool:
         """
         Checks if the 'Remember Me' checkbox is present on the login page.
@@ -71,13 +124,34 @@ class LoginPage:
                 "'Remember Me' checkbox should NOT be present on the Login Page, but it was found."
             )
 
+    def get_error_message_text(self) -> str:
+        """
+        Returns the error message text displayed for invalid login.
+        """
+        try:
+            error_elem = WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located(self.ERROR_MESSAGE)
+            )
+            return error_elem.text
+        except Exception:
+            return ""
+
     # Additional utility methods can be implemented here as needed.
 
 # Example usage in a test (not part of the PageClass, for illustration only):
 #
-# def test_remember_me_checkbox_absence(driver):
+# def test_valid_login(driver):
 #     login_page = LoginPage(driver)
 #     login_page.go_to_login_page()
-#     login_page.assert_remember_me_checkbox_absent()
+#     login_page.enter_username('user1')
+#     login_page.enter_password('Pass@123')
+#     login_page.click_login()
+#     assert login_page.is_dashboard_displayed(), "Dashboard not displayed after login"
 #
-# This will navigate to the login screen and verify the absence of the 'Remember Me' checkbox.
+# def test_invalid_login(driver):
+#     login_page = LoginPage(driver)
+#     login_page.go_to_login_page()
+#     login_page.enter_username('invalidUser')
+#     login_page.enter_password('WrongPass')
+#     login_page.click_login()
+#     assert login_page.is_error_message_displayed(), "Error message not displayed for invalid login"
