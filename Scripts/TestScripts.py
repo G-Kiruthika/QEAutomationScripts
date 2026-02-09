@@ -273,3 +273,52 @@ class TestLoginFunctionality:
         error_message = self.login_page.get_error_message()
         assert error_message is not None, "Expected error message for empty password but got none."
         assert 'password' in error_message.lower() or 'required' in error_message.lower(), f"Expected password required error, got: {error_message}"
+
+    # TC_LOGIN_009: Password min/max/exceed validation
+    def test_TC_LOGIN_009(self):
+        """
+        Test Case TC_LOGIN_009: Password minimum, maximum, and exceeding maximum length validation.
+        Steps:
+        1. Navigate to the login page and verify it is displayed.
+        2. Enter password with less than minimum allowed characters (e.g., '123'). Verify validation error for minimum length.
+        3. Enter password with maximum allowed characters (e.g., 'A'). Verify password is accepted.
+        4. Enter password exceeding maximum allowed characters (e.g., 'A'). Verify validation error for maximum length.
+        """
+        self.login_page.navigate_to_login_page()
+        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
+        # Step 2: Min length
+        self.login_page.enter_password_min_length('123')
+        self.login_page.click_login_button()
+        assert self.login_page.is_validation_error_displayed(), "Validation error for minimum length not displayed."
+        assert 'minimum' in self.login_page.get_validation_error_text().lower(), f"Expected minimum length error, got: {self.login_page.get_validation_error_text()}"
+        # Step 3: Max length
+        self.login_page.enter_password_max_length('A')
+        self.login_page.click_login_button()
+        assert self.login_page.is_password_accepted('A'), "Password not accepted at maximum length."
+        # Step 4: Exceed max length
+        self.login_page.enter_password_exceed_max_length('A')
+        self.login_page.click_login_button()
+        assert self.login_page.is_validation_error_displayed(), "Validation error for maximum length not displayed."
+        assert 'maximum' in self.login_page.get_validation_error_text().lower(), f"Expected maximum length error, got: {self.login_page.get_validation_error_text()}"
+
+    # TC-LOGIN-07: Empty fields, login button, error message
+    def test_TC_LOGIN_07(self):
+        """
+        Test Case TC-LOGIN-07: Leave both email and password fields empty, click login, validate error messages.
+        Steps:
+        1. Navigate to the login page and verify it is displayed.
+        2. Leave both email and password fields empty.
+        3. Click the 'Login' button.
+        4. Verify login fails and appropriate error messages are displayed indicating both fields are required.
+        """
+        self.login_page.navigate_to_login_page()
+        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
+        # Step 2: Leave both fields empty
+        assert self.login_page.is_email_field_empty(), "Email field is not empty."
+        assert self.login_page.is_password_field_empty(), "Password field is not empty."
+        # Step 3: Click login
+        self.login_page.click_login_button()
+        # Step 4: Validate error messages
+        assert self.login_page.is_empty_field_prompt_displayed(), "Error message for empty fields not displayed."
+        error_text = self.login_page.get_error_message_text()
+        assert 'required' in error_text.lower(), f"Expected error about required fields, got: {error_text}"
