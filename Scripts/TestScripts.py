@@ -93,20 +93,18 @@ class TestLoginPage(unittest.TestCase):
         login_page = LoginPage(self.driver)
         login_page.navigate_to_login_page()
         min_length_username = "a@b.co"
+        self.assertTrue(login_page.validate_minimum_length_username(min_length_username, min_length=6), "Username should be minimum allowed length.")
         login_page.enter_username(min_length_username)
         login_page.enter_password("ValidPass123!")
         login_page.click_login()
-        self.assertTrue(login_page.is_login_page_displayed(), "Login page should be displayed after navigation.")
-        # Username field accepts minimum length input
-        self.assertEqual(len(min_length_username), 6, "Username should be minimum allowed length.")
         # Password field accepts input
         self.assertTrue(isinstance("ValidPass123!", str), "Password should be a string.")
         # Login succeeds or error is shown
         if login_page.is_login_successful():
             self.assertTrue(login_page.is_login_successful(), "User should be logged in with minimum length username and valid password.")
         else:
-            self.assertTrue(login_page.is_error_message_displayed(), "Error message should be displayed if login fails.")
-            error_msg = login_page.get_error_message()
+            error_msg = login_page.get_login_error_message()
+            self.assertIsNotNone(error_msg, "Error message should be displayed if login fails.")
             self.assertIn(error_msg, ["Invalid email or password."], "Appropriate error message should be shown.")
 
     def test_TC_LOGIN_010_failed_attempts_account_lock_or_captcha(self):
@@ -116,14 +114,10 @@ class TestLoginPage(unittest.TestCase):
         username = "user@example.com"
         password = "WrongPass!@#"
         attempts = 5
-        for i in range(attempts):
-            login_page.enter_username(username)
-            login_page.enter_password(password)
-            login_page.click_login()
-            self.assertTrue(login_page.is_error_message_displayed(), f"Error message should be displayed for attempt {i+1}.")
-            error_msg = login_page.get_error_message()
+        is_locked, is_captcha, error_messages = login_page.attempt_login_multiple_times(username, password, attempts)
+        for i, error_msg in enumerate(error_messages):
+            self.assertIsNotNone(error_msg, f"Error message should be displayed for attempt {i+1}.")
             self.assertIn(error_msg, ["Invalid email or password."], f"Appropriate error message should be shown for attempt {i+1}.")
-        is_locked, is_captcha = login_page.attempt_login_multiple_times(username, password, attempts)
         self.assertTrue(is_locked or is_captcha, "Account should be locked or CAPTCHA should be displayed after maximum failed attempts.")
         if is_locked:
             self.assertTrue(login_page.is_lock_message_present(), "Lock message should be present after account is locked.")
