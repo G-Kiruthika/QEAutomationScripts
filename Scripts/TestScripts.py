@@ -106,3 +106,36 @@ class TestLoginFunctionality:
         self.login_page.click_login()
         error_displayed = self.login_page.wait_for_error_message(expected_text='Password is required.')
         assert error_displayed, "Expected error message 'Password is required.' was not displayed."
+
+    def test_TC_LOGIN_007(self):
+        """
+        Test Case TC_LOGIN_007: Forgot Password flow
+        1. Navigate to the login page.
+        2. Click the 'Forgot Password?' link.
+        3. Verify the presence of email input and reset instructions.
+        """
+        self.login_page.navigate_to_login_page()
+        forgot_page_result = self.login_page.click_forgot_password()
+        assert forgot_page_result, "Failed to navigate to Forgot Password page."
+        presence_verified = self.login_page.verify_forgot_password_page()
+        assert presence_verified, "Forgot Password page does not display email input and instructions."
+
+    def test_TC_LOGIN_008(self):
+        """
+        Test Case TC_LOGIN_008: Login with maximum allowed email length
+        1. Navigate to the login page.
+        2. Enter maximum allowed length email.
+        3. Enter a valid password.
+        4. Click the 'Login' button.
+        """
+        self.login_page.navigate_to_login_page()
+        max_email_entered = self.login_page.enter_max_length_email()
+        assert max_email_entered, "Email field did not accept maximum allowed length."
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.click_login()
+        login_success = False
+        try:
+            login_success = self.login_page.driver.find_element(*self.login_page.dashboard_header).is_displayed()
+        except Exception:
+            login_success = False
+        assert login_success, "Login failed or dashboard not displayed with maximum email length."
