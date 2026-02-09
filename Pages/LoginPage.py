@@ -1,141 +1,104 @@
-# Executive Summary
-# LoginPage.py implements the Page Object Model for the login page, supporting both valid and invalid login flows as per TC_LOGIN_001, TC_LOGIN_002, TC_LOGIN_003, and TC_LOGIN_004.
-# All locators are sourced from Locators.json and methods are strictly aligned with Selenium Python best practices.
-
-# Detailed Analysis:
-# - Handles login with valid and invalid credentials.
-# - Handles empty field submission and error validation (TC_LOGIN_003).
-# - Handles 'Remember Me' functionality and auto-login verification (TC_LOGIN_004).
-# - Uses explicit waits for robust element interaction.
-# - Strict error handling for login failures.
-
-# Implementation Guide:
-# - Import LoginPage in your test scripts.
-# - Use login() for valid login, login_invalid() for negative tests.
-# - Use submit_empty_login_and_validate_error() for TC_LOGIN_003.
-# - Use login_with_remember_me_and_validate_auto_login() for TC_LOGIN_004.
-# - All methods return actionable results for downstream automation.
-
-# Quality Assurance Report:
-# - Code validated for PEP8, Selenium best practices, and locator usage.
-# - Extensive logging and exception handling included.
-# - All new methods tested for strict input/output integrity.
-
-# Troubleshooting Guide:
-# - If login fails, check locator values in Locators.json.
-# - Ensure WebDriver session is active and page is loaded.
-# - For 'Remember Me' issues, verify browser cookie handling and session persistence.
-
-# Future Considerations:
-# - Add 2FA, CAPTCHA handling as needed.
-# - Extend for SSO or federated login flows.
-# - Modularize further for cross-page interactions.
-
+import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 class LoginPage:
-    def __init__(self, driver, locators):
+    URL = "https://example-ecommerce.com/login"
+    LOCATORS = {
+        "emailField": (By.ID, "login-email"),
+        "passwordField": (By.ID, "login-password"),
+        "rememberMeCheckbox": (By.ID, "remember-me"),
+        "loginSubmit": (By.ID, "login-submit"),
+        "forgotPasswordLink": (By.CSS_SELECTOR, "a.forgot-password-link"),
+        "errorMessage": (By.CSS_SELECTOR, "div.alert-danger"),
+        "validationError": (By.CSS_SELECTOR, ".invalid-feedback"),
+        "emptyFieldPrompt": (By.XPATH, "//*[contains(text(),'Mandatory fields are required')]") ,
+        "dashboardHeader": (By.CSS_SELECTOR, "h1.dashboard-title"),
+        "userProfileIcon": (By.CSS_SELECTOR, ".user-profile-name")
+    }
+
+    def __init__(self, driver):
         self.driver = driver
-        self.locators = locators['LoginPage']
         self.wait = WebDriverWait(self.driver, 10)
 
-    def enter_username(self, username):
-        username_field = self.wait.until(
-            EC.visibility_of_element_located((By.XPATH, self.locators['username']))
-        )
-        username_field.clear()
-        username_field.send_keys(username)
+    def navigate(self):
+        self.driver.get(self.URL)
+        self.wait.until(EC.visibility_of_element_located(self.LOCATORS["emailField"]))
+        self.wait.until(EC.visibility_of_element_located(self.LOCATORS["passwordField"]))
+        self.wait.until(EC.visibility_of_element_located(self.LOCATORS["loginSubmit"]))
+
+    def enter_email(self, email):
+        email_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["emailField"]))
+        email_elem.clear()
+        email_elem.send_keys(email)
 
     def enter_password(self, password):
-        password_field = self.wait.until(
-            EC.visibility_of_element_located((By.XPATH, self.locators['password']))
-        )
-        password_field.clear()
-        password_field.send_keys(password)
+        pwd_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["passwordField"]))
+        pwd_elem.clear()
+        pwd_elem.send_keys(password)
 
     def click_login(self):
-        login_button = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, self.locators['login_button']))
-        )
-        login_button.click()
+        login_btn = self.wait.until(EC.element_to_be_clickable(self.LOCATORS["loginSubmit"]))
+        login_btn.click()
+
+    def validate_accessibility(self):
+        # Screen reader: ARIA attributes
+        email_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["emailField"]))
+        password_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["passwordField"]))
+        login_btn = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["loginSubmit"]))
+        accessibility_results = {}
+        accessibility_results["email_aria_label"] = email_elem.get_attribute("aria-label") is not None
+        accessibility_results["password_aria_label"] = password_elem.get_attribute("aria-label") is not None
+        accessibility_results["login_btn_aria_label"] = login_btn.get_attribute("aria-label") is not None
+        # Keyboard navigation: Tab order
+        self.driver.find_element(By.TAG_NAME, "body").click()
+        tab_order = []
+        for _ in range(3):
+            self.driver.find_element(By.TAG_NAME, "body").send_keys("\t")
+            active = self.driver.switch_to.active_element
+            tab_order.append(active.get_attribute("id"))
+        accessibility_results["tab_order"] = tab_order
+        # Color contrast: CSS values
+        color_contrast = {}
+        for field in [email_elem, password_elem, login_btn]:
+            fg = field.value_of_css_property("color")
+            bg = field.value_of_css_property("background-color")
+            color_contrast[field.get_attribute("id")] = {"fg": fg, "bg": bg}
+        accessibility_results["color_contrast"] = color_contrast
+        return accessibility_results
+
+    def is_password_masked(self):
+        pwd_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["passwordField"]))
+        input_type = pwd_elem.get_attribute("type")
+        return input_type == "password"
 
     def get_error_message(self):
         try:
-            error = self.wait.until(
-                EC.visibility_of_element_located((By.XPATH, self.locators['error_message']))
-            )
-            return error.text
-        except Exception:
+            error_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["errorMessage"]))
+            return error_elem.text
+        except TimeoutException:
             return None
 
-    def login(self, username, password):
-        self.enter_username(username)
-        self.enter_password(password)
-        self.click_login()
-        # Wait for profile page or error
+    def get_validation_error(self):
         try:
-            self.wait.until(EC.visibility_of_element_located((By.XPATH, self.locators['profile_page_indicator'])))
-            return True
-        except Exception:
-            return False
-
-    def login_invalid(self, username, password):
-        self.enter_username(username)
-        self.enter_password(password)
-        self.click_login()
-        error = self.get_error_message()
-        return error
-
-    # TC_LOGIN_003: Submit empty fields and validate error message
-    def submit_empty_login_and_validate_error(self):
-        username_field = self.wait.until(
-            EC.visibility_of_element_located((By.XPATH, self.locators['username']))
-        )
-        password_field = self.wait.until(
-            EC.visibility_of_element_located((By.XPATH, self.locators['password']))
-        )
-        username_field.clear()
-        password_field.clear()
-        self.click_login()
-        # Validate mandatory fields error prompt
-        try:
-            error_prompt = self.wait.until(
-                EC.visibility_of_element_located((By.XPATH, self.locators['empty_field_prompt']))
-            )
-            return error_prompt.text
-        except Exception:
+            validation_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["validationError"]))
+            return validation_elem.text
+        except TimeoutException:
             return None
 
-    # TC_LOGIN_004: Valid credentials, 'Remember Me', auto-login
-    def login_with_remember_me_and_validate_auto_login(self, username, password):
-        username_field = self.wait.until(
-            EC.visibility_of_element_located((By.XPATH, self.locators['username']))
-        )
-        password_field = self.wait.until(
-            EC.visibility_of_element_located((By.XPATH, self.locators['password']))
-        )
-        remember_me_checkbox = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, self.locators['remember_me']))
-        )
-        username_field.clear()
-        username_field.send_keys(username)
-        password_field.clear()
-        password_field.send_keys(password)
-        # Check 'Remember Me'
-        if not remember_me_checkbox.is_selected():
-            remember_me_checkbox.click()
-        self.click_login()
-        # Validate successful login
+    def is_empty_field_prompt_displayed(self):
         try:
-            self.wait.until(EC.visibility_of_element_located((By.XPATH, self.locators['profile_page_indicator'])))
-        except Exception:
-            return False
-        # Simulate browser restart for auto-login validation
-        self.driver.refresh()
-        try:
-            self.wait.until(EC.visibility_of_element_located((By.XPATH, self.locators['profile_page_indicator'])))
+            prompt_elem = self.wait.until(EC.visibility_of_element_located(self.LOCATORS["emptyFieldPrompt"]))
             return True
-        except Exception:
+        except TimeoutException:
+            return False
+
+    def is_logged_in(self):
+        try:
+            self.wait.until(EC.visibility_of_element_located(self.LOCATORS["dashboardHeader"]))
+            self.wait.until(EC.visibility_of_element_located(self.LOCATORS["userProfileIcon"]))
+            return True
+        except TimeoutException:
             return False
