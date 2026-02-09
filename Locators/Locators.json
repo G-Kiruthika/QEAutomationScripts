@@ -1,23 +1,8 @@
 {
-  "LoginPage": {
-    "url": "https://example-ecommerce.com/login",
-    "inputs": {
-      "emailField": "id=login-email",
-      "passwordField": "id=login-password",
-      "rememberMeCheckbox": "id=remember-me"
-    },
-    "buttons": {
-      "loginSubmit": "id=login-submit",
-      "forgotPasswordLink": "a.forgot-password-link"
-    },
-    "messages": {
-      "errorMessage": "div.alert-danger",
-      "validationError": ".invalid-feedback",
-      "emptyFieldPrompt": "text='Mandatory fields are required'"
-    },
-    "postLogin": {
-      "dashboardHeader": "h1.dashboard-title",
-      "userProfileIcon": ".user-profile-name"
-    }
-  }
+    "username": "input#username",
+    "password": "input#password",
+    "loginButton": "button#login",
+    "loginSuccess": "div.dashboard",
+    "captchaWidget": "div.captcha",
+    "lockMessage": "div.lock-message"
 }
