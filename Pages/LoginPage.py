@@ -120,3 +120,26 @@ class LoginPage:
             return error.text
         except Exception:
             return None
+
+    def select_remember_me(self):
+        """
+        Selects the 'Remember Me' checkbox if not already selected.
+        """
+        checkbox = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_CHECKBOX))
+        if not checkbox.is_selected():
+            checkbox.click()
+        return checkbox.is_selected()
+
+    def is_logged_in(self):
+        """
+        Returns True if dashboard header or user profile icon is visible (user is logged in).
+        """
+        try:
+            dashboard = self.wait.until(EC.visibility_of_element_located(self.DASHBOARD_HEADER))
+            return True
+        except Exception:
+            try:
+                user_icon = self.wait.until(EC.visibility_of_element_located(self.USER_PROFILE_ICON))
+                return True
+            except Exception:
+                return False
