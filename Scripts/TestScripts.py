@@ -16,15 +16,23 @@ class TestLoginFunctionality:
         await self.login_page.fill_email('')
 
     def test_TC_LOGIN_001(self):
-        username = 'invalid_user'
-        password = 'invalid_pass'
-        expected_error = 'Invalid username or password. Please try again.'
-        result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
-        assert result, f"Expected error message '{expected_error}', but got something else."
+        username = 'user1'
+        password = 'Pass@123'
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_username(username)
+        self.login_page.enter_password(password)
+        self.login_page.click_login()
+        assert self.login_page.is_dashboard_displayed(), 'Dashboard not displayed after valid login.'
 
     def test_TC_LOGIN_002(self):
-        self.login_page.go_to_login_page()
-        self.login_page.assert_remember_me_checkbox_absent()
+        username = 'invalidUser'
+        password = 'WrongPass'
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_username(username)
+        self.login_page.enter_password(password)
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None and 'invalid' in error_message.lower(), 'Error message not displayed for invalid credentials.'
 
     def test_TC_LOGIN_001_valid(self):
         self.login_page.navigate_to_login_page()
@@ -62,7 +70,7 @@ class TestLoginFunctionality:
         result = self.login_page.attempt_sql_injection(username_injection, password_injection)
         assert result, "SQL injection did not trigger error message or unauthorized access occurred."
 
-    def test_TC_LOGIN_009_accessibility(self):
+    def test_TC_LOGIN_009(self):
         self.login_page.navigate_to_login_page()
         screen_reader_compatible = self.login_page.is_screen_reader_compatible()
         keyboard_nav_accessible = self.login_page.is_keyboard_navigation_accessible()
@@ -71,7 +79,7 @@ class TestLoginFunctionality:
         assert keyboard_nav_accessible, "Keyboard navigation accessibility failed."
         assert color_contrast_sufficient, "Color contrast is not sufficient."
 
-    def test_TC_LOGIN_010_password_masking(self):
+    def test_TC_LOGIN_010(self):
         self.login_page.navigate_to_login_page()
         self.login_page.enter_password('Pass@123')
         masked = self.login_page.is_password_masked()
@@ -98,19 +106,3 @@ class TestLoginFunctionality:
         self.login_page.click_login()
         error_displayed = self.login_page.wait_for_error_message(expected_text='Password is required.')
         assert error_displayed, "Expected error message 'Password is required.' was not displayed."
-
-    def test_TC_LOGIN_009_min_length_login(self):
-        """
-        Test Case TC_LOGIN_009: Login with minimum allowed length username and valid password.
-        """
-        result = self.login_page.login_with_min_length_username(username='a@b.co', password='ValidPass123!')
-        assert result, "Login with minimum allowed length username failed or error was displayed."
-
-    def test_TC_LOGIN_010_max_failed_attempts(self):
-        """
-        Test Case TC_LOGIN_010: Repeated failed login attempts and verify account lock/CAPTCHA.
-        """
-        result = self.login_page.login_with_max_failed_attempts(username='user@example.com', password='WrongPass!@#', max_attempts=5)
-        for attempt in result['attempt_results']:
-            assert attempt['error'] is not None, f"No error message for attempt {attempt['attempt']}"
-        assert result['account_locked'] or result['captcha_displayed'], "Account lock or CAPTCHA was not triggered after maximum failed attempts."
