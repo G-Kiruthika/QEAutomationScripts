@@ -66,3 +66,21 @@ def test_TC_LOGIN_010_multiple_failed_login_attempts_and_account_lock(driver):
     locked = login_page.is_account_locked() if hasattr(login_page, 'is_account_locked') else False
     captcha_present = login_page.is_captcha_present() if hasattr(login_page, 'is_captcha_present') else False
     assert locked or captcha_present, "Account not locked or CAPTCHA not presented after maximum failed attempts"
+
+# TC_LOGIN_003: Test login with empty email and valid password.
+def test_TC_LOGIN_003_empty_email_valid_password(driver):
+    login_page = LoginPage(driver)
+    login_page.navigate('https://example.com/login')
+    valid_password = 'ValidPass123!'
+    error_message = login_page.validate_empty_email(valid_password)
+    assert error_message is not None, "No error message shown when email is empty"
+    assert 'Email is required' in error_message, f"Unexpected error message: {error_message}"
+
+# TC_LOGIN_004: Test login with valid email and empty password.
+def test_TC_LOGIN_004_valid_email_empty_password(driver):
+    login_page = LoginPage(driver)
+    login_page.navigate('https://example.com/login')
+    valid_email = 'user@example.com'
+    error_message = login_page.validate_empty_password(valid_email)
+    assert error_message is not None, "No error message shown when password is empty"
+    assert 'Password is required' in error_message, f"Unexpected error message: {error_message}"
