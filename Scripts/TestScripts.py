@@ -222,7 +222,7 @@ class TestLoginFunctionality:
         1. Navigate to the login page and verify it is displayed.
         2. Enter email less than minimum allowed ('a@b.c'), verify validation error.
         3. Enter email at maximum allowed (64 'a's + '@example.com'), verify acceptance.
-        4. Enter email exceeding maximum (65 'a's + '@example.com'), verify validation error.
+        4. Enter email exceeding maximum allowed (65 'a's + '@example.com'), verify validation error.
         """
         self.login_page.load()
         assert self.login_page.is_displayed(), "Login page is not displayed."
@@ -322,3 +322,57 @@ class TestLoginFunctionality:
         assert self.login_page.is_empty_field_prompt_displayed(), "Error message for empty fields not displayed."
         error_text = self.login_page.get_error_message_text()
         assert 'required' in error_text.lower(), f"Expected error about required fields, got: {error_text}"
+
+    def test_TC_LOGIN_010(self):
+        """
+        Test Case TC_LOGIN_010: Login with special characters in email and password.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter email with special characters: 'user!#$%&\'*+/=?^_`{|}~@example.com'
+        3. Enter password with special characters: 'P@$$w0rd!#%&*()_+-={}[]|;:<>,.?/~'
+        4. Click the login button.
+        5. Verify login success or appropriate error handling.
+        """
+        self.login_page.navigate_to_login_page()
+        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
+        special_email = "user!#$%&'*+/=?^_`{|}~@example.com"
+        special_password = "P@$$w0rd!#%&*()_+-={}[]|;:<>,.?/~"
+        self.login_page.enter_email(special_email)
+        self.login_page.enter_password(special_password)
+        self.login_page.click_login_button()
+        # Accept either login success or proper error handling
+        if self.login_page.is_user_logged_in():
+            assert True, "Login succeeded with special characters."
+        else:
+            assert self.login_page.is_error_message_displayed(), "Error message not displayed for special character login."
+            error_text = self.login_page.get_error_message_text()
+            assert error_text, "Error message text is empty for special character login."
+
+    def test_TC_LOGIN_08(self):
+        """
+        Test Case TC-LOGIN-08: Login with 'Remember Me' checked and verify session persistence after browser restart.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter valid email and password.
+        3. Check 'Remember Me' checkbox.
+        4. Click the login button and verify user is logged in.
+        5. Close and reopen the browser.
+        6. Verify session persists and user remains logged in.
+        """
+        self.login_page.navigate_to_login_page()
+        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
+        self.login_page.enter_email('user@example.com')
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.select_remember_me()
+        assert self.login_page.is_remember_me_selected(), "'Remember Me' checkbox is not selected."
+        self.login_page.click_login_button()
+        assert self.login_page.is_user_logged_in(), "User is not logged in after login with 'Remember Me'."
+        # Simulate browser restart
+        def driver_factory():
+            from selenium import webdriver
+            return webdriver.Chrome()
+        self.login_page.driver.quit()
+        new_driver = driver_factory()
+        new_login_page = LoginPage(new_driver)
+        new_login_page.navigate_to_login_page()
+        assert new_login_page.verify_session_persistence(), "Session did not persist after browser restart."
