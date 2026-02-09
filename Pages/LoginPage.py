@@ -138,3 +138,48 @@ class LoginPage:
             return self.is_user_logged_in()
         except Exception:
             return False
+
+    # --- Appended for TC_LOGIN_001 and TC_LOGIN_002 ---
+    def perform_login(self, email: str, password: str) -> bool:
+        """
+        Perform login flow for valid credentials.
+        Steps:
+            1. Navigate to login page.
+            2. Enter email and password.
+            3. Click login.
+            4. Verify dashboard page.
+        Test Case: TC_LOGIN_001 (testCaseId: 1217)
+        Acceptance Criteria: AC_LOGIN_01
+        Args:
+            email (str): Valid email address
+            password (str): Valid password
+        Returns:
+            bool: True if user is logged in and dashboard is displayed, False otherwise
+        """
+        self.navigate_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login_button()
+        return self.is_user_logged_in()
+
+    def perform_invalid_login(self, email: str, password: str) -> bool:
+        """
+        Perform login flow for invalid credentials and verify error message.
+        Steps:
+            1. Navigate to login page.
+            2. Enter invalid email and/or password.
+            3. Click login.
+            4. Verify error message is displayed.
+        Test Case: TC_LOGIN_002 (testCaseId: 1218)
+        Acceptance Criteria: AC_LOGIN_02
+        Args:
+            email (str): Invalid email address
+            password (str): Invalid password
+        Returns:
+            bool: True if error message is displayed, False otherwise
+        """
+        self.navigate_to_login_page()
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login_button()
+        return self.is_error_message_displayed()
