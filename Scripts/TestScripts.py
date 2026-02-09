@@ -2,12 +2,9 @@
 from Pages.LoginPage import LoginPage
 
 class TestLoginFunctionality:
-    def __init__(self, driver, locators=None):
+    def __init__(self, driver):
         self.driver = driver
-        if locators:
-            self.login_page = LoginPage(driver, locators)
-        else:
-            self.login_page = LoginPage(driver)
+        self.login_page = LoginPage(driver)
 
     def test_TC_LOGIN_003_empty_fields_prompt(self):
         """
@@ -36,33 +33,32 @@ class TestLoginFunctionality:
         self.login_page.perform_login_with_remember_me('user1', 'Pass@123')
         assert self.login_page.is_user_auto_logged_in(), 'User should remain logged in or be auto-logged in after browser restart.'
 
-    def test_TC_LOGIN_009_accessibility(self):
+    def test_TC_LOGIN_009_accessibility_validation(self):
         """
-        Test Case TC_LOGIN_009: Accessibility validation
+        Test Case TC_LOGIN_009: Accessibility validation for login page
         Steps:
         1. Navigate to the login page.
         2. Check for screen reader compatibility, keyboard navigation, and color contrast.
         """
-        self.login_page.go_to_login_page()
-        report = self.login_page.check_accessibility_features()
-        assert report['email_aria'], 'Email field should have ARIA label.'
-        assert report['password_aria'], 'Password field should have ARIA label.'
-        assert report['login_button_aria'], 'Login button should have ARIA label.'
-        assert report['email_tabindex'], 'Email field should be keyboard accessible.'
-        assert report['password_tabindex'], 'Password field should be keyboard accessible.'
-        assert report['login_button_tabindex'], 'Login button should be keyboard accessible.'
-        # Optionally, check color values (not asserting, just logging)
-        print('Email field color:', report['email_color'], '| Background:', report['email_bg'])
-        print('Password field color:', report['password_color'], '| Background:', report['password_bg'])
-        print('Login button color:', report['login_button_color'], '| Background:', report['login_button_bg'])
+        self.login_page.navigate()
+        accessibility_results = self.login_page.validate_accessibility()
+        assert accessibility_results["email_aria_label"], "Email field should have aria-label for screen readers"
+        assert accessibility_results["password_aria_label"], "Password field should have aria-label for screen readers"
+        assert accessibility_results["login_btn_aria_label"], "Login button should have aria-label for screen readers"
+        tab_order = accessibility_results["tab_order"]
+        assert tab_order == ["login-email", "login-password", "login-submit"], f"Tab order should be email -> password -> login, got: {tab_order}"
+        color_contrast = accessibility_results["color_contrast"]
+        for field_id, contrast in color_contrast.items():
+            assert contrast["fg"] != contrast["bg"], f"Foreground and background color should be different for {field_id}"
 
     def test_TC_LOGIN_010_password_masking(self):
         """
-        Test Case TC_LOGIN_010: Password masking validation
+        Test Case TC_LOGIN_010: Password masking check
         Steps:
         1. Navigate to the login page.
-        2. Enter password in the password field and verify it is masked.
+        2. Enter password in the password field.
         """
-        self.login_page.go_to_login_page()
-        is_masked = self.login_page.validate_password_masking()
-        assert is_masked, 'Password input should be masked (type="password").'
+        self.login_page.navigate()
+        self.login_page.enter_password("Pass@123")
+        is_masked = self.login_page.is_password_masked()
+        assert is_masked, "Password input should be masked (type='password')"
