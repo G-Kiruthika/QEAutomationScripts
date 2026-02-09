@@ -49,29 +49,24 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_003(self):
         """
-        Test Case TC_LOGIN_003: Leave email empty, enter valid password, click login, verify error message.
+        Test Case TC_LOGIN_003: Login with empty email.
         Steps:
         1. Navigate to the login page.
         2. Leave the email field empty.
         3. Enter a valid password (ValidPass123!).
         4. Click the login button.
-        5. Verify error message is displayed indicating email is required.
+        5. Verify error message indicating email is required.
         """
-        self.login_page.go_to_login_page()
-        self.login_page.login_with_empty_email('ValidPass123!')
-        error_message = self.login_page.get_error_message()
-        assert 'email is required' in error_message.lower(), f'Expected error message about email requirement, got: {error_message}'
+        self.login_page.test_login_with_empty_email('ValidPass123!')
 
     def test_TC_LOGIN_01(self):
         """
-        Test Case TC-LOGIN-01: Enter valid email and password, click login, verify dashboard/homepage.
+        Test Case TC-LOGIN-01: Successful login.
         Steps:
         1. Navigate to the login page.
         2. Enter a valid registered email address (user@example.com).
-        3. Enter the correct password for the email (ValidPassword123!).
-        4. Click the 'Login' button.
-        5. Verify user is successfully logged in and redirected to the dashboard/homepage.
+        3. Enter the correct password (ValidPassword123!).
+        4. Click the login button.
+        5. Verify user is successfully logged in and redirected to dashboard/homepage.
         """
-        self.login_page.go_to_login_page()
-        self.login_page.login_with_valid_credentials('user@example.com', 'ValidPassword123!')
-        assert self.login_page.is_user_on_dashboard(), 'User was not redirected to dashboard/homepage after login.'
+        self.login_page.test_successful_login('user@example.com', 'ValidPassword123!')
