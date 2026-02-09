@@ -70,3 +70,37 @@ class TestLoginFunctionality:
         5. Verify user is successfully logged in and redirected to dashboard/homepage.
         """
         self.login_page.test_successful_login('user@example.com', 'ValidPassword123!')
+
+    def test_TC_LOGIN_004(self):
+        """
+        Test Case TC_LOGIN_004: Login with empty password.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter a valid email address (user@example.com).
+        3. Leave the password field empty.
+        4. Click the login button.
+        5. Verify error message indicating password is required.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('user@example.com')
+        self.login_page.clear_password()
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert 'password is required' in error_message.lower(), f'Expected error for empty password, got: {error_message}'
+
+    def test_TC_LOGIN_02(self):
+        """
+        Test Case TC-LOGIN-02: Login with invalid email and valid password.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter an invalid/unregistered email address (invaliduser@example.com).
+        3. Enter a valid password (ValidPassword123!).
+        4. Click the login button.
+        5. Verify login fails and appropriate error message is displayed.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('invaliduser@example.com')
+        self.login_page.enter_password('ValidPassword123!')
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert 'error' in error_message.lower() or 'login failed' in error_message.lower(), f'Expected error for invalid email, got: {error_message}'
