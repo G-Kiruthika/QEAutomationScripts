@@ -2,9 +2,9 @@
 from Pages.LoginPage import LoginPage
 
 class TestLoginFunctionality:
-    def __init__(self, driver, locators):
+    def __init__(self, driver):
         self.driver = driver
-        self.login_page = LoginPage(driver, locators)
+        self.login_page = LoginPage(driver)
 
     async def test_empty_fields_validation(self):
         await self.login_page.navigate()
@@ -89,29 +89,31 @@ class TestLoginFunctionality:
         password = 'Pass@123'
         self.login_page.login_with_remember_me_and_verify_auto_login(email, password)
 
-    def test_TC_LOGIN_005_forgot_password_navigation(self):
+    def test_TC_LOGIN_005(self):
         """
-        Test Case TC_LOGIN_005: Forgot Password navigation.
+        Test Case TC_LOGIN_005: Forgot Password navigation
         Steps:
         1. Navigate to the login page.
         2. Click on 'Forgot Password' link.
-        3. Assert user is redirected to password recovery page.
+        3. Verify user is redirected to password recovery page.
         """
+        # Ensure navigation to login page
         self.login_page.navigate_to_login_page()
+        # Click 'Forgot Password' and verify navigation
         result = self.login_page.navigate_to_forgot_password()
-        assert result, "User was not redirected to password recovery page."
+        assert result, "Navigation to password recovery page failed."
 
-    def test_TC_LOGIN_006_sql_injection_login_failure(self):
+    def test_TC_LOGIN_006(self):
         """
-        Test Case TC_LOGIN_006: SQL injection login attempt fails.
+        Test Case TC_LOGIN_006: SQL Injection validation
         Steps:
         1. Navigate to the login page.
-        2. Enter SQL injection string in username and password fields.
+        2. Enter SQL injection string in username and/or password fields.
         3. Click the Login button.
-        4. Assert login fails and no unauthorized access occurs.
+        4. Verify login fails and no unauthorized access occurs.
         """
         self.login_page.navigate_to_login_page()
-        username = "' OR 1=1; --"
-        password = "' OR 1=1; --"
-        result = self.login_page.attempt_sql_injection(username, password)
-        assert result, "SQL injection did not trigger error as expected."
+        username_injection = "' OR 1=1; --"
+        password_injection = "' OR 1=1; --"
+        result = self.login_page.attempt_sql_injection(username_injection, password_injection)
+        assert result, "SQL injection did not trigger error message or unauthorized access occurred."
