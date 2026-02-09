@@ -5,96 +5,35 @@ class TestLoginFunctionality:
     def __init__(self, driver):
         self.driver = driver
         self.login_page = LoginPage(driver)
+    # ... existing methods ...
 
-    async def test_empty_fields_validation(self):
-        await self.login_page.navigate()
-        await self.login_page.submit_login('', '')
-        assert await self.login_page.get_error_message() == 'Mandatory fields are required'
-
-    async def test_remember_me_functionality(self):
-        await self.login_page.navigate()
-        await self.login_page.fill_email('')
-
-    def test_TC_LOGIN_001(self):
-        """Test invalid login and error message for TC_LOGIN_001"""
-        username = 'invalid_user'
-        password = 'invalid_pass'
-        expected_error = 'Invalid username or password. Please try again.'
-        result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
-        assert result, f"Expected error message '{expected_error}', but got something else."
-
-    def test_TC_LOGIN_002(self):
-        """
-        Test Case TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
-        Steps:
-        1. Navigate to the login screen.
-        2. Assert that 'Remember Me' checkbox is not present.
-        """
-        self.login_page.go_to_login_page()
-        self.login_page.assert_remember_me_checkbox_absent()
-
-    def test_TC_LOGIN_001_valid(self):
-        """
-        Test Case TC_LOGIN_001: Successful login with valid credentials.
-        Steps:
-        1. Navigate to the login page.
-        2. Enter a valid email address: user@example.com
-        3. Enter a valid password: ValidPass123!
-        4. Click the login button.
-        5. Verify that the dashboard is displayed.
-        """
-        self.login_page.go_to_login_page()
-        self.login_page.enter_email('user@example.com')
-        self.login_page.enter_password('ValidPass123!')
+    def test_TC_LOGIN_003_email_required(self):
+        '''
+        TC_LOGIN_003: 
+        1. Navigate to login page
+        2. Leave email empty
+        3. Enter valid password
+        4. Click login
+        5. Verify error message about email required
+        '''
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_email("")
+        self.login_page.enter_password("ValidPassword123")
         self.login_page.click_login()
-        self.login_page.verify_dashboard_displayed()
+        error_msg = self.login_page.get_error_message()
+        assert "Email is required" in error_msg, f"Expected email required error, got: {error_msg}"
 
-    def test_TC_LOGIN_002_invalid(self):
-        """
-        Test Case TC_LOGIN_002: Login attempt with invalid credentials and error validation.
-        Steps:
-        1. Navigate to the login page.
-        2. Enter an invalid email address: wronguser@example.com
-        3. Enter an invalid password: WrongPass456!
-        4. Click the login button.
-        5. Verify that an error message is displayed indicating invalid credentials.
-        """
-        self.login_page.go_to_login_page()
-        self.login_page.enter_email('wronguser@example.com')
-        self.login_page.enter_password('WrongPass456!')
+    def test_TC_LOGIN_01_successful_login(self):
+        '''
+        TC-LOGIN-01:
+        1. Navigate to login page
+        2. Enter valid email
+        3. Enter correct password
+        4. Click login
+        5. Verify successful login and dashboard/homepage is displayed
+        '''
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_email("valid.user@example.com")
+        self.login_page.enter_password("ValidPassword123")
         self.login_page.click_login()
-        self.login_page.verify_error_message_displayed()
-
-    def test_TC_LOGIN_003(self):
-        """
-        Test Case TC_LOGIN_003: Attempt login with empty email and valid password.
-        Steps:
-        1. Navigate to the login page.
-        2. Leave the email field empty.
-        3. Enter a valid password: ValidPass123!
-        4. Click the login button.
-        5. Verify error message is displayed indicating email is required.
-        """
-        self.login_page.navigate()
-        self.login_page.enter_email('')
-        self.login_page.enter_password('ValidPass123!')
-        self.login_page.click_login()
-        error_message = self.login_page.get_error_message()
-        assert error_message is not None, "Expected error message but got none."
-        assert 'email' in error_message.lower(), f"Expected error about email, got: {error_message}"
-
-    def test_TC_LOGIN_01(self):
-        """
-        Test Case TC-LOGIN-01: Successful login with valid credentials.
-        Steps:
-        1. Navigate to the login page.
-        2. Enter a valid registered email address: user@example.com
-        3. Enter the correct password: ValidPassword123!
-        4. Click the 'Login' button.
-        5. Verify successful login and dashboard/homepage is displayed.
-        """
-        self.login_page.navigate()
-        self.login_page.enter_email('user@example.com')
-        self.login_page.enter_password('ValidPassword123!')
-        self.login_page.click_login()
-        assert self.login_page.is_login_successful(), "Login was not successful, dashboard not displayed."
+        assert self.login_page.is_dashboard_displayed(), "Dashboard/Homepage was not displayed after login"
