@@ -106,40 +106,42 @@ class TestLoginFunctionality:
 
     # --- New methods appended below ---
 
-    def test_TC_LOGIN_003_email_empty(self):
+    def test_TC_LOGIN_005_empty_fields(self):
         """
-        Test Case TC_LOGIN_003: Email Empty, Password Valid
+        Test Case TC_LOGIN_005: Both email and password fields empty
         Steps:
         1. Navigate to the login page.
-        2. Leave the email field empty.
-        3. Enter a valid password in the password field.
-        4. Click the 'Login' button.
-        5. Assert error message 'Email is required.' is displayed and user is not logged in.
+        2. Leave both email and password fields empty.
+        3. Click the 'Login' button.
+        4. Assert error messages 'Email is required.' and 'Password is required.' are displayed. User is not logged in.
         """
         self.login_page.navigate("https://example.com/login")
-        self.login_page.clear_fields()
-        self.login_page.enter_username("")
-        self.login_page.enter_password("ValidPass123!")
+        self.login_page.leave_fields_empty()
         self.login_page.click_login()
-        error_message = self.login_page.get_error_message()
-        assert error_message is not None and "Email is required." in error_message, f"Expected 'Email is required.' error, got: {error_message}"
-        assert not self.login_page.is_logged_in(), "User should not be logged in when email is empty."
+        errors = self.login_page.get_error_messages()
+        assert "Email is required." in errors, f"Expected 'Email is required.' error, got: {errors}"
+        assert "Password is required." in errors, f"Expected 'Password is required.' error, got: {errors}"
+        assert not self.login_page.is_logged_in(), "User should not be logged in when both fields are empty."
 
-    def test_TC_LOGIN_004_password_empty(self):
+    def test_TC_LOGIN_006_remember_me_session(self):
         """
-        Test Case TC_LOGIN_004: Password Empty, Email Valid
+        Test Case TC_LOGIN_006: Valid login with 'Remember Me' and session persistence
         Steps:
         1. Navigate to the login page.
-        2. Enter a valid email address in the email field.
-        3. Leave the password field empty.
+        2. Enter valid email and password.
+        3. Check the 'Remember Me' checkbox.
         4. Click the 'Login' button.
-        5. Assert error message 'Password is required.' is displayed and user is not logged in.
+        5. Close and reopen the browser, revisit the site.
+        6. Assert user remains logged in; session persists.
         """
         self.login_page.navigate("https://example.com/login")
-        self.login_page.clear_fields()
-        self.login_page.enter_username("user@example.com")
-        self.login_page.enter_password("")
+        self.login_page.enter_email("user@example.com")
+        self.login_page.enter_password("ValidPass123!")
+        self.login_page.check_remember_me()
+        assert self.login_page.is_remember_me_checked(), "'Remember Me' checkbox should be selected."
         self.login_page.click_login()
-        error_message = self.login_page.get_error_message()
-        assert error_message is not None and "Password is required." in error_message, f"Expected 'Password is required.' error, got: {error_message}"
-        assert not self.login_page.is_logged_in(), "User should not be logged in when password is empty."
+        assert self.login_page.is_logged_in(), "User should be logged in after valid credentials."
+        # Simulate session persistence
+        self.login_page.validate_session_persistence("https://example.com/login")
+        # After browser re-initialization, check if user remains logged in
+        assert self.login_page.is_logged_in(), "User should remain logged in after browser restart with 'Remember Me' checked."
