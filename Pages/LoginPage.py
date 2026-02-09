@@ -1,3 +1,4 @@
+# imports
 import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -16,6 +17,7 @@ class LoginPage:
     EMPTY_FIELD_PROMPT = (By.XPATH, "//*[text()='Mandatory fields are required']")
     DASHBOARD_HEADER = (By.CSS_SELECTOR, "h1.dashboard-title")
     USER_PROFILE_ICON = (By.CSS_SELECTOR, ".user-profile-name")
+    CAPTCHA = (By.CSS_SELECTOR, "div.captcha, iframe.captcha")  # Example selector for CAPTCHA
 
     def __init__(self, driver: WebDriver):
         """Initializes LoginPage with WebDriver instance."""
@@ -137,3 +139,53 @@ class LoginPage:
             "dashboard_visible": dashboard_visible,
             "profile_visible": profile_visible
         }
+
+    # --- Methods added for TC_LOGIN_009 ---
+    def login_with_minimum_length_email(self, email: str, password: str):
+        """Performs login using minimum allowed length email/username."""
+        self.enter_email(email)
+        self.enter_password(password)
+        self.click_login()
+        time.sleep(1)
+        return {
+            "dashboard_visible": self.is_dashboard_header_displayed(),
+            "error_message": self.get_error_message() if not self.is_dashboard_header_displayed() else None
+        }
+
+    # --- Methods added for TC_LOGIN_010 ---
+    def login_with_failed_attempts(self, email: str, password: str, max_attempts: int = 5):
+        """Attempts login with incorrect password up to max_attempts and checks for lockout/CAPTCHA."""
+        results = []
+        for attempt in range(max_attempts):
+            self.enter_email(email)
+            self.enter_password(password)
+            self.click_login()
+            time.sleep(1)
+            error_msg = None
+            try:
+                error_msg = self.get_error_message()
+            except Exception:
+                error_msg = None
+            results.append({
+                "attempt": attempt + 1,
+                "error_message": error_msg,
+                "captcha_displayed": self.is_captcha_displayed(),
+                "account_locked": self.is_account_locked()
+            })
+        return results
+
+    def is_captcha_displayed(self) -> bool:
+        """Checks if CAPTCHA is present on the login page."""
+        try:
+            captcha_elem = self.driver.find_element(*self.CAPTCHA)
+            return captcha_elem.is_displayed()
+        except Exception:
+            return False
+
+    def is_account_locked(self) -> bool:
+        """Checks if account lockout message is displayed."""
+        try:
+            lockout_elem = self.driver.find_element(By.XPATH, "//*[contains(text(),'account locked') or contains(text(),'too many attempts')]")
+            return lockout_elem.is_displayed()
+        except Exception:
+            return False
