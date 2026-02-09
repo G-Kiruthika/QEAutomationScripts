@@ -1,7 +1,7 @@
 # LoginPage.py
 # Selenium Page Object for Login functionality
 # All locators are sourced from Locators.json
-# QA Report: All methods required for TC_LOGIN_007 and TC_LOGIN_008 are present. Code follows Selenium best practices. Imports are complete. Each method includes robust waiting and error handling.
+# QA Report: All methods required for TC_LOGIN_01 and TC_LOGIN_02 are present. Code follows Selenium best practices. Imports are complete. Each method includes robust waiting and error handling.
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -25,6 +25,10 @@ class LoginPage:
         - is_user_profile_icon_displayed(): Checks if user profile icon is visible after login.
         - is_min_length_error_displayed(): Checks for minimum length error message.
     All locators are sourced from Locators.json.
+
+    Covers:
+        - TC_LOGIN_01: Valid login scenario (navigate, input, submit, dashboard validation).
+        - TC_LOGIN_02: Invalid login scenario (navigate, input, submit, error message validation).
     """
 
     URL = "https://example-ecommerce.com/login"
@@ -119,7 +123,7 @@ class LoginPage:
     def is_min_length_error_displayed(self):
         """
         Check if the minimum length error message ('Email/Username must be at least 3 characters.') is displayed.
-        This method is used for TC_LOGIN_008 validation.
+        This method is used for TC_LOGIN_02 validation.
         """
         try:
             error = self.wait.until(EC.visibility_of_element_located(self.ERROR_MESSAGE))
