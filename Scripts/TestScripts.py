@@ -117,3 +117,33 @@ class TestLoginFunctionality:
         password_injection = "' OR 1=1; --"
         result = self.login_page.attempt_sql_injection(username_injection, password_injection)
         assert result, "SQL injection did not trigger error message or unauthorized access occurred."
+
+    def test_TC_LOGIN_009(self):
+        """
+        Test Case TC_LOGIN_009: Accessibility validation
+        Steps:
+        1. Navigate to the login page.
+        2. Check for screen reader compatibility, keyboard navigation, and color contrast.
+        """
+        self.login_page.navigate_to_login_page()
+        screen_reader_results = self.login_page.check_screen_reader_compatibility()
+        keyboard_nav_result = self.login_page.check_keyboard_navigation()
+        color_contrast_results = self.login_page.check_color_contrast()
+        # Assert accessibility standards
+        assert all(screen_reader_results.values()), f"Screen reader compatibility failed: {screen_reader_results}"
+        assert keyboard_nav_result, "Keyboard navigation failed."
+        for element, ratio in color_contrast_results.items():
+            assert ratio >= 4.5, f"Color contrast ratio for {element} is below WCAG AA standard: {ratio}"
+
+    def test_TC_LOGIN_010(self):
+        """
+        Test Case TC_LOGIN_010: Password masking validation
+        Steps:
+        1. Navigate to the login page.
+        2. Enter password in the password field.
+        3. Validate password input is masked.
+        """
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_password('Pass@123')
+        masked = self.login_page.validate_password_masking()
+        assert masked, "Password field is not masked."
