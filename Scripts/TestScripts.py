@@ -56,3 +56,23 @@ class TestLoginFunctionality:
         new_driver = get_new_driver_instance()
         login_page_reopened = LoginPage(new_driver)
         assert login_page_reopened.is_dashboard_header_displayed()
+
+    def test_TC_LOGIN_005(self, driver):
+        """
+        TC_LOGIN_005: Navigate to login page, click forgot password, verify redirection to password recovery page.
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.click_forgot_password()
+        # Assuming the password recovery page has a unique element or URL to verify
+        assert driver.current_url.endswith('/password-recovery') or 'password' in driver.title.lower()
+
+    def test_TC_LOGIN_006(self, driver):
+        """
+        TC_LOGIN_006: Enter SQL injection strings for username and password, click login, verify login fails and no unauthorized access.
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        error_message = login_page.login_with_sql_injection("' OR 1=1; --", "' OR 1=1; --")
+        assert error_message is not None and error_message != ''
+        assert not login_page.is_dashboard_header_displayed()
