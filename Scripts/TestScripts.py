@@ -32,3 +32,33 @@ class TestLoginFunctionality:
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_001_valid(self):
+        """
+        Test Case TC_LOGIN_001: Valid login flow.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter valid username and password.
+        3. Click the Login button.
+        4. Verify dashboard header is displayed.
+        """
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_email('user1')
+        self.login_page.enter_password('Pass@123')
+        self.login_page.click_login()
+        assert self.login_page.verify_dashboard_header(), "Dashboard header not visible after login."
+
+    def test_TC_LOGIN_002_invalid(self):
+        """
+        Test Case TC_LOGIN_002: Invalid login flow.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter invalid username and/or password.
+        3. Click the Login button.
+        4. Verify error message for invalid credentials.
+        """
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_email('invalidUser')
+        self.login_page.enter_password('WrongPass')
+        self.login_page.click_login()
+        assert self.login_page.verify_error_message('Invalid username or password. Please try again.'), "Error message not displayed for invalid credentials."
