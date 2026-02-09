@@ -78,3 +78,21 @@ class TestLoginFunctionality:
         assert not result['dashboard_visible']
         assert not result['profile_visible']
         assert result['error_message'] is not None or result['validation_message'] is not None
+
+    def test_TC_LOGIN_009(self, driver):
+        """
+        TC_LOGIN_009: Accessibility checks (screen reader compatibility, keyboard navigation, color contrast) on login page.
+        """
+        login_page = LoginPage(driver)
+        assert login_page.check_screen_reader_compatibility(), "Screen reader compatibility failed"
+        assert login_page.check_keyboard_navigation(), "Keyboard navigation accessibility failed"
+        assert login_page.check_color_contrast(), "Color contrast accessibility failed"
+
+    def test_TC_LOGIN_010(self, driver):
+        """
+        TC_LOGIN_010: Password masking check on login page after entering a password.
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.login('valid_username', 'valid_password')
+        assert login_page.is_password_field_masked(), "Password field is not masked as expected"
