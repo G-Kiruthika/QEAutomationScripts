@@ -135,3 +135,46 @@ class TestLoginFunctionality:
         error_message = self.login_page.get_error_message()
         assert error_message is not None, "Expected error message but got none."
         assert 'error' in error_message.lower(), f"Expected error about login failure, got: {error_message}"
+
+    def test_TC_LOGIN_006(self):
+        """
+        Test Case TC_LOGIN_006: Valid login with 'Remember Me' checked and session persistence.
+        Steps:
+        1. Navigate to the login page and verify it is displayed.
+        2. Enter email 'user@example.com' and password 'ValidPass123!'.
+        3. Check the 'Remember Me' checkbox.
+        4. Click the login button and verify user is logged in.
+        5. Close and reopen the browser and verify user is auto-logged in (session persists).
+        """
+        self.login_page.navigate_to_login_page()
+        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
+        self.login_page.enter_email('user@example.com')
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.check_remember_me()
+        self.login_page.click_login_button()
+        assert self.login_page.is_user_logged_in(), "User is not logged in."
+        # Simulate browser restart
+        def driver_factory():
+            from selenium import webdriver
+            return webdriver.Chrome()
+        new_driver = self.login_page.close_and_reopen_browser(driver_factory)
+        new_login_page = LoginPage(new_driver)
+        assert new_login_page.is_user_auto_logged_in(), "User is not auto-logged in after browser restart."
+
+    def test_TC_LOGIN_04(self):
+        """
+        Test Case TC-LOGIN-04: Invalid login and error handling.
+        Steps:
+        1. Navigate to the login page and verify it is displayed.
+        2. Enter email 'invaliduser@example.com' and password 'WrongPassword'.
+        3. Click the login button.
+        4. Verify that login fails and an error message is displayed.
+        """
+        self.login_page.navigate_to_login_page()
+        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
+        self.login_page.enter_email('invaliduser@example.com')
+        self.login_page.enter_password('WrongPassword')
+        self.login_page.click_login_button()
+        assert self.login_page.is_error_message_displayed(), "Error message not displayed after invalid login."
+        error_text = self.login_page.get_error_message_text()
+        assert error_text, "Error message text is empty after invalid login."
