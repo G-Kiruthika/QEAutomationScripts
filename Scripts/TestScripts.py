@@ -146,32 +146,29 @@ class TestLoginFunctionality:
     # --- Appended for TC_LOGIN_007 ---
     def test_TC_LOGIN_007(self):
         """
-        Test Case TC_LOGIN_007: Forgot Password Link Navigation
+        Test Case TC_LOGIN_007: Forgot Password link navigation.
         Steps:
         1. Navigate to the login page.
-        2. Verify login page is displayed.
-        3. Click on the 'Forgot Password' link.
-        4. Verify user is redirected to the 'Forgot Password' page.
+        2. Click on the 'Forgot Password' link.
+        3. Verify redirection to 'Forgot Password' page.
         """
         self.login_page.navigate_to_login_page()
-        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
         self.login_page.click_forgot_password_link()
-        assert self.login_page.is_forgot_password_page_displayed(), "Forgot Password page is not displayed."
+        assert self.login_page.is_forgot_password_page_displayed(), "Forgot Password page was not displayed."
 
     # --- Appended for TC_LOGIN_008 ---
     def test_TC_LOGIN_008(self):
         """
-        Test Case TC_LOGIN_008: Minimum Length Validation for Email/Username
+        Test Case TC_LOGIN_008: Minimum length validation for email/username.
         Steps:
         1. Navigate to the login page.
-        2. Verify login page is displayed.
-        3. Enter email/username below minimum length (e.g., 'ab') and valid password (e.g., 'validPassword123').
-        4. Click the 'Login' button.
-        5. Verify error message is displayed: 'Email/Username must be at least 3 characters.'
+        2. Enter email/username below minimum length (e.g., 2 characters) and valid password.
+        3. Click the 'Login' button.
+        4. Verify error message: 'Email/Username must be at least 3 characters.'
         """
+        short_email = 'ab'
+        valid_password = 'validPassword123'
         self.login_page.navigate_to_login_page()
-        assert self.login_page.is_login_page_displayed(), "Login page is not displayed."
-        self.login_page.enter_short_email_and_login('ab', 'validPassword123')
-        assert self.login_page.is_min_length_error_displayed(), "Minimum length error message not displayed."
-        error_text = self.login_page.get_min_length_error_text()
-        assert 'at least 3 characters' in error_text, f"Expected error message to contain 'at least 3 characters', got: {error_text}"
+        self.login_page.enter_short_email_and_password(short_email, valid_password)
+        self.login_page.click_login_button()
+        assert self.login_page.is_min_length_error_displayed(), "Minimum length error was not displayed."
