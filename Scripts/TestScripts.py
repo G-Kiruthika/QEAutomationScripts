@@ -58,3 +58,48 @@ class TestLogin(unittest.TestCase):
         error_message = login_page.get_error_message()
         self.assertTrue(empty_prompt_present or (error_message and "email" in error_message.lower()), "Should show prompt or error message for empty email field.")
         driver.quit()
+
+    # --- Appended test for TC_LOGIN_009 ---
+    def test_TC_LOGIN_009_password_length_validation(self):
+        """TC_LOGIN_009: Password length validation scenarios."""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.go_to_login_page()
+
+        # Step 2: Enter password with less than minimum allowed characters
+        login_page.enter_email("valid_user@example.com")
+        login_page.enter_password("123")  # Assuming '123' is less than min length
+        login_page.click_login()
+        min_length_error = login_page.get_validation_error()
+        self.assertIsNotNone(min_length_error, "Should show validation error for minimum password length.")
+
+        # Step 3: Enter password with maximum allowed characters
+        login_page.enter_email("valid_user@example.com")
+        max_allowed_password = "A"  # Replace with actual max allowed value
+        login_page.enter_password(max_allowed_password)
+        login_page.click_login()
+        accepted = login_page.is_dashboard_header_present()
+        self.assertTrue(accepted, "Password at max allowed length should be accepted.")
+
+        # Step 4: Enter password exceeding maximum allowed characters
+        login_page.enter_email("valid_user@example.com")
+        over_max_password = "A" * 65  # Example: 65 chars, assuming max allowed is less
+        login_page.enter_password(over_max_password)
+        login_page.click_login()
+        max_length_error = login_page.get_validation_error()
+        self.assertIsNotNone(max_length_error, "Should show validation error for exceeding max password length.")
+        driver.quit()
+
+    # --- Appended test for TC-LOGIN-07 ---
+    def test_TC_LOGIN_07_login_with_empty_fields(self):
+        """TC-LOGIN-07: Attempt login with both email and password fields empty."""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.go_to_login_page()
+        login_page.enter_email("")
+        login_page.enter_password("")
+        login_page.click_login()
+        empty_prompt_present = login_page.is_empty_field_prompt_present()
+        error_message = login_page.get_error_message()
+        self.assertTrue(empty_prompt_present or (error_message and ("email" in error_message.lower() or "password" in error_message.lower())), "Should show prompt or error message for empty email and password fields.")
+        driver.quit()
