@@ -59,32 +59,6 @@ class TestLoginFunctionality:
         result = self.login_page.perform_invalid_login('wronguser@example.com', 'wrongPassword')
         assert result, "Error message not displayed for invalid credentials."
 
-    def test_TC_LOGIN_001_valid(self):
-        """
-        Test Case TC_LOGIN_001: Successful login with valid credentials.
-        Steps:
-        1. Navigate to the login page.
-        2. Enter a valid email address: user@example.com
-        3. Enter a valid password: validPassword123
-        4. Click the login button.
-        5. Verify that the dashboard is displayed.
-        """
-        result = self.login_page.perform_login('user@example.com', 'validPassword123')
-        assert result, "Login was not successful, dashboard not displayed."
-
-    def test_TC_LOGIN_002_invalid(self):
-        """
-        Test Case TC_LOGIN_002: Login attempt with invalid credentials and error validation.
-        Steps:
-        1. Navigate to the login page.
-        2. Enter an invalid email address: wronguser@example.com
-        3. Enter an invalid password: wrongPassword
-        4. Click the login button.
-        5. Verify that an error message is displayed indicating invalid credentials.
-        """
-        result = self.login_page.perform_invalid_login('wronguser@example.com', 'wrongPassword')
-        assert result, "Error message not displayed for invalid credentials."
-
     def test_TC_LOGIN_003(self):
         """
         Test Case TC_LOGIN_003: Attempt login with empty email and valid password.
@@ -146,29 +120,25 @@ class TestLoginFunctionality:
     # --- Appended for TC_LOGIN_007 ---
     def test_TC_LOGIN_007(self):
         """
-        Test Case TC_LOGIN_007: Forgot Password link navigation.
+        Test Case TC_LOGIN_007: Forgot Password link redirection.
         Steps:
-        1. Navigate to the login page.
-        2. Click on the 'Forgot Password' link.
-        3. Verify redirection to 'Forgot Password' page.
+        1. Navigate to login page.
+        2. Click 'Forgot Password' link.
+        3. Verify user is redirected to 'Forgot Password' page.
         """
         self.login_page.navigate_to_login_page()
         self.login_page.click_forgot_password_link()
-        assert self.login_page.is_forgot_password_page_displayed(), "Forgot Password page was not displayed."
+        assert self.login_page.is_forgot_password_page_displayed(), "Redirection to Forgot Password page failed."
 
     # --- Appended for TC_LOGIN_008 ---
     def test_TC_LOGIN_008(self):
         """
-        Test Case TC_LOGIN_008: Minimum length validation for email/username.
+        Test Case TC_LOGIN_008: Login attempt with short username and valid password.
         Steps:
-        1. Navigate to the login page.
-        2. Enter email/username below minimum length (e.g., 2 characters) and valid password.
-        3. Click the 'Login' button.
-        4. Verify error message: 'Email/Username must be at least 3 characters.'
+        1. Navigate to login page.
+        2. Enter short username ('ab') and valid password ('validPassword123').
+        3. Click Login.
+        4. Verify error message for username length.
         """
-        short_email = 'ab'
-        valid_password = 'validPassword123'
-        self.login_page.navigate_to_login_page()
-        self.login_page.enter_short_email_and_password(short_email, valid_password)
-        self.login_page.click_login_button()
-        assert self.login_page.is_min_length_error_displayed(), "Minimum length error was not displayed."
+        result = self.login_page.perform_login_with_short_username('ab', 'validPassword123')
+        assert result, "Error message for short username not displayed or incorrect."
