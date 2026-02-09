@@ -1,5 +1,6 @@
 import unittest
 from LoginPage import LoginPage
+from ForgotPasswordPage import ForgotPasswordPage
 
 # Existing test methods...
 
@@ -61,5 +62,30 @@ class TestLoginPage(unittest.TestCase):
         # Placeholder for actual browser restart logic
         # In real test suite, implement browser restart and cookie/session restoration as needed
         pass
+
+    def test_TC_LOGIN_007_forgot_password_flow(self):
+        """TC_LOGIN_007: Navigate to login, click 'Forgot Password?', verify email input and reset instructions."""
+        login_page = LoginPage(self.driver, self.locators)
+        login_page.navigate_to_login_page()
+        login_page.click_forgot_password()
+        forgot_password_page = ForgotPasswordPage(self.driver, self.locators)
+        email_input_present = forgot_password_page.verify_email_input_present()
+        reset_instructions_present = forgot_password_page.verify_reset_instructions_present()
+        self.assertTrue(email_input_present, "Email input should be present on Forgot Password page.")
+        self.assertTrue(reset_instructions_present, "Reset instructions should be present on Forgot Password page.")
+
+    def test_TC_LOGIN_008_max_username_length_login(self):
+        """TC_LOGIN_008: Enter max length username, valid password, click login, assert login or error."""
+        login_page = LoginPage(self.driver, self.locators)
+        login_page.navigate_to_login_page()
+        max_length_username = "a" * 64 + "@example.com"
+        valid_password = "ValidPass123!"
+        login_page.enter_username(max_length_username)
+        login_page.enter_password(valid_password)
+        login_page.click_login()
+        # Assert either login success or error message
+        login_successful = login_page.is_login_successful()
+        error_displayed = login_page.is_error_message_displayed() if not login_successful else False
+        self.assertTrue(login_successful or error_displayed, "Should either login successfully or display error message for max length username.")
 
 # Existing code...
