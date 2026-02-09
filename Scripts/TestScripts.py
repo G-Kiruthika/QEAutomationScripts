@@ -87,3 +87,29 @@ class TestLoginFunctionality:
         self.login_page.enter_password('Pass@123')
         masked = self.login_page.is_password_masked()
         assert masked, "Password field is not masked."
+
+    # Appended method for TC_LOGIN_001 (Valid login)
+    def test_TC_LOGIN_001_atomic(self):
+        """
+        Atomic test for TC_LOGIN_001: Valid Login
+        Steps:
+        1. Navigate to login page
+        2. Enter valid email and password
+        3. Click login
+        4. Validate dashboard presence
+        """
+        result = self.login_page.login_with_valid_credentials('user@example.com', 'ValidPass123!')
+        assert result, "Valid login failed, dashboard not visible."
+
+    # Appended method for TC_LOGIN_002 (Invalid login)
+    def test_TC_LOGIN_002_atomic(self):
+        """
+        Atomic test for TC_LOGIN_002: Invalid Login
+        Steps:
+        1. Navigate to login page
+        2. Enter invalid email and password
+        3. Click login
+        4. Validate error message presence
+        """
+        error_text = self.login_page.login_with_invalid_credentials('invaliduser@example.com', 'WrongPass!@#')
+        assert error_text == "Invalid email or password.", f"Expected error message 'Invalid email or password.', but got '{error_text}'"
