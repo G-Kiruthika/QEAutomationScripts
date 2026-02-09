@@ -87,33 +87,26 @@ class TestLoginFunctionality:
         session_persistent = self.login_page.is_session_persistent()
         assert session_persistent, "Session should persist after browser reopen when 'Remember Me' is checked."
 
-    def test_TC_LOGIN_001_actual(self):
+    def test_TC_LOGIN_009(self):
         """
-        Test Case TC_LOGIN_001 (Actual): Valid login with provided test data.
+        Test Case TC_LOGIN_009: Accessibility validation for the login page.
         Steps:
         1. Navigate to the login page.
-        2. Enter valid email (user@example.com) and password (ValidPass123!).
-        3. Click the Login button.
-        4. Verify dashboard header or user profile icon is displayed.
+        2. Validate accessibility (screen reader compatibility, keyboard navigation, color contrast).
         """
         self.login_page.go_to_login_page()
-        self.login_page.enter_email('user@example.com')
-        self.login_page.enter_password('ValidPass123!')
-        self.login_page.click_login()
-        assert self.login_page.is_dashboard_header_displayed() or self.login_page.is_user_profile_icon_displayed(), "Dashboard header or user profile icon should be displayed after valid login."
+        accessibility_result = self.login_page.validate_accessibility()
+        assert accessibility_result, "Accessibility validation failed for the login page."
 
-    def test_TC_LOGIN_002_actual(self):
+    def test_TC_LOGIN_010(self):
         """
-        Test Case TC_LOGIN_002 (Actual): Invalid login with provided test data.
+        Test Case TC_LOGIN_010: Password field masking verification.
         Steps:
         1. Navigate to the login page.
-        2. Enter invalid email (invaliduser@example.com) and password (WrongPass!@#).
-        3. Click the Login button.
-        4. Verify error message 'Invalid email or password.' is displayed and user is not logged in.
+        2. Enter a password.
+        3. Verify password masking is enabled.
         """
         self.login_page.go_to_login_page()
-        self.login_page.enter_email('invaliduser@example.com')
-        self.login_page.enter_password('WrongPass!@#')
-        self.login_page.click_login()
-        assert self.login_page.is_error_message_displayed(), "Error message should be displayed for invalid login."
-        assert self.login_page.get_error_message_text() == 'Invalid email or password.', f"Expected error message 'Invalid email or password.', got: {self.login_page.get_error_message_text()}"
+        self.login_page.enter_password('SomeSecret123!')
+        masking_result = self.login_page.verify_password_masking()
+        assert masking_result, "Password masking verification failed."
