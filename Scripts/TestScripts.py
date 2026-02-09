@@ -110,3 +110,35 @@ class TestLoginFunctionality:
         """
         result = self.login_page.login_with_empty_password('user@example.com')
         assert result, "Error message 'Password is required.' was not displayed."
+
+    # --- Appended for TC_LOGIN_005 ---
+    def test_TC_LOGIN_005(self):
+        """
+        Test Case TC_LOGIN_005: Attempt login with both fields empty and verify error messages.
+        Steps:
+        1. Navigate to login page.
+        2. Leave both email/username and password fields empty.
+        3. Click the 'Login' button.
+        4. Verify error messages: 'Email/Username is required.' and 'Password is required.'
+        """
+        result = self.login_page.perform_login_with_empty_fields()
+        assert result, "Error messages 'Email/Username is required.' and 'Password is required.' were not displayed."
+
+    # --- Appended for TC_LOGIN_006 ---
+    def test_TC_LOGIN_006(self):
+        """
+        Test Case TC_LOGIN_006: Login with Remember Me and session persistence.
+        Steps:
+        1. Navigate to login page.
+        2. Enter valid email/username and password.
+        3. Select 'Remember Me' checkbox.
+        4. Click the 'Login' button.
+        5. Restart browser and revisit the site.
+        6. Verify user remains logged in.
+        """
+        email = 'user@example.com'
+        password = 'validPassword123'
+        result = self.login_page.perform_login_with_remember_me(email, password)
+        # Simulate browser restart and session persistence check
+        session_persistent = self.login_page.verify_session_persistence()
+        assert result and session_persistent, "User did not remain logged in after browser restart."
