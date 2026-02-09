@@ -1,5 +1,6 @@
 import pytest
 from Pages.LoginPage import LoginPage
+from Pages.ForgotPasswordPage import ForgotPasswordPage
 
 class TestLoginFunctionality:
     def test_empty_fields_validation(self, driver):
@@ -134,3 +135,33 @@ class TestLoginFunctionality:
         login_page.enter_password('')
         login_page.click_login()
         assert login_page.get_error_message() == 'Password is required.'
+
+    # --- TC_LOGIN_007: Forgot Password flow ---
+    def test_TC_LOGIN_007(self, driver):
+        """
+        TC_LOGIN_007: 1. Navigate to the login page. 2. Click the 'Forgot Password?' link. 3. Verify the presence of email input and reset instructions on Forgot Password page.
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        login_page.click_forgot_password()
+        forgot_password_page = ForgotPasswordPage(driver)
+        assert forgot_password_page.is_email_input_present(), "Email input should be present on Forgot Password page"
+        assert forgot_password_page.is_reset_instructions_present(), "Reset instructions should be present on Forgot Password page"
+
+    # --- TC_LOGIN_008: Max-length email login ---
+    def test_TC_LOGIN_008(self, driver):
+        """
+        TC_LOGIN_008: 1. Navigate to the login page. 2. Enter an email/username at maximum allowed length in the email field. 3. Enter a valid password. 4. Click the 'Login' button. Verify login or error.
+        """
+        login_page = LoginPage(driver)
+        login_page.navigate()
+        max_length_email = 'a' * 64 + '@example.com'
+        login_page.enter_email(max_length_email)
+        login_page.enter_password('ValidPass123!')
+        login_page.click_login()
+        # Depending on system config, assert dashboard or error
+        if login_page.is_dashboard_header_displayed():
+            assert True, "User is logged in with max-length email"
+        else:
+            error_msg = login_page.get_error_message()
+            assert error_msg is not None, "Error message should be shown for invalid credentials"
