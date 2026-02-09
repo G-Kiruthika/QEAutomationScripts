@@ -62,3 +62,27 @@ class TestLoginFunctionality:
         self.login_page.enter_password('WrongPass')
         self.login_page.click_login()
         assert self.login_page.is_error_message_displayed(), "Error message should be displayed for invalid login."
+
+    def test_TC_LOGIN_005_forgot_password_navigation(self):
+        """
+        TC_LOGIN_005: Test clicking 'Forgot Password' link and verify navigation to password recovery page.
+        Steps:
+        1. Navigate to login page.
+        2. Click 'Forgot Password' link.
+        3. Assert user is redirected to password recovery page.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.click_forgot_password()
+        assert self.login_page.is_password_recovery_page_displayed(), "Password recovery page not displayed after clicking 'Forgot Password'."
+
+    def test_TC_LOGIN_006_sql_injection_login(self):
+        """
+        TC_LOGIN_006: Test SQL injection login attempt and verify login fails (no unauthorized access).
+        Steps:
+        1. Navigate to login page.
+        2. Enter SQL injection string in username and password fields.
+        3. Click login.
+        4. Assert login fails and no unauthorized access occurs (dashboard not displayed).
+        """
+        self.login_page.go_to_login_page()
+        assert self.login_page.attempt_sql_injection_login("' OR 1=1; --", "' OR 1=1; --"), "SQL injection login did not fail as expected."
