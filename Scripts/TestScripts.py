@@ -118,32 +118,26 @@ class TestLoginFunctionality:
         result = self.login_page.attempt_sql_injection(username_injection, password_injection)
         assert result, "SQL injection did not trigger error message or unauthorized access occurred."
 
-    def test_TC_LOGIN_009(self):
+    def test_TC_LOGIN_009_accessibility(self):
         """
-        Test Case TC_LOGIN_009: Accessibility validation
+        Test Case TC_LOGIN_009: Accessibility checks for login page.
         Steps:
         1. Navigate to the login page.
         2. Check for screen reader compatibility, keyboard navigation, and color contrast.
+        3. Assert that login page is accessible as per standards.
         """
         self.login_page.navigate_to_login_page()
-        screen_reader_results = self.login_page.check_screen_reader_compatibility()
-        keyboard_nav_result = self.login_page.check_keyboard_navigation()
-        color_contrast_results = self.login_page.check_color_contrast()
-        # Assert accessibility standards
-        assert all(screen_reader_results.values()), f"Screen reader compatibility failed: {screen_reader_results}"
-        assert keyboard_nav_result, "Keyboard navigation failed."
-        for element, ratio in color_contrast_results.items():
-            assert ratio >= 4.5, f"Color contrast ratio for {element} is below WCAG AA standard: {ratio}"
+        result = self.login_page.check_accessibility()
+        assert result, "Login page accessibility checks failed."
 
-    def test_TC_LOGIN_010(self):
+    def test_TC_LOGIN_010_password_masking(self):
         """
-        Test Case TC_LOGIN_010: Password masking validation
+        Test Case TC_LOGIN_010: Password masking validation.
         Steps:
         1. Navigate to the login page.
-        2. Enter password in the password field.
-        3. Validate password input is masked.
+        2. Enter password 'Pass@123' in the password field.
+        3. Assert that password input is masked (type='password').
         """
         self.login_page.navigate_to_login_page()
-        self.login_page.enter_password('Pass@123')
-        masked = self.login_page.validate_password_masking()
-        assert masked, "Password field is not masked."
+        is_masked = self.login_page.enter_password('Pass@123')
+        assert is_masked, "Password input is not masked (type!='password')."
