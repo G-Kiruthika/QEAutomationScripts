@@ -66,3 +66,40 @@ class TestLoginFunctionality:
         self.login_page.close_and_reopen_browser()
         self.login_page.go_to_login_page()
         assert self.login_page.is_logged_in(), "User should remain logged in after browser restart with 'Remember Me' checked."
+
+    def test_TC_LOGIN_007(self):
+        """
+        Test Case TC_LOGIN_007: Multiple Invalid Login Attempts and Lockout/CAPTCHA Detection
+        Steps:
+        1. Attempt multiple logins with incorrect credentials in rapid succession (10 times).
+        2. Observe system response after threshold is reached.
+        Expected: Account is locked or CAPTCHA is triggered, error message is displayed.
+        """
+        username = "user1"
+        password = "wrongPass"
+        attempts = 10
+        responses = self.login_page.attempt_multiple_logins(username, password, attempts)
+        locked = any(r['locked'] for r in responses)
+        captcha = any(r['captcha'] for r in responses)
+        errors = [r['error'] for r in responses if r['error']]
+        assert locked or captcha, "Account should be locked or CAPTCHA triggered after multiple invalid logins."
+        assert errors, "Error message should be displayed after invalid login attempts."
+
+    def test_TC_LOGIN_008(self):
+        """
+        Test Case TC_LOGIN_008: Multiple Valid Login Attempts and Performance Measurement
+        Steps:
+        1. Simulate multiple valid login attempts in rapid succession.
+        2. Measure response time and server load.
+        Expected: Login remains responsive, no server crashes or slowdowns.
+        """
+        username = "user1"
+        password = "Pass@123"
+        attempts = 10
+        results = self.login_page.attempt_multiple_valid_logins(username, password, attempts)
+        response_times = [r['response_time'] for r in results if r['response_time'] is not None]
+        errors = [r['error'] for r in results if r['error']]
+        assert response_times, "Should have response time measurements for valid logins."
+        avg_response = sum(response_times) / len(response_times) if response_times else None
+        assert all(rt < 5 for rt in response_times), f"All login response times should be under 5 seconds, got: {response_times}"
+        assert not errors, f"No errors should occur during valid login attempts, got: {errors}"
