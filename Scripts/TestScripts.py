@@ -58,8 +58,6 @@ class TestLogin(unittest.TestCase):
         login_page = LoginPage(driver)
         login_page.open()
         login_page.click_forgot_password()
-        # Here, you would check that the URL or page content matches the Forgot Password page
-        # For demonstration, let's check the current URL contains 'forgot-password'
         current_url = driver.current_url
         self.assertIn("forgot-password", current_url, "User should be redirected to the 'Forgot Password' page.")
         driver.quit()
@@ -74,4 +72,28 @@ class TestLogin(unittest.TestCase):
         login_page.click_login()
         validation_error = login_page.get_validation_error()
         self.assertEqual(validation_error, "Email/Username must be at least 3 characters.", "Validation error message should be displayed for min length email.")
+        driver.quit()
+
+    def test_TC_LOGIN_009_password_min_length(self):
+        """TC_LOGIN_009: Enter valid email and password below minimum length, expect error message 'Password must be at least 6 characters.'"""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.open()
+        login_page.enter_email("user@example.com")
+        login_page.enter_password("ab")
+        login_page.click_login()
+        min_length_error = login_page.is_min_length_error_displayed()
+        self.assertTrue(min_length_error, "Error message 'Password must be at least 6 characters.' should be displayed.")
+        driver.quit()
+
+    def test_TC_LOGIN_010_unregistered_user(self):
+        """TC_LOGIN_010: Enter unregistered email and valid password, expect error message 'User not found.'"""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.open()
+        login_page.enter_email("notregistered@example.com")
+        login_page.enter_password("validPassword123")
+        login_page.click_login()
+        user_not_found_error = login_page.is_user_not_found_error_displayed()
+        self.assertTrue(user_not_found_error, "Error message 'User not found.' should be displayed.")
         driver.quit()
