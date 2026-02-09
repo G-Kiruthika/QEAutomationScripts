@@ -33,32 +33,34 @@ class TestLoginFunctionality:
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
 
-    def test_TC_LOGIN_001_valid_login(self):
+    def test_TC_LOGIN_001_valid(self):
         """
-        Test Case TC_LOGIN_001: Valid login flow
+        Test Case TC_LOGIN_001: Successful login with valid credentials.
         Steps:
-        1. Navigate to login page.
-        2. Enter valid email.
-        3. Enter valid password.
-        4. Click login.
-        5. Verify dashboard is displayed.
+        1. Navigate to the login page.
+        2. Enter a valid email address: user@example.com
+        3. Enter a valid password: ValidPass123!
+        4. Click the login button.
+        5. Verify that the dashboard is displayed.
         """
-        email = 'user@example.com'
-        password = 'ValidPass123!'
-        result = self.login_page.login_valid_user(email, password)
-        assert result, "Dashboard was not displayed after valid login."
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('user@example.com')
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.click_login()
+        self.login_page.verify_dashboard_displayed()
 
-    def test_TC_LOGIN_002_invalid_login(self):
+    def test_TC_LOGIN_002_invalid(self):
         """
-        Test Case TC_LOGIN_002: Invalid login flow
+        Test Case TC_LOGIN_002: Login attempt with invalid credentials and error validation.
         Steps:
-        1. Navigate to login page.
-        2. Enter invalid email.
-        3. Enter invalid password.
-        4. Click login.
-        5. Verify error message is displayed.
+        1. Navigate to the login page.
+        2. Enter an invalid email address: wronguser@example.com
+        3. Enter an invalid password: WrongPass456!
+        4. Click the login button.
+        5. Verify that an error message is displayed indicating invalid credentials.
         """
-        email = 'wronguser@example.com'
-        password = 'WrongPass456!'
-        error_message = self.login_page.login_invalid_user(email, password)
-        assert error_message is not None and 'invalid credentials' in error_message.lower(), f"Expected error message for invalid credentials, got: {error_message}"
+        self.login_page.go_to_login_page()
+        self.login_page.enter_email('wronguser@example.com')
+        self.login_page.enter_password('WrongPass456!')
+        self.login_page.click_login()
+        self.login_page.verify_error_message_displayed()
