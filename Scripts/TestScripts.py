@@ -134,4 +134,20 @@ class TestLoginPage(unittest.TestCase):
             captcha_msg = login_page.get_captcha_text()
             self.assertIsNotNone(captcha_msg, "CAPTCHA text should be present.")
 
+    # New test method for TC_LOGIN_005
+    def test_TC_LOGIN_005_forgot_password_navigation(self):
+        """TC_LOGIN_005: Click 'Forgot Password' link and verify navigation to password recovery page."""
+        login_page = LoginPage(self.driver)
+        login_page.navigate_to_login_page()
+        result = login_page.click_forgot_password_and_verify()
+        self.assertTrue(result, "User should be redirected to password recovery page after clicking 'Forgot Password'.")
+
+    # New test method for TC_LOGIN_006
+    def test_TC_LOGIN_006_sql_injection_login(self):
+        """TC_LOGIN_006: Attempt SQL injection on login fields and assert login fails with no unauthorized access."""
+        login_page = LoginPage(self.driver)
+        login_page.navigate_to_login_page()
+        result = login_page.attempt_sql_injection_login()
+        self.assertTrue(result, "SQL injection login attempt should fail with no unauthorized access.")
+
 # Existing code...
