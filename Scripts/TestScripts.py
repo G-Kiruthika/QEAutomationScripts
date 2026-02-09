@@ -106,32 +106,40 @@ class TestLoginFunctionality:
 
     # --- New methods appended below ---
 
-    def test_TC_LOGIN_001_valid_login(self):
+    def test_TC_LOGIN_003_email_empty(self):
         """
-        Test Case TC_LOGIN_001: Valid Login
+        Test Case TC_LOGIN_003: Email Empty, Password Valid
         Steps:
         1. Navigate to the login page.
-        2. Enter valid registered email address 'user@example.com'.
-        3. Enter valid password 'ValidPass123!'.
+        2. Leave the email field empty.
+        3. Enter a valid password in the password field.
         4. Click the 'Login' button.
-        5. Assert dashboard is displayed.
+        5. Assert error message 'Email is required.' is displayed and user is not logged in.
         """
-        email = "user@example.com"
-        password = "ValidPass123!"
-        result = self.login_page.login_valid_user(email, password)
-        assert result, "Dashboard should be displayed after valid login."
+        self.login_page.navigate("https://example.com/login")
+        self.login_page.clear_fields()
+        self.login_page.enter_username("")
+        self.login_page.enter_password("ValidPass123!")
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None and "Email is required." in error_message, f"Expected 'Email is required.' error, got: {error_message}"
+        assert not self.login_page.is_logged_in(), "User should not be logged in when email is empty."
 
-    def test_TC_LOGIN_002_invalid_login(self):
+    def test_TC_LOGIN_004_password_empty(self):
         """
-        Test Case TC_LOGIN_002: Invalid Login
+        Test Case TC_LOGIN_004: Password Empty, Email Valid
         Steps:
         1. Navigate to the login page.
-        2. Enter unregistered email address 'invaliduser@example.com'.
-        3. Enter incorrect password 'WrongPass!@#'.
+        2. Enter a valid email address in the email field.
+        3. Leave the password field empty.
         4. Click the 'Login' button.
-        5. Assert error message 'Invalid email or password.' is displayed and user is not logged in.
+        5. Assert error message 'Password is required.' is displayed and user is not logged in.
         """
-        email = "invaliduser@example.com"
-        password = "WrongPass!@#"
-        error_message = self.login_page.login_invalid_user(email, password)
-        assert error_message is not None and "Invalid email or password." in error_message, f"Expected error message 'Invalid email or password.', got: {error_message}"
+        self.login_page.navigate("https://example.com/login")
+        self.login_page.clear_fields()
+        self.login_page.enter_username("user@example.com")
+        self.login_page.enter_password("")
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None and "Password is required." in error_message, f"Expected 'Password is required.' error, got: {error_message}"
+        assert not self.login_page.is_logged_in(), "User should not be logged in when password is empty."
