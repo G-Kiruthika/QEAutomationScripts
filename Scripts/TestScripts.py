@@ -17,11 +17,15 @@ class TestLoginFunctionality:
 
     def test_TC_LOGIN_001(self):
         """Test invalid login and error message for TC_LOGIN_001"""
+        # Step 1: Navigate to login screen
+        self.login_page.go_to_login_page()
+        # Step 2: Enter invalid username/password
         username = 'invalid_user'
         password = 'invalid_pass'
+        self.login_page.perform_invalid_login(username, password)
+        # Step 3: Verify error message
         expected_error = 'Invalid username or password. Please try again.'
-        result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
-        assert result, f"Expected error message '{expected_error}', but got something else."
+        self.login_page.assert_error_message_displayed(expected_error)
 
     def test_TC_LOGIN_002(self):
         """
