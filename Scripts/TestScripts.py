@@ -31,7 +31,6 @@ class TestLoginFunctionality:
         self.login_page.enter_username('user@example.com')
         self.login_page.enter_password('ValidPass123!')
         self.login_page.click_login()
-        # Validate dashboard header is present
         dashboard_header = self.login_page.driver.find_element(*self.login_page.dashboard_header)
         assert dashboard_header.is_displayed(), 'Dashboard header not visible after login.'
 
@@ -64,12 +63,6 @@ class TestLoginFunctionality:
         assert result, "SQL injection did not trigger error message or unauthorized access occurred."
 
     def test_TC_LOGIN_009(self):
-        """
-        Test Case TC_LOGIN_009: Accessibility validation
-        Steps:
-        1. Navigate to the login page.
-        2. Check for screen reader compatibility, keyboard navigation, and color contrast.
-        """
         self.login_page.navigate_to_login_page()
         screen_reader_compatible = self.login_page.is_screen_reader_compatible()
         keyboard_nav_accessible = self.login_page.is_keyboard_navigation_accessible()
@@ -79,14 +72,29 @@ class TestLoginFunctionality:
         assert color_contrast_sufficient, "Color contrast is not sufficient."
 
     def test_TC_LOGIN_010(self):
-        """
-        Test Case TC_LOGIN_010: Password masking validation
-        Steps:
-        1. Navigate to the login page.
-        2. Enter password in the password field.
-        3. Validate password input is masked.
-        """
         self.login_page.navigate_to_login_page()
         self.login_page.enter_password('Pass@123')
         masked = self.login_page.is_password_masked()
         assert masked, "Password field is not masked."
+
+    def test_TC_LOGIN_003(self):
+        """
+        Test Case TC_LOGIN_003: Leave email field empty, enter valid password, click login, expect 'Email is required.' error.
+        """
+        self.login_page.navigate_to_login_page()
+        self.login_page.clear_email_field()
+        self.login_page.enter_password('ValidPass123!')
+        self.login_page.click_login()
+        error_displayed = self.login_page.wait_for_error_message(expected_text='Email is required.')
+        assert error_displayed, "Expected error message 'Email is required.' was not displayed."
+
+    def test_TC_LOGIN_004(self):
+        """
+        Test Case TC_LOGIN_004: Enter valid email, leave password field empty, click login, expect 'Password is required.' error.
+        """
+        self.login_page.navigate_to_login_page()
+        self.login_page.enter_username('user@example.com')
+        self.login_page.clear_password_field()
+        self.login_page.click_login()
+        error_displayed = self.login_page.wait_for_error_message(expected_text='Password is required.')
+        assert error_displayed, "Expected error message 'Password is required.' was not displayed."
