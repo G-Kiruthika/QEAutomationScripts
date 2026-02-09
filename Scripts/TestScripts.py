@@ -75,3 +75,31 @@ class TestLogin(unittest.TestCase):
         error_message = login_page.get_error_message()
         self.assertEqual(error_message, "Invalid credentials.", "Error message should be 'Invalid credentials.' for invalid login.")
         driver.quit()
+
+    def test_TC_LOGIN_03_empty_fields(self):
+        """Test Case TC_LOGIN_03: Attempt login with empty username and password fields"""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.open()
+        login_page.leave_fields_empty()
+        login_page.click_login()
+        # Check that both fields are empty
+        self.assertTrue(login_page.is_fields_empty(), "Both username and password fields should be empty.")
+        # Check for empty fields prompt
+        self.assertTrue(login_page.is_empty_field_prompt_displayed(), "Mandatory fields error prompt should be displayed for empty fields.")
+        driver.quit()
+
+    def test_TC_LOGIN_04_max_length_credentials(self):
+        """Test Case TC_LOGIN_04: Attempt login with max-length username and password (50 chars each)"""
+        driver = webdriver.Chrome()
+        login_page = LoginPage(driver)
+        login_page.open()
+        login_page.enter_max_length_credentials()
+        login_page.click_login()
+        # Check that max-length input is accepted
+        self.assertTrue(login_page.is_max_length_accepted(), "Both username and password fields should accept 50 characters.")
+        # Optionally, check for login success or error
+        logged_in = login_page.is_dashboard_header_displayed()
+        error_message = login_page.get_error_message()
+        self.assertTrue(logged_in or error_message is not None, "Login should either succeed or show an error message for max-length credentials.")
+        driver.quit()
