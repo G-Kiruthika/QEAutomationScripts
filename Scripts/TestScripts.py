@@ -213,3 +213,63 @@ class TestLoginFunctionality:
         self.login_page.enter_password('ValidPassword123!')
         self.login_page.click_login_button()
         assert self.login_page.is_empty_field_prompt_displayed(), "Empty field prompt is not displayed for missing email."
+
+    # TC_LOGIN_008: Email min/max validation
+    def test_TC_LOGIN_008(self):
+        """
+        Test Case TC_LOGIN_008: Email minimum and maximum length validation.
+        Steps:
+        1. Navigate to the login page and verify it is displayed.
+        2. Enter email less than minimum allowed ('a@b.c'), verify validation error.
+        3. Enter email at maximum allowed (64 'a's + '@example.com'), verify acceptance.
+        4. Enter email exceeding maximum (65 'a's + '@example.com'), verify validation error.
+        """
+        self.login_page.load()
+        assert self.login_page.is_displayed(), "Login page is not displayed."
+
+        # Step 2: Minimum email length
+        min_email = 'a@b.c'
+        self.login_page.enter_email(min_email)
+        self.login_page.enter_password('ValidPassword123!')
+        self.login_page.click_login()
+        validation_error = self.login_page.get_validation_error()
+        assert validation_error is not None, "Expected validation error for minimum length but got none."
+        assert 'minimum' in validation_error.lower(), f"Expected minimum length error, got: {validation_error}"
+
+        # Step 3: Maximum allowed email
+        max_email = 'a' * 64 + '@example.com'
+        self.login_page.clear_email()
+        self.login_page.enter_email(max_email)
+        self.login_page.enter_password('ValidPassword123!')
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert error_message is None or 'maximum' not in error_message.lower(), f"Unexpected error for maximum allowed email: {error_message}"
+
+        # Step 4: Exceed maximum allowed email
+        over_max_email = 'a' * 65 + '@example.com'
+        self.login_page.clear_email()
+        self.login_page.enter_email(over_max_email)
+        self.login_page.enter_password('ValidPassword123!')
+        self.login_page.click_login()
+        validation_error = self.login_page.get_validation_error()
+        assert validation_error is not None, "Expected validation error for maximum length but got none."
+        assert 'maximum' in validation_error.lower(), f"Expected maximum length error, got: {validation_error}"
+
+    # TC-LOGIN-06: Empty password error
+    def test_TC_LOGIN_06(self):
+        """
+        Test Case TC-LOGIN-06: Empty password error validation.
+        Steps:
+        1. Navigate to the login page and verify it is displayed.
+        2. Enter a valid email ('user@example.com').
+        3. Leave password empty.
+        4. Click login and verify error for missing password.
+        """
+        self.login_page.load()
+        assert self.login_page.is_displayed(), "Login page is not displayed."
+        self.login_page.enter_email('user@example.com')
+        self.login_page.clear_password()
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None, "Expected error message for empty password but got none."
+        assert 'password' in error_message.lower() or 'required' in error_message.lower(), f"Expected password required error, got: {error_message}"
