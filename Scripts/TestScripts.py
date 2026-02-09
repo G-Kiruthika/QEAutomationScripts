@@ -88,3 +88,27 @@ class TestLoginFunctionality:
         self.login_page.enter_sql_injection("' OR 1=1; --", "' OR 1=1; --")
         self.login_page.click_login()
         assert self.login_page.is_login_failed(), "Login should fail and no unauthorized access should occur with SQL injection."
+
+    def test_TC_LOGIN_007_multiple_failed_logins(self):
+        """
+        TC_LOGIN_007: Multiple rapid failed login attempts
+        Steps:
+        1. Attempt multiple logins with incorrect credentials in rapid succession (10 times).
+        2. Observe system response after threshold is reached.
+        """
+        self.login_page.go_to_login_page()
+        error_messages = self.login_page.attempt_multiple_failed_logins('user1', 'wrongPass', attempts=10)
+        assert self.login_page.check_account_lock_or_captcha(), "Account lock or CAPTCHA not triggered after threshold."
+        for msg in error_messages:
+            assert msg != '', "Error message should be displayed after each failed login attempt."
+
+    def test_TC_LOGIN_008_multiple_valid_logins(self):
+        """
+        TC_LOGIN_008: Multiple rapid valid login attempts and response time measurement
+        Steps:
+        1. Simulate multiple valid login attempts in rapid succession (10 times).
+        2. Measure response time and server load.
+        """
+        self.login_page.go_to_login_page()
+        response_times = self.login_page.attempt_multiple_valid_logins('user1', 'Pass@123', attempts=10)
+        assert all(t < 5 for t in response_times), "Login response time too slow."
