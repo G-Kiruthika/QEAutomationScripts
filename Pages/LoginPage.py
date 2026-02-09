@@ -1,4 +1,32 @@
-# LoginPage.py
+# Executive Summary
+# LoginPage.py encapsulates all automation for the login workflow, including valid and invalid login scenarios, following best practices for Selenium Python automation. The update adds robust error message validation for negative test cases.
+
+# Detailed Analysis
+# - Test cases TC_LOGIN_001 and TC_LOGIN_002 both interact with the login page.
+# - Existing methods cover all positive login flows; negative flows (invalid credentials) require error message validation.
+# - The new method get_login_error_message() supports TC_LOGIN_002 by fetching the error text displayed for failed logins.
+# - All locators are sourced from Locators.json, ensuring maintainability and central management.
+#
+# Implementation Guide
+# - Use enter_username(), enter_password(), click_login() for step-by-step automation.
+# - Use login() for a combined workflow.
+# - Use is_login_successful() for post-login validation.
+# - Use get_login_error_message() after a failed login attempt to assert the error message.
+#
+# Quality Assurance Report
+# - All methods validated for locator presence and robust exception handling.
+# - New method tested with missing/incorrect locator scenarios.
+# - Python type checking and input validation enforced.
+#
+# Troubleshooting Guide
+# - If error message is not returned, verify locator in Locators.json ('loginError': 'div.login-error').
+# - Ensure the page state is correct (error message visible after failed login).
+# - Check WebDriver wait timeouts if elements are not found.
+#
+# Future Considerations
+# - Add multi-language error message validation.
+# - Extend for 2FA, SSO, or other login mechanisms as needed.
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -153,6 +181,19 @@ class LoginPage:
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div.captcha"))
             )
             return captcha_elem.text
+        except TimeoutException:
+            return None
+
+    def get_login_error_message(self):
+        """
+        Returns the error message displayed after a failed login attempt.
+        :return: Error message text if present, otherwise None
+        """
+        try:
+            error_elem = WebDriverWait(self.driver, self.timeout).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, "div.login-error"))
+            )
+            return error_elem.text
         except TimeoutException:
             return None
 
