@@ -62,7 +62,7 @@ class TestLoginFunctionality:
         result = self.login_page.attempt_sql_injection(username_injection, password_injection)
         assert result, "SQL injection did not trigger error message or unauthorized access occurred."
 
-    def test_TC_LOGIN_009(self):
+    def test_TC_LOGIN_009_accessibility(self):
         self.login_page.navigate_to_login_page()
         screen_reader_compatible = self.login_page.is_screen_reader_compatible()
         keyboard_nav_accessible = self.login_page.is_keyboard_navigation_accessible()
@@ -71,7 +71,7 @@ class TestLoginFunctionality:
         assert keyboard_nav_accessible, "Keyboard navigation accessibility failed."
         assert color_contrast_sufficient, "Color contrast is not sufficient."
 
-    def test_TC_LOGIN_010(self):
+    def test_TC_LOGIN_010_password_masking(self):
         self.login_page.navigate_to_login_page()
         self.login_page.enter_password('Pass@123')
         masked = self.login_page.is_password_masked()
@@ -98,3 +98,19 @@ class TestLoginFunctionality:
         self.login_page.click_login()
         error_displayed = self.login_page.wait_for_error_message(expected_text='Password is required.')
         assert error_displayed, "Expected error message 'Password is required.' was not displayed."
+
+    def test_TC_LOGIN_009_min_length_login(self):
+        """
+        Test Case TC_LOGIN_009: Login with minimum allowed length username and valid password.
+        """
+        result = self.login_page.login_with_min_length_username(username='a@b.co', password='ValidPass123!')
+        assert result, "Login with minimum allowed length username failed or error was displayed."
+
+    def test_TC_LOGIN_010_max_failed_attempts(self):
+        """
+        Test Case TC_LOGIN_010: Repeated failed login attempts and verify account lock/CAPTCHA.
+        """
+        result = self.login_page.login_with_max_failed_attempts(username='user@example.com', password='WrongPass!@#', max_attempts=5)
+        for attempt in result['attempt_results']:
+            assert attempt['error'] is not None, f"No error message for attempt {attempt['attempt']}"
+        assert result['account_locked'] or result['captcha_displayed'], "Account lock or CAPTCHA was not triggered after maximum failed attempts."
