@@ -95,7 +95,7 @@ class TestLoginFunctionality:
         4. Click the login button.
         5. Verify error message is displayed: 'Email/Username is required.'
         """
-        result = self.login_page.perform_login_with_empty_email('validPassword123')
+        result = self.login_page.login_with_empty_email('validPassword123')
         assert result, "Error message 'Email/Username is required.' was not displayed."
 
     def test_TC_LOGIN_004(self):
@@ -108,5 +108,5 @@ class TestLoginFunctionality:
         4. Click the login button.
         5. Verify error message is displayed: 'Password is required.'
         """
-        result = self.login_page.perform_login_with_empty_password('user@example.com')
+        result = self.login_page.login_with_empty_password('user@example.com')
         assert result, "Error message 'Password is required.' was not displayed."
