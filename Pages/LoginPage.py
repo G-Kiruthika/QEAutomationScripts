@@ -1,129 +1,159 @@
 # LoginPage.py
-"""
-Executive Summary:
-This PageClass implements advanced login automation for rapid login attempts, account lock and CAPTCHA detection, and login response time measurement. It is tailored for TC_LOGIN_007 (rapid incorrect logins, account lock/CAPTCHA detection) and TC_LOGIN_008 (rapid valid logins, response time measurement).
-
-Detailed Analysis:
-- attempt_multiple_logins: Automates rapid incorrect login attempts with interval control.
-- is_account_locked: Detects if the account is locked via lock message locator.
-- is_captcha_present: Detects CAPTCHA widget presence.
-- attempt_multiple_valid_logins: Automates rapid valid login attempts and measures response times.
-- get_login_response_time: Measures login response time.
-- is_login_successful: Verifies successful login post authentication.
-
-Implementation Guide:
-1. Ensure Locators.json is updated with 'captchaWidget' and 'lockMessage'.
-2. Instantiate LoginPage with Selenium WebDriver.
-3. Use the methods as per test case requirements.
-
-Quality Assurance Report:
-- All methods validated for locator presence and exception handling.
-- Response time measured using time module.
-- Strict input validation for username, password, attempts, and interval.
-
-Troubleshooting Guide:
-- If locators are missing, check Locators.json.
-- If CAPTCHA or lock message detection fails, verify locator correctness.
-- For timing issues, ensure system clock is synchronized.
-
-Future Considerations:
-- Add support for dynamic CAPTCHA types.
-- Enhance lock detection for multi-language messages.
-- Integrate with reporting frameworks for real-time analytics.
-"""
-
-import time
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 class LoginPage:
-    def __init__(self, driver, locators):
+    """
+    Page Object Model for the Login Page.
+    Provides methods to interact with login elements and validate login behaviors.
+    """
+
+    def __init__(self, driver, timeout=10):
+        """
+        Initializes LoginPage with WebDriver instance and timeout.
+        :param driver: Selenium WebDriver instance
+        :param timeout: Default wait timeout in seconds
+        """
         self.driver = driver
-        self.locators = locators
+        self.timeout = timeout
 
-    def attempt_multiple_logins(self, username, password, attempts, interval):
-        """Performs rapid incorrect login attempts to trigger account lock or CAPTCHA."""
-        assert isinstance(username, str), "Username must be a string"
-        assert isinstance(password, str), "Password must be a string"
-        assert isinstance(attempts, int) and attempts > 0, "Attempts must be a positive integer"
-        assert isinstance(interval, (int, float)) and interval >= 0, "Interval must be non-negative"
-        for i in range(attempts):
-            self.enter_username(username)
-            self.enter_password(password)
-            self.click_login()
-            time.sleep(interval)
+    def enter_username(self, username):
+        """
+        Enters the username into the username field.
+        :param username: Username string
+        :raises ValueError: If username is not a string or too short
+        """
+        if not isinstance(username, str):
+            raise ValueError("Username must be a string.")
+        if len(username) < 3:
+            raise ValueError("Username must be at least 3 characters long.")
+        username_field = WebDriverWait(self.driver, self.timeout).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input#username"))
+        )
+        username_field.clear()
+        username_field.send_keys(username)
 
-    def is_account_locked(self):
-        """Checks if the account is locked by searching for lock message element."""
+    def enter_password(self, password):
+        """
+        Enters the password into the password field.
+        :param password: Password string
+        :raises ValueError: If password is not a string
+        """
+        if not isinstance(password, str):
+            raise ValueError("Password must be a string.")
+        password_field = WebDriverWait(self.driver, self.timeout).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input#password"))
+        )
+        password_field.clear()
+        password_field.send_keys(password)
+
+    def click_login(self):
+        """
+        Clicks the login button.
+        """
+        login_button = WebDriverWait(self.driver, self.timeout).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button#login"))
+        )
+        login_button.click()
+
+    def is_login_successful(self):
+        """
+        Checks if login was successful by verifying the presence of the dashboard element.
+        :return: True if dashboard is present, False otherwise
+        """
         try:
-            lock_message_locator = self.locators.get('lockMessage')
-            element = self.driver.find_element(By.CSS_SELECTOR, lock_message_locator)
-            return element.is_displayed()
-        except (NoSuchElementException, KeyError):
+            WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.dashboard"))
+            )
+            return True
+        except TimeoutException:
             return False
 
     def is_captcha_present(self):
-        """Detects the presence of CAPTCHA widget."""
+        """
+        Checks if CAPTCHA widget is present after failed login attempts.
+        :return: True if CAPTCHA is present, False otherwise
+        """
         try:
-            captcha_locator = self.locators.get('captchaWidget')
-            element = self.driver.find_element(By.CSS_SELECTOR, captcha_locator)
-            return element.is_displayed()
-        except (NoSuchElementException, KeyError):
+            WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.captcha"))
+            )
+            return True
+        except TimeoutException:
             return False
 
-    def attempt_multiple_valid_logins(self, username, password, attempts, interval):
-        """Performs rapid valid login attempts and records response times."""
-        assert isinstance(username, str), "Username must be a string"
-        assert isinstance(password, str), "Password must be a string"
-        assert isinstance(attempts, int) and attempts > 0, "Attempts must be a positive integer"
-        assert isinstance(interval, (int, float)) and interval >= 0, "Interval must be non-negative"
-        response_times = []
-        for i in range(attempts):
-            start_time = time.time()
-            self.enter_username(username)
-            self.enter_password(password)
-            self.click_login()
-            success = self.is_login_successful()
-            end_time = time.time()
-            response_times.append(end_time - start_time)
-            time.sleep(interval)
-        return response_times
+    def is_lock_message_present(self):
+        """
+        Checks if account lock message is displayed after repeated failed login attempts.
+        :return: True if lock message is present, False otherwise
+        """
+        try:
+            WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.lock-message"))
+            )
+            return True
+        except TimeoutException:
+            return False
 
-    def get_login_response_time(self, username, password):
-        """Measures response time for a single login attempt."""
-        assert isinstance(username, str), "Username must be a string"
-        assert isinstance(password, str), "Password must be a string"
-        start_time = time.time()
+    def login(self, username, password):
+        """
+        Performs the complete login action.
+        :param username: Username string
+        :param password: Password string
+        :return: True if login is successful, False otherwise
+        """
         self.enter_username(username)
         self.enter_password(password)
         self.click_login()
-        self.is_login_successful()
-        end_time = time.time()
-        return end_time - start_time
+        return self.is_login_successful()
 
-    def is_login_successful(self):
-        """Checks if login was successful by verifying post-login element."""
+    def attempt_login_multiple_times(self, username, password, attempts=3):
+        """
+        Attempts to login multiple times with given credentials.
+        Used to simulate repeated failed login attempts for lock/CAPTCHA scenarios.
+        :param username: Username string
+        :param password: Password string
+        :param attempts: Number of attempts
+        :return: Tuple (is_locked, is_captcha)
+        """
+        for i in range(attempts):
+            try:
+                self.enter_username(username)
+                self.enter_password(password)
+                self.click_login()
+            except Exception as e:
+                # Log exception, continue
+                print(f"Login attempt {i+1} failed: {e}")
+        is_locked = self.is_lock_message_present()
+        is_captcha = self.is_captcha_present()
+        return (is_locked, is_captcha)
+
+    def get_lock_message_text(self):
+        """
+        Returns the lock message text if present.
+        :return: Lock message text, or None
+        """
         try:
-            success_locator = self.locators.get('loginSuccess')
-            element = self.driver.find_element(By.CSS_SELECTOR, success_locator)
-            return element.is_displayed()
-        except (NoSuchElementException, KeyError):
-            return False
+            lock_elem = WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.lock-message"))
+            )
+            return lock_elem.text
+        except TimeoutException:
+            return None
 
-    # Existing methods assumed: enter_username, enter_password, click_login
-    def enter_username(self, username):
-        username_locator = self.locators.get('username')
-        elem = self.driver.find_element(By.CSS_SELECTOR, username_locator)
-        elem.clear()
-        elem.send_keys(username)
+    def get_captcha_text(self):
+        """
+        Returns the CAPTCHA widget text if present.
+        :return: CAPTCHA text, or None
+        """
+        try:
+            captcha_elem = WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.captcha"))
+            )
+            return captcha_elem.text
+        except TimeoutException:
+            return None
 
-    def enter_password(self, password):
-        password_locator = self.locators.get('password')
-        elem = self.driver.find_element(By.CSS_SELECTOR, password_locator)
-        elem.clear()
-        elem.send_keys(password)
-
-    def click_login(self):
-        login_button_locator = self.locators.get('loginButton')
-        elem = self.driver.find_element(By.CSS_SELECTOR, login_button_locator)
-        elem.click()
+# End of LoginPage.py
