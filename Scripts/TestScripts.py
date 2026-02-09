@@ -73,6 +73,8 @@ class TestLoginFunctionality:
         """
         login_page = LoginPage(driver)
         login_page.navigate()
-        error_message = login_page.login_with_sql_injection("' OR 1=1; --", "' OR 1=1; --")
-        assert error_message is not None and error_message != ''
-        assert not login_page.is_dashboard_header_displayed()
+        result = login_page.login_with_sql_injection_attempt("' OR 1=1; --", "' OR 1=1; --")
+        assert result['unauthorized_access'] is True
+        assert not result['dashboard_visible']
+        assert not result['profile_visible']
+        assert result['error_message'] is not None or result['validation_message'] is not None
