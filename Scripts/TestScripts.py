@@ -32,3 +32,34 @@ class TestLoginFunctionality:
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
+
+    def test_TC_LOGIN_001_valid_login(self):
+        """
+        Test Case TC_LOGIN_001: Valid login should redirect user to dashboard.
+        Steps:
+        1. Navigate to login page.
+        2. Enter valid username and password.
+        3. Click login.
+        4. Verify dashboard header is present.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_username('user1')
+        self.login_page.enter_password('Pass@123')
+        self.login_page.click_login()
+        assert self.login_page.verify_dashboard_header_present(), "Dashboard header not found after login."
+
+    def test_TC_LOGIN_002_invalid_login(self):
+        """
+        Test Case TC_LOGIN_002: Invalid login should show error message.
+        Steps:
+        1. Navigate to login page.
+        2. Enter invalid username and password.
+        3. Click login.
+        4. Verify error message is displayed.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_username('invalidUser')
+        self.login_page.enter_password('WrongPass')
+        self.login_page.click_login()
+        error_msg = self.login_page.get_error_message()
+        assert error_msg != "", "Error message not displayed for invalid login."
