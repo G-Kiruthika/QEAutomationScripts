@@ -103,3 +103,42 @@ class TestLoginFunctionality:
         avg_response = sum(response_times) / len(response_times) if response_times else None
         assert all(rt < 5 for rt in response_times), f"All login response times should be under 5 seconds, got: {response_times}"
         assert not errors, f"No errors should occur during valid login attempts, got: {errors}"
+
+    def test_TC_LOGIN_001_valid_login(self):
+        """
+        Test Case TC_LOGIN_001: Valid Login
+        Steps:
+        1. Navigate to the login page.
+        2. Enter a valid registered email address in the email field.
+           [Test Data: user@example.com]
+        3. Enter a valid password in the password field.
+           [Test Data: ValidPass123!]
+        4. Click the 'Login' button.
+        Expected:
+        - User is logged in and redirected to the account/dashboard page.
+        """
+        self.login_page.navigate("https://your-login-url.com")  # Replace with actual login URL
+        self.login_page.enter_username("user@example.com")
+        self.login_page.enter_password("ValidPass123!")
+        self.login_page.click_login()
+        assert self.login_page.is_logged_in(), "User should be redirected to dashboard after valid login."
+
+    def test_TC_LOGIN_002_invalid_login(self):
+        """
+        Test Case TC_LOGIN_002: Invalid Login
+        Steps:
+        1. Navigate to the login page.
+        2. Enter an unregistered email address in the email field.
+           [Test Data: invaliduser@example.com]
+        3. Enter an incorrect password in the password field.
+           [Test Data: WrongPass!@#]
+        4. Click the 'Login' button.
+        Expected:
+        - Error message is displayed: 'Invalid email or password.' User is not logged in.
+        """
+        self.login_page.navigate("https://your-login-url.com")  # Replace with actual login URL
+        self.login_page.enter_username("invaliduser@example.com")
+        self.login_page.enter_password("WrongPass!@#")
+        self.login_page.click_login()
+        error_message = self.login_page.get_error_message()
+        assert error_message is not None and "Invalid email or password" in error_message, f"Expected error message for invalid login, got: {error_message}"
