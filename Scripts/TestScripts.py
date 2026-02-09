@@ -68,3 +68,31 @@ class TestLoginFunctionality:
         """
         self.login_page.login_with_invalid_credentials('invaliduser@example.com', 'WrongPass!@#')
         assert self.login_page.is_error_message_displayed(), "Error message should be displayed for invalid login."
+
+    def test_TC_LOGIN_003(self):
+        """
+        Test Case TC_LOGIN_003: Attempt login with empty email and valid password. Verify error message.
+        Steps:
+        1. Navigate to the login page.
+        2. Leave the email field empty.
+        3. Enter a valid password (ValidPass123!).
+        4. Click the Login button.
+        5. Verify error message is displayed: 'Email is required.'
+        """
+        self.login_page.go_to_login_page()
+        error_message = self.login_page.login_with_empty_email('ValidPass123!')
+        assert error_message == 'Email is required.', f"Expected 'Email is required.', got '{error_message}'"
+
+    def test_TC_LOGIN_004(self):
+        """
+        Test Case TC_LOGIN_004: Attempt login with valid email and empty password. Verify error message.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter a valid email (user@example.com).
+        3. Leave the password field empty.
+        4. Click the Login button.
+        5. Verify error message is displayed: 'Password is required.'
+        """
+        self.login_page.go_to_login_page()
+        error_message = self.login_page.login_with_empty_password('user@example.com')
+        assert error_message == 'Password is required.', f"Expected 'Password is required.', got '{error_message}'"
