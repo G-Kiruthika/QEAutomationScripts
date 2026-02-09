@@ -59,8 +59,33 @@ class TestLoginFunctionality:
         result = self.login_page.perform_invalid_login('wronguser@example.com', 'wrongPassword')
         assert result, "Error message not displayed for invalid credentials."
 
-    # --- Appended for TC_LOGIN_003 ---
-    def test_TC_LOGIN_003_empty_email_valid_password(self):
+    def test_TC_LOGIN_001_valid(self):
+        """
+        Test Case TC_LOGIN_001: Successful login with valid credentials.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter a valid email address: user@example.com
+        3. Enter a valid password: validPassword123
+        4. Click the login button.
+        5. Verify that the dashboard is displayed.
+        """
+        result = self.login_page.perform_login('user@example.com', 'validPassword123')
+        assert result, "Login was not successful, dashboard not displayed."
+
+    def test_TC_LOGIN_002_invalid(self):
+        """
+        Test Case TC_LOGIN_002: Login attempt with invalid credentials and error validation.
+        Steps:
+        1. Navigate to the login page.
+        2. Enter an invalid email address: wronguser@example.com
+        3. Enter an invalid password: wrongPassword
+        4. Click the login button.
+        5. Verify that an error message is displayed indicating invalid credentials.
+        """
+        result = self.login_page.perform_invalid_login('wronguser@example.com', 'wrongPassword')
+        assert result, "Error message not displayed for invalid credentials."
+
+    def test_TC_LOGIN_003(self):
         """
         Test Case TC_LOGIN_003: Attempt login with empty email and valid password.
         Steps:
@@ -71,18 +96,17 @@ class TestLoginFunctionality:
         5. Verify error message is displayed: 'Email/Username is required.'
         """
         result = self.login_page.perform_login_with_empty_email('validPassword123')
-        assert result, "Expected error message 'Email/Username is required.' not displayed."
+        assert result, "Error message 'Email/Username is required.' was not displayed."
 
-    # --- Appended for TC_LOGIN_004 ---
-    def test_TC_LOGIN_004_valid_email_empty_password(self):
+    def test_TC_LOGIN_004(self):
         """
         Test Case TC_LOGIN_004: Attempt login with valid email and empty password.
         Steps:
         1. Navigate to the login page.
-        2. Enter valid email: user@example.com
-        3. Leave password field empty.
+        2. Enter a valid email: user@example.com
+        3. Leave the password field empty.
         4. Click the login button.
         5. Verify error message is displayed: 'Password is required.'
         """
         result = self.login_page.perform_login_with_empty_password('user@example.com')
-        assert result, "Expected error message 'Password is required.' not displayed."
+        assert result, "Error message 'Password is required.' was not displayed."
