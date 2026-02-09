@@ -63,26 +63,28 @@ class TestLoginFunctionality:
         self.login_page.click_login()
         assert self.login_page.is_error_message_displayed(), "Error message should be displayed for invalid login."
 
-    def test_TC_LOGIN_005_forgot_password_navigation(self):
+    def test_TC_LOGIN_005_forgot_password(self):
         """
-        TC_LOGIN_005: Test clicking 'Forgot Password' link and verify navigation to password recovery page.
+        TC_LOGIN_005: Forgot Password Flow
         Steps:
         1. Navigate to login page.
         2. Click 'Forgot Password' link.
-        3. Assert user is redirected to password recovery page.
+        3. Assert password recovery page is displayed.
         """
         self.login_page.go_to_login_page()
         self.login_page.click_forgot_password()
-        assert self.login_page.is_password_recovery_page_displayed(), "Password recovery page not displayed after clicking 'Forgot Password'."
+        assert self.login_page.is_password_recovery_page_displayed(), "Password recovery page should be displayed after clicking 'Forgot Password'."
 
-    def test_TC_LOGIN_006_sql_injection_login(self):
+    def test_TC_LOGIN_006_sql_injection(self):
         """
-        TC_LOGIN_006: Test SQL injection login attempt and verify login fails (no unauthorized access).
+        TC_LOGIN_006: SQL Injection Login Attempt
         Steps:
         1. Navigate to login page.
-        2. Enter SQL injection string in username and password fields.
+        2. Enter SQL injection in username/password.
         3. Click login.
-        4. Assert login fails and no unauthorized access occurs (dashboard not displayed).
+        4. Assert login fails (error message, no dashboard).
         """
         self.login_page.go_to_login_page()
-        assert self.login_page.attempt_sql_injection_login("' OR 1=1; --", "' OR 1=1; --"), "SQL injection login did not fail as expected."
+        self.login_page.enter_sql_injection("' OR 1=1; --", "' OR 1=1; --")
+        self.login_page.click_login()
+        assert self.login_page.is_login_failed(), "Login should fail and no unauthorized access should occur with SQL injection."
