@@ -1,2 +1,40 @@
-registration:
- user_email_1: user@example.com
+# config/config.yaml
+
+# Environment Configuration
+environment: test
+
+# Browser Configuration
+browser:
+ type: chrome
+ headless: false
+ implicit_wait: 10
+ page_load_timeout: 30
+
+# Application URLs
+ui:
+ base_url: https://example.com
+ registration_url: https://example.com/register
+ confirmation_url: https://example.com/confirmation
+
+# Test Data
+test_data:
+ registration:
+ test_email: test.user@example.com
+ existing_email: test.user@example.com
+
+# Timeouts
+timeouts:
+ default: 10
+ short: 5
+ long: 30
+
+# Reporting
+reporting:
+ screenshots_on_failure: true
+ video_recording: false
+ allure_results: reports/allure-results
+
+# Logging
+logging:
+ level: INFO
+ file: logs/test_execution.log
