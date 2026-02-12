@@ -1,1 +1,25 @@
-{"pages": {"RegistrationPage": {"file_name": "registration_page.py", "locators": {"email_input": {"by": "placeholder", "value": "email_input_locator"}, "name_input": {"by": "placeholder", "value": "name_input_locator"}, "password_input": {"by": "placeholder", "value": "password_input_locator"}, "submit_button": {"by": "placeholder", "value": "submit_button_locator"}, "error_message": {"by": "placeholder", "value": "error_message_locator"}}, "actions": ["enter_email(email)", "enter_name(name)", "enter_password(password)", "submit_registration()"], "validations": ["validate_email_input()", "validate_name_input()", "validate_password_error()", "validate_registration_failed()"]}}}
+{
+ "pages": {
+ "RegistrationPage": {
+ "file_name": "registration_page.py",
+ "locators": {
+ "email_input": {"by": "placeholder", "value": "email_input_locator"},
+ "name_input": {"by": "placeholder", "value": "name_input_locator"},
+ "password_input": {"by": "placeholder", "value": "password_input_locator"},
+ "submit_button": {"by": "placeholder", "value": "submit_button_locator"},
+ "error_message": {"by": "placeholder", "value": "error_message_locator"}
+ },
+ "actions": [
+ "enter_email(email)",
+ "enter_name(name)",
+ "enter_password(password)",
+ "submit_registration()"
+ ],
+ "validations": [
+ "validate_field_acceptance()",
+ "validate_password_error()",
+ "validate_registration_failure()"
+ ]
+ }
+ }
+}
