@@ -1,27 +1,35 @@
 {
  "test_suite": "Functional UI Suite",
  "test_cases": {
- "C41": {
- "test_name": "test_tc_004",
+ "C39": {
+ "test_name": "test_registration_with_existing_email",
  "feature": "Registration",
- "target_file": "test_tc_004.py",
- "pages_used": ["RegistrationPage"],
+ "target_file": "test_registration_with_existing_email.py",
+ "pages_used": ["RegistrationPage", "ConfirmationPage"],
  "flow": [
- {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_data"},
- {"page": "RegistrationPage", "action": "enter_name", "data_ref": "user_data"},
- {"page": "RegistrationPage", "action": "enter_password", "data_ref": "user_data"},
+ {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_email_1"},
  {"page": "RegistrationPage", "action": "submit_registration", "data_ref": null},
- {"page": "RegistrationPage", "assertion": "validate_field_acceptance"},
- {"page": "RegistrationPage", "assertion": "validate_password_error"},
- {"page": "RegistrationPage", "assertion": "validate_registration_failure"}
+ {"page": "ConfirmationPage", "assertion": "is_confirmation_displayed"},
+ {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_email_1"},
+ {"page": "RegistrationPage", "action": "submit_registration", "data_ref": null},
+ {"page": "RegistrationPage", "assertion": "is_error_displayed"}
  ],
  "test_data": {
- "user_data": {
- "email": "user@example.com",
- "name": "John Doe",
- "password": "Pass12"
+ "user_email_1": {
+ "email": "user@example.com"
  }
  }
  }
+ },
+ "framework": {
+ "architecture": "python-ui-api-automation-framework",
+ "type": "ui",
+ "base_classes_required": ["BasePage"],
+ "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+ "api_dependencies": [],
+ "config_dependencies": ["config/config.yaml"],
+ "utils_dependencies": [],
+ "external_libraries": ["selenium", "pytest", "pyyaml"],
+ "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
  }
 }
