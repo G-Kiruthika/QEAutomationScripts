@@ -1,46 +1,38 @@
-# Configuration file for Python UI & API Automation Framework
-# Environment-specific settings and test data
+# Environment Configuration for UI & API Automation Framework
 
-# UI Test Configuration
 ui:
-  base_url: "https://ecommerce.example.com"
-  login_url: "https://ecommerce.example.com/login"
-  alternative_login_url: "https://ecommerce-website.com/login"
-  
-  # Browser settings
+  base_url: "https://ecommerce-website.com"
+  login_url: "https://ecommerce-website.com/login"
   browser: "chrome"
   headless: false
   implicit_wait: 10
   explicit_wait: 20
   page_load_timeout: 30
 
-# Test Data
 test_data:
-  valid_user:
-    email: "testuser@example.com"
-    password: "Test@1234"
-  
-  invalid_user:
-    email: "invaliduser@example.com"
+  valid_credentials:
+    username: "validuser@example.com"
     password: "ValidPass123!"
-    expected_error: "Invalid username or password"
+  invalid_credentials:
+    empty_username: ""
+    wrong_passwords:
+      - "WrongPass1"
+      - "WrongPass2"
+      - "WrongPass3"
+      - "WrongPass4"
+      - "WrongPass5"
 
-# API Configuration (for future use)
 api:
   base_url: "https://api.example.com"
   timeout: 30
 
-# Reporting Configuration
 reporting:
-  screenshots_on_failure: true
-  screenshot_path: "reports/screenshots"
-  report_path: "reports/test_results"
-
-# Email Configuration (for test reports)
-email:
-  enabled: false
-  smtp_server: "smtp.example.com"
-  smtp_port: 587
-  sender: "automation@example.com"
-  recipients:
+  email_enabled: true
+  email_recipients:
     - "qa-team@example.com"
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+
+logging:
+  level: "INFO"
+  log_file: "logs/automation.log"
