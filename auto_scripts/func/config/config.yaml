@@ -1,25 +1,25 @@
-# Environment Configuration for Ecommerce Login Test Suite
+# Environment Configuration for EcommerceLoginFlow Test Suite
 
-ui:
-  base_urls:
-    ecommerce_main: "https://ecommerce.example.com/login"
-    ecommerce_alt: "https://ecommerce-website.com/login"
+ecommerce:
+  login_urls:
+    primary: 'https://ecommerce.example.com/login'
+    secondary: 'https://ecommerce-website.com/login'
   
-  browser:
-    default: "chrome"
-    headless: false
-    implicit_wait: 10
-    page_load_timeout: 30
+  test_users:
+    valid_user:
+      email: 'testuser@example.com'
+      password: 'Test@1234'
+    
+    invalid_user:
+      email: 'invaliduser@example.com'
+      password: 'ValidPass123!'
 
-test_data:
-  valid_users:
-    - email: "testuser@example.com"
-      password: "Test@1234"
-  
-  invalid_users:
-    - username: "invaliduser@example.com"
-      password: "ValidPass123!"
+browser:
+  default: 'chrome'
+  headless: false
+  implicit_wait: 10
+  page_load_timeout: 30
 
 reporting:
   screenshots_on_failure: true
-  log_level: "INFO"
+  log_level: 'INFO'
