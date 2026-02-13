@@ -1,49 +1,86 @@
-# Python UI & API Automation Framework Configuration
-# Environment-specific settings for test execution
-
-# Application URLs
-app:
-  base_url: "https://example.com"
-  registration_url: "https://example.com/register"
-  login_url: "https://example.com/login"
+# Automation Framework Configuration
 
 # Browser Configuration
-browser:
-  default: "chrome"
-  headless: false
-  implicit_wait: 10
-  page_load_timeout: 30
-  window_size: "1920x1080"
+browser: chrome
+headless: false
+
+# Timeout Configuration
+implicit_wait: 10
+explicit_wait: 20
+page_load_timeout: 30
+
+# Test Environment URLs
+environments:
+  qa:
+    base_url: https://ecommerce-website.com
+    login_url: https://ecommerce-website.com/login
+    api_base_url: https://api.ecommerce-website.com
+  
+  staging:
+    base_url: https://staging.ecommerce-website.com
+    login_url: https://staging.ecommerce-website.com/login
+    api_base_url: https://api.staging.ecommerce-website.com
+  
+  production:
+    base_url: https://www.ecommerce-website.com
+    login_url: https://www.ecommerce-website.com/login
+    api_base_url: https://api.ecommerce-website.com
+
+# Default Environment
+default_environment: qa
 
 # Test Data
 test_data:
-  registration:
-    valid_user:
-      first_name: "John"
-      last_name: "Doe"
-      email: "john.doe@example.com"
-      password: "Password123"
-    duplicate_user:
-      first_name: "Jane"
-      last_name: "Doe"
-      email: "john.doe@example.com"
-      password: "Password123"
+  valid_credentials:
+    username: validuser@example.com
+    password: ValidPass123!
+  
+  invalid_credentials:
+    username: invaliduser@example.com
+    password: InvalidPass123!
+  
+  blank_username:
+    username: ""
+    password: ValidPass123!
+  
+  wrong_passwords:
+    - WrongPass1
+    - WrongPass2
+    - WrongPass3
+    - WrongPass4
+    - WrongPass5
 
 # Logging Configuration
 logging:
-  level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  file: "logs/test_execution.log"
+  level: INFO
+  log_dir: logs
+  screenshot_on_failure: true
 
-# Reporting
+# Reporting Configuration
 reporting:
-  screenshots_on_failure: true
-  screenshot_path: "reports/screenshots/"
-  html_report: true
-  report_path: "reports/html/"
+  report_dir: reports
+  report_format: html
+  generate_allure_report: true
 
-# API Configuration (for future use)
-api:
-  base_url: "https://api.example.com"
-  timeout: 30
-  retry_count: 3
+# Retry Configuration
+retry:
+  max_attempts: 3
+  retry_delay: 2
+
+# Email Configuration (for notifications)
+email:
+  enabled: false
+  smtp_server: smtp.gmail.com
+  smtp_port: 587
+  sender_email: automation@example.com
+  receiver_emails:
+    - qa-team@example.com
+
+# Database Configuration (if needed)
+database:
+  enabled: false
+  host: localhost
+  port: 5432
+  database: test_db
+  username: test_user
+  password: test_password
