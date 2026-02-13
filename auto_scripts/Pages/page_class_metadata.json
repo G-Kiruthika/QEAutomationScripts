@@ -1,0 +1,47 @@
+{
+  "LoginPage": {
+    "locators": {
+      "username_input": {"type": "id", "value": "username"},
+      "password_input": {"type": "id", "value": "password"},
+      "login_button": {"type": "xpath", "value": "//button[@type='submit']"}
+    },
+    "actions": [
+      {"name": "enter_username", "description": "Enter username into username input", "locator": "username_input"},
+      {"name": "enter_password", "description": "Enter password into password input", "locator": "password_input"},
+      {"name": "click_login", "description": "Click the login button", "locator": "login_button"}
+    ],
+    "validations": [
+      {"name": "is_login_successful", "description": "Validate login success", "locator": null},
+      {"name": "is_error_displayed", "description": "Validate error message is shown", "locator": null}
+    ]
+  },
+  "DashboardPage": {
+    "locators": {
+      "welcome_message": {"type": "css", "value": ".welcome"},
+      "logout_button": {"type": "id", "value": "logout"},
+      "profile_link": {"type": "xpath", "value": "//a[@href='/profile']"}
+    },
+    "actions": [
+      {"name": "click_logout", "description": "Click the logout button", "locator": "logout_button"},
+      {"name": "go_to_profile", "description": "Navigate to profile page", "locator": "profile_link"}
+    ],
+    "validations": [
+      {"name": "is_dashboard_loaded", "description": "Validate dashboard is loaded", "locator": "welcome_message"}
+    ]
+  },
+  "ProfilePage": {
+    "locators": {
+      "edit_button": {"type": "css", "value": ".edit-profile"},
+      "profile_name": {"type": "id", "value": "profileName"},
+      "save_button": {"type": "xpath", "value": "//button[@id='saveProfile']"}
+    },
+    "actions": [
+      {"name": "edit_profile", "description": "Click edit profile button", "locator": "edit_button"},
+      {"name": "update_profile_name", "description": "Update profile name field", "locator": "profile_name"},
+      {"name": "save_profile", "description": "Click save profile button", "locator": "save_button"}
+    ],
+    "validations": [
+      {"name": "is_profile_updated", "description": "Validate profile update", "locator": "profile_name"}
+    ]
+  }
+}
