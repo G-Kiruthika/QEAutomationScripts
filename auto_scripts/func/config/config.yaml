@@ -1,45 +1,40 @@
-# Configuration file for UI & API Automation Framework
+# Configuration file for Python UI & API Automation Framework
+# This file contains environment-specific settings and test data
 
 # Environment Configuration
 environment:
-  base_urls:
-    login_url_1: 'https://ecommerce.example.com/login'
-    login_url_2: 'https://ecommerce-website.com/login'
-
-# Test Data Configuration
-test_data:
-  valid_user:
-    email: 'testuser@example.com'
-    password: 'Test@1234'
-  invalid_user:
-    username: 'invaliduser@example.com'
-    password: 'ValidPass123!'
+  name: "test"
+  base_url: "https://ecommerce.example.com"
 
 # Browser Configuration
 browser:
-  type: 'chrome'
+  type: "chrome"  # Options: chrome, firefox, edge, safari
   headless: false
   implicit_wait: 10
-  explicit_wait: 20
   page_load_timeout: 30
+  window_size: "maximize"  # Options: maximize, fullscreen, or "width,height"
 
-# Selenium Grid Configuration (Optional)
-selenium_grid:
-  enabled: false
-  hub_url: 'http://localhost:4444/wd/hub'
-
-# Logging Configuration
-logging:
-  level: 'INFO'
-  log_file: 'logs/test_execution.log'
-
-# Screenshot Configuration
-screenshots:
-  enabled: true
-  on_failure: true
-  directory: 'screenshots/'
+# Test Data
+test_data:
+  login:
+    valid_user:
+      url: "https://ecommerce.example.com/login"
+      email: "testuser@example.com"
+      password: "Test@1234"
+    invalid_user:
+      url: "https://ecommerce-website.com/login"
+      username: "invaliduser@example.com"
+      password: "ValidPass123!"
 
 # Reporting Configuration
 reporting:
-  format: 'html'
-  directory: 'reports/'
+  screenshots_on_failure: true
+  video_recording: false
+  report_format: "html"  # Options: html, json, xml
+  report_path: "reports/"
+
+# Logging Configuration
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: "logs/automation.log"
+  console_output: true
