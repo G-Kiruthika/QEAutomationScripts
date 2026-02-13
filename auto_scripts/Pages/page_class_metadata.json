@@ -1,0 +1,43 @@
+{
+  "page_classes": [
+    {
+      "class_name": "LoginPage",
+      "file_path": "auto_scripts/Pages/LoginPage.py",
+      "locators": [
+        {
+          "name": "username_input",
+          "type": "id",
+          "value": "username"
+        },
+        {
+          "name": "password_input",
+          "type": "id",
+          "value": "password"
+        },
+        {
+          "name": "login_button",
+          "type": "xpath",
+          "value": "//button[@type='submit']"
+        }
+      ],
+      "last_updated": "2024-06-10T00:00:00Z"
+    },
+    {
+      "class_name": "HomePage",
+      "file_path": "auto_scripts/Pages/HomePage.py",
+      "locators": [
+        {
+          "name": "welcome_banner",
+          "type": "css_selector",
+          "value": ".welcome-banner"
+        },
+        {
+          "name": "logout_button",
+          "type": "xpath",
+          "value": "//a[@id='logout']"
+        }
+      ],
+      "last_updated": "2024-06-10T00:00:00Z"
+    }
+  ]
+}
