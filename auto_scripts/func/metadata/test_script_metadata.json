@@ -1,1 +1,68 @@
-{"test_cases": [{"name": "Register New User","flow": [{"page": "RegistrationPage","action": "enter_first_name","data": "John"},{"page": "RegistrationPage","action": "enter_last_name","data": "Doe"},{"page": "RegistrationPage","action": "enter_email","data": "john.doe@example.com"},{"page": "RegistrationPage","action": "enter_password","data": "Password123"},{"page": "RegistrationPage","action": "click_register_button"},{"page": "RegistrationPage","action": "get_success_message"}],"test_data": {"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "Password123"},"expected_result": "Success message is displayed."},{"name": "Register Duplicate Email","flow": [{"page": "RegistrationPage","action": "enter_first_name","data": "Jane"},{"page": "RegistrationPage","action": "enter_last_name","data": "Doe"},{"page": "RegistrationPage","action": "enter_email","data": "john.doe@example.com"},{"page": "RegistrationPage","action": "enter_password","data": "Password123"},{"page": "RegistrationPage","action": "click_register_button"},{"page": "RegistrationPage","action": "get_error_message"}],"test_data": {"first_name": "Jane","last_name": "Doe","email": "john.doe@example.com","password": "Password123"},"expected_result": "Error message for duplicate email is displayed."}],"framework": {"base_classes_required": ["BasePage", "BaseTest"],"core_dependencies": ["selenium", "pytest"],"config_dependencies": ["configparser", "os"],"utils_dependencies": ["logging", "exceptions"],"external_libraries": ["webdriver_manager"],"required_imports": ["from selenium.webdriver.common.by import By","from selenium.webdriver.common.keys import Keys","import pytest","import logging"],"ecosystem_sync": true}}
+{
+  "test_suite": "registration_negative_tests",
+  "test_cases": [
+    {
+      "test_name": "invalid_email_registration_fails",
+      "feature": "registration",
+      "target_file": "test_registration_invalid_email.py",
+      "pages_used": ["RegistrationPage"],
+      "flow": [
+        "navigate_to_registration_page",
+        "enter_email('invalid_email')",
+        "enter_name('Test User')",
+        "enter_password('ValidPassword123')",
+        "click_register()",
+        "validate_error_message('Invalid email address')",
+        "validate_registration_failed()"
+      ],
+      "test_data": {
+        "email": "invalid_email",
+        "name": "Test User",
+        "password": "ValidPassword123"
+      }
+    },
+    {
+      "test_name": "short_password_registration_fails",
+      "feature": "registration",
+      "target_file": "test_registration_short_password.py",
+      "pages_used": ["RegistrationPage"],
+      "flow": [
+        "navigate_to_registration_page",
+        "enter_email('valid.email@example.com')",
+        "enter_name('Test User')",
+        "enter_password('123')",
+        "click_register()",
+        "validate_error_message('Password is too short')",
+        "validate_registration_failed()"
+      ],
+      "test_data": {
+        "email": "valid.email@example.com",
+        "name": "Test User",
+        "password": "123"
+      }
+    }
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": [
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py"
+    ],
+    "config_dependencies": [
+      "config/config.yaml"
+    ],
+    "external_libraries": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ],
+    "required_imports": [
+      "pages.registration_page",
+      "pages.base_page",
+      "core.driver_factory"
+    ],
+    "utils_dependencies": [
+      "utils/send_email_report.py"
+    ]
+  }
+}
