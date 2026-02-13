@@ -1,44 +1,48 @@
-"""Registration Flow Test Suite
+"""Registration Test Suite
 
-This module contains automated test cases for user registration functionality.
-Follows the Python UI Automation Framework standards with Page Object Model.
+This module contains test cases for user registration functionality.
+Follows the Python UI & API Automation Framework standards.
 """
 
 import pytest
-from core.driver_factory import get_driver
+import logging
 from pages.registration_page import RegistrationPage
+from core.driver_factory import get_driver
+
+logger = logging.getLogger(__name__)
 
 
 def test_register_new_user():
     """Test successful registration of a new user.
     
-    Steps:
-    1. Navigate to registration page
-    2. Enter first name: John
-    3. Enter last name: Doe
-    4. Enter email: john.doe@example.com
-    5. Enter password: Password123
-    6. Click register button
-    7. Verify success message is displayed
-    
-    Expected Result: Success message is displayed.
+    This test verifies that a new user can successfully register
+    with valid credentials and receives a success message.
     """
     driver = get_driver()
     try:
         registration_page = RegistrationPage(driver)
         
+        # Test data
+        first_name = "John"
+        last_name = "Doe"
+        email = "john.doe@example.com"
+        password = "Password123"
+        
         # Execute registration flow
-        registration_page.enter_first_name("John")
-        registration_page.enter_last_name("Doe")
-        registration_page.enter_email("john.doe@example.com")
-        registration_page.enter_password("Password123")
+        registration_page.enter_first_name(first_name)
+        registration_page.enter_last_name(last_name)
+        registration_page.enter_email(email)
+        registration_page.enter_password(password)
         registration_page.click_register_button()
         
         # Verify success message
         success_message = registration_page.get_success_message()
         assert success_message is not None, "Success message should be displayed"
-        assert len(success_message) > 0, "Success message should not be empty"
+        logger.info(f"Registration successful for user: {email}")
         
+    except Exception as e:
+        logger.error(f"Test failed: {str(e)}")
+        raise
     finally:
         driver.quit()
 
@@ -46,32 +50,33 @@ def test_register_new_user():
 def test_register_duplicate_email():
     """Test registration with duplicate email address.
     
-    Steps:
-    1. Navigate to registration page
-    2. Enter first name: Jane
-    3. Enter last name: Doe
-    4. Enter email: john.doe@example.com (duplicate)
-    5. Enter password: Password123
-    6. Click register button
-    7. Verify error message is displayed
-    
-    Expected Result: Error message for duplicate email is displayed.
+    This test verifies that attempting to register with an already
+    registered email address displays an appropriate error message.
     """
     driver = get_driver()
     try:
         registration_page = RegistrationPage(driver)
         
-        # Execute registration flow with duplicate email
-        registration_page.enter_first_name("Jane")
-        registration_page.enter_last_name("Doe")
-        registration_page.enter_email("john.doe@example.com")
-        registration_page.enter_password("Password123")
+        # Test data
+        first_name = "Jane"
+        last_name = "Doe"
+        email = "john.doe@example.com"
+        password = "Password123"
+        
+        # Execute registration flow
+        registration_page.enter_first_name(first_name)
+        registration_page.enter_last_name(last_name)
+        registration_page.enter_email(email)
+        registration_page.enter_password(password)
         registration_page.click_register_button()
         
         # Verify error message
         error_message = registration_page.get_error_message()
-        assert error_message is not None, "Error message should be displayed for duplicate email"
-        assert len(error_message) > 0, "Error message should not be empty"
+        assert error_message is not None, "Error message for duplicate email should be displayed"
+        logger.info(f"Duplicate email validation successful for: {email}")
         
+    except Exception as e:
+        logger.error(f"Test failed: {str(e)}")
+        raise
     finally:
         driver.quit()

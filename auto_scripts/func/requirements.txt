@@ -1,10 +1,8 @@
 # Python UI & API Automation Framework Dependencies
-# Core testing and automation libraries
+# Core automation and testing libraries
 
-# Selenium WebDriver
+# Selenium and WebDriver Management
 selenium==4.15.2
-
-# WebDriver Manager for automatic driver downloads
 webdriver-manager==4.0.1
 
 # Testing Framework
@@ -12,29 +10,23 @@ pytest==7.4.3
 pytest-html==4.1.1
 pytest-xdist==3.5.0
 
-# Configuration Management
+# Configuration and Data Handling
 PyYAML==6.0.1
-configparser==6.0.0
-
-# Logging and Reporting
-colorlog==6.8.0
-allure-pytest==2.13.2
+python-dotenv==1.0.0
 
 # API Testing
 requests==2.31.0
 
-# Data Handling
-pandas==2.1.4
-openpyxl==3.1.2
+# Logging and Reporting
+allure-pytest==2.13.2
 
 # Utilities
-python-dotenv==1.0.0
+ConfigParser==6.0.0
 
-# Email Reporting (optional)
-secure-smtplib==0.1.1
+# Code Quality
+pylint==3.0.3
+black==23.12.1
 
-# Screenshot and Image Processing
-Pillow==10.1.0
-
-# Date and Time
-python-dateutil==2.8.2
+# Additional Dependencies
+openpyxl==3.1.2
+pandas==2.1.4
