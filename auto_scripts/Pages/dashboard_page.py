@@ -2,14 +2,11 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class DashboardPage(BasePage):
-    WELCOME_BANNER = (By.CSS_SELECTOR, ".welcome-banner")
-    LOGOUT_LINK = (By.LINK_TEXT, "Logout")
+    WELCOME_MESSAGE = (By.CSS_SELECTOR, '.welcome')
+    LOGOUT_BUTTON = (By.ID, 'logout')
 
-    def __init__(self, driver):
-        super().__init__(driver)
+    def click_logout(self):
+        self.driver.find_element(*self.LOGOUT_BUTTON).click()
 
-    def is_welcome_banner_visible(self):
-        return self.is_element_visible(self.WELCOME_BANNER)
-
-    def click_logout_link(self):
-        self.click_element(self.LOGOUT_LINK)
+    def is_dashboard_loaded(self):
+        return len(self.driver.find_elements(*self.WELCOME_MESSAGE)) > 0
