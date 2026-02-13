@@ -1,1 +1,50 @@
-{"test_scripts": [{"test_case_id": "501", "test_case_description": "Test Case TC-POS-001", "flow": [{"step": 1, "action": "navigate_to_login_page", "page": "LoginPage", "test_data": {"url": "https://ecommerce.example.com/login"}}, {"step": 2, "action": "enter_email", "page": "LoginPage", "test_data": {"email": "testuser@example.com"}}, {"step": 3, "action": "enter_password", "page": "LoginPage", "test_data": {"password": "Test@1234"}}, {"step": 4, "action": "click_login", "page": "LoginPage", "test_data": {}}, {"step": 5, "action": "verify_user_name_header", "page": "LoginPage", "test_data": {}}, {"step": 6, "action": "verify_session_token", "page": "LoginPage", "test_data": {}}], "test_data": {"url": "https://ecommerce.example.com/login", "email": "testuser@example.com", "password": "Test@1234"}}, {"test_case_id": "504", "test_case_description": "Test Case TC_LOGIN_006", "flow": [{"step": 1, "action": "navigate_to_login_page", "page": "LoginPage", "test_data": {"url": "https://ecommerce-website.com/login"}}, {"step": 2, "action": "enter_email", "page": "LoginPage", "test_data": {"email": "invaliduser@example.com"}}, {"step": 3, "action": "enter_password", "page": "LoginPage", "test_data": {"password": "ValidPass123!"}}, {"step": 4, "action": "click_login", "page": "LoginPage", "test_data": {}}, {"step": 5, "action": "verify_error_message", "page": "LoginPage", "test_data": {}}], "test_data": {"url": "https://ecommerce-website.com/login", "email": "invaliduser@example.com", "password": "ValidPass123!"}}], "framework": {"base_classes_required": ["BasePage"], "core_dependencies": ["selenium.webdriver", "pytest"], "config_dependencies": ["config.env", "config.urls"], "external_libraries": ["selenium", "pytest"], "required_imports": ["from selenium import webdriver", "import pytest"], "utils_dependencies": ["error_handling", "reporting"]}}
+{
+  "tests": [
+    {
+      "test_name": "test_login_valid_credentials",
+      "feature": "login",
+      "target_file": "login_page.py",
+      "pages_used": ["LoginPage", "DashboardPage"],
+      "flow": [
+        {"action": "navigate_to_login_page", "page": "LoginPage"},
+        {"action": "enter_email", "page": "LoginPage"},
+        {"action": "enter_password", "page": "LoginPage"},
+        {"action": "click_login_button", "page": "LoginPage"},
+        {"action": "verify_login_success", "page": "LoginPage"},
+        {"action": "verify_user_session_created", "page": "LoginPage"},
+        {"action": "verify_user_name_displayed", "page": "DashboardPage"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce.example.com/login",
+        "email": "testuser@example.com",
+        "password": "Test@1234"
+      }
+    },
+    {
+      "test_name": "test_login_invalid_username",
+      "feature": "login",
+      "target_file": "login_page.py",
+      "pages_used": ["LoginPage"],
+      "flow": [
+        {"action": "navigate_to_login_page", "page": "LoginPage"},
+        {"action": "enter_username", "page": "LoginPage"},
+        {"action": "enter_password", "page": "LoginPage"},
+        {"action": "click_login_button", "page": "LoginPage"},
+        {"action": "verify_login_failure", "page": "LoginPage"},
+        {"action": "verify_user_remains_on_login_page", "page": "LoginPage"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "username": "invaliduser@example.com",
+        "password": "ValidPass123!"
+      }
+    }
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "config_dependencies": ["config/config.yaml"],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
