@@ -1,9 +1,22 @@
 # Configuration file for Python UI & API Automation Framework
-# Environment-specific settings and test data
 
+# Application URLs
+app:
+  base_url: "https://example.com"
+  registration_url: "https://example.com/register"
+
+# Browser Configuration
+browser:
+  name: "chrome"  # Options: chrome, firefox, edge, safari
+  headless: false
+  implicit_wait: 10
+  page_load_timeout: 30
+  window_size: "1920x1080"
+
+# Test Data
 test_data:
   registration:
-    new_user:
+    valid_user:
       first_name: "John"
       last_name: "Doe"
       email: "john.doe@example.com"
@@ -14,13 +27,20 @@ test_data:
       email: "john.doe@example.com"
       password: "Password123"
 
-environment:
-  base_url: "https://example.com"
-  timeout: 10
-  browser: "chrome"
-  headless: false
-
+# Logging Configuration
 logging:
-  level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  file: "logs/automation.log"
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: "logs/automation.log"
+  console_output: true
+
+# Reporting
+reporting:
+  html_report: true
+  screenshot_on_failure: true
+  video_recording: false
+
+# Timeouts (in seconds)
+timeouts:
+  element_wait: 10
+  page_load: 30
+  script_timeout: 30

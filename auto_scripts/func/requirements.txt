@@ -1,26 +1,24 @@
-# Python UI & API Automation Framework Dependencies
-# Core testing and automation libraries
-
-# Selenium WebDriver
-selenium>=4.0.0
-
-# WebDriver Manager for automatic driver management
-webdriver-manager>=3.8.0
+# Core Selenium and WebDriver dependencies
+selenium==4.15.2
+webdriver-manager==4.0.1
 
 # Testing framework
-pytest>=7.0.0
-pytest-html>=3.1.0
-pytest-xdist>=2.5.0
+pytest==7.4.3
+pytest-html==4.1.1
+pytest-xdist==3.5.0
 
-# Configuration management
-PyYAML>=6.0
-configparser>=5.0.0
+# Configuration and data handling
+PyYAML==6.0.1
+configparser==6.0.0
 
 # Logging and reporting
-coloredlogs>=15.0
+coloredlogs==15.0.1
 
-# API testing
-requests>=2.28.0
+# API testing (if needed)
+requests==2.31.0
 
 # Utilities
-python-dotenv>=0.19.0
+python-dotenv==1.0.0
+
+# Additional dependencies from metadata
+logging
