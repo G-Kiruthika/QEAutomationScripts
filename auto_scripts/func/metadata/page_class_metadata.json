@@ -1,1 +1,41 @@
-{"pages": {"LoginPage": {"file_name": "login_page.py", "locators": {"username_input": {"by": "placeholder", "value": "username_input_locator"}, "password_input": {"by": "placeholder", "value": "password_input_locator"}, "login_button": {"by": "placeholder", "value": "login_button_locator"}, "validation_error_message": {"by": "placeholder", "value": "validation_error_message_locator"}, "account_lockout_message": {"by": "placeholder", "value": "account_lockout_message_locator"}}, "actions": ["navigate_to_login_page(url)", "enter_username(username)", "enter_password(password)", "click_login_button()", "verify_validation_error()", "verify_account_lockout_message()"], "validations": ["is_login_page_displayed()", "is_username_blank()", "is_password_entered()", "is_validation_error_displayed()", "is_account_lockout_message_displayed()"]}}}
+{
+  "pages": {
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "email_field": {"by": "placeholder", "value": "locator_for_email_field"},
+        "password_field": {"by": "placeholder", "value": "locator_for_password_field"},
+        "login_button": {"by": "placeholder", "value": "locator_for_login_button"},
+        "error_message": {"by": "placeholder", "value": "locator_for_error_message"},
+        "header_user_name": {"by": "placeholder", "value": "locator_for_header_user_name"}
+      },
+      "actions": [
+        "navigate_to_login_page(url)",
+        "enter_email(email)",
+        "enter_password(password)",
+        "click_login_button()"
+      ],
+      "validations": [
+        "is_login_page_displayed()",
+        "is_email_accepted()",
+        "is_password_masked_and_accepted()",
+        "is_error_message_displayed()",
+        "is_user_name_displayed()"
+      ]
+    },
+    "DashboardPage": {
+      "file_name": "dashboard_page.py",
+      "locators": {
+        "dashboard_home": {"by": "placeholder", "value": "locator_for_dashboard_home"},
+        "session_token": {"by": "placeholder", "value": "locator_for_session_token"}
+      },
+      "actions": [
+        "verify_user_authenticated_and_redirected()",
+        "verify_user_session_created()"
+      ],
+      "validations": [
+        "is_session_token_generated()"
+      ]
+    }
+  }
+}

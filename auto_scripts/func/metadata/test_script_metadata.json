@@ -1,1 +1,52 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"508": {"test_name": "login_empty_username", "feature": "Login Validation", "target_file": "test_login_empty_username.py", "pages_used": ["LoginPage"], "flow": [{"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": "url"}, {"page": "LoginPage", "action": "enter_username", "data_ref": "username"}, {"page": "LoginPage", "action": "enter_password", "data_ref": "password"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "assertion": "is_validation_error_displayed"}], "test_data": {"url": "https://ecommerce-website.com/login", "username": "", "password": "ValidPass123!"}}, "510": {"test_name": "login_account_lockout", "feature": "Account Lockout", "target_file": "test_login_account_lockout.py", "pages_used": ["LoginPage"], "flow": [{"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": "url"}, {"page": "LoginPage", "action": "enter_username", "data_ref": "username"}, {"page": "LoginPage", "action": "enter_password", "data_ref": "passwords[0]"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "action": "enter_password", "data_ref": "passwords[1]"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "action": "enter_password", "data_ref": "passwords[2]"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "action": "enter_password", "data_ref": "passwords[3]"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "action": "enter_password", "data_ref": "passwords[4]"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "action": "enter_password", "data_ref": "passwords[5]"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "assertion": "is_account_lockout_message_displayed"}], "test_data": {"url": "https://ecommerce-website.com/login", "username": "validuser@example.com", "passwords": ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5", "ValidPass123!"]}}}, "framework": {"architecture": "python-ui-api-automation-framework", "type": "ui", "base_classes_required": ["BasePage"], "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"], "config_dependencies": ["config/config.yaml"], "utils_dependencies": [], "api_dependencies": [], "external_libraries": ["selenium", "pytest", "pyyaml"], "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "501": {
+      "test_name": "test_tc_pos_001",
+      "feature": "Login",
+      "target_file": "test_login.py",
+      "pages_used": ["LoginPage", "DashboardPage"],
+      "flow": [
+        {"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": "url"},
+        {"page": "LoginPage", "action": "enter_email", "data_ref": "email"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": "password"},
+        {"page": "LoginPage", "action": "click_login_button", "data_ref": null},
+        {"page": "DashboardPage", "assertion": "is_user_name_displayed"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce.example.com/login",
+        "email": "testuser@example.com",
+        "password": "Test@1234"
+      }
+    },
+    "504": {
+      "test_name": "test_tc_login_006",
+      "feature": "Login",
+      "target_file": "test_login.py",
+      "pages_used": ["LoginPage"],
+      "flow": [
+        {"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": "url"},
+        {"page": "LoginPage", "action": "enter_email", "data_ref": "email"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": "password"},
+        {"page": "LoginPage", "action": "click_login_button", "data_ref": null},
+        {"page": "LoginPage", "assertion": "is_error_message_displayed"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "email": "invaliduser@example.com",
+        "password": "ValidPass123!"
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
