@@ -1,24 +1,25 @@
 from selenium.webdriver.common.by import By
-from auto_scripts.Pages.base_page import BasePage
+from pages.base_page import BasePage
 
 class RegistrationPage(BasePage):
-    EMAIL_INPUT = (By.XPATH, "//input[@id='email']")
-    SUBMIT_BUTTON = (By.XPATH, "//button[@id='register']")
-    ERROR_MESSAGE = (By.XPATH, "//div[@class='error']")
-    CONFIRMATION_MESSAGE = (By.XPATH, "//div[@class='success']")
+    EMAIL_INPUT = (By.ID, 'email_input')
+    SUBMIT_BUTTON = (By.ID, 'submit_button')
+    ERROR_MESSAGE = (By.ID, 'error_message')
+    CONFIRMATION_MESSAGE = (By.ID, 'confirmation_message')
+    FIRST_NAME_INPUT = (By.XPATH, "//input[@name='first_name']")
+    LAST_NAME_INPUT = (By.XPATH, "//input[@name='last_name']")
+    PASSWORD_INPUT = (By.XPATH, "//input[@name='password']")
+    REGISTER_BUTTON = (By.XPATH, "//button[@id='register']")
+    SUCCESS_MESSAGE = (By.XPATH, "//div[@class='success-message']")
 
-    # Missing locators appended below
-    FIRST_NAME_INPUT = (By.XPATH, "//input[@id='first_name']")
-    LAST_NAME_INPUT = (By.XPATH, "//input[@id='last_name']")
-    PASSWORD_INPUT = (By.XPATH, "//input[@id='password']")
-    SUCCESS_MESSAGE = (By.XPATH, "//div[@class='success']")
-    
-    # Existing methods
+    def __init__(self, driver):
+        super().__init__(driver)
+
     def enter_email(self, email):
-        self.driver.find_element(*self.EMAIL_INPUT).send_keys(email)
+        self.enter_text(self.EMAIL_INPUT, email)
 
     def submit_registration(self):
-        self.driver.find_element(*self.SUBMIT_BUTTON).click()
+        self.click_element(self.SUBMIT_BUTTON)
 
     def is_confirmation_displayed(self):
         return self.is_element_visible(self.CONFIRMATION_MESSAGE)
@@ -26,21 +27,20 @@ class RegistrationPage(BasePage):
     def is_error_displayed(self):
         return self.is_element_visible(self.ERROR_MESSAGE)
 
-    # Missing methods appended below
     def enter_first_name(self, first_name):
-        self.driver.find_element(*self.FIRST_NAME_INPUT).send_keys(first_name)
+        self.enter_text(self.FIRST_NAME_INPUT, first_name)
 
     def enter_last_name(self, last_name):
-        self.driver.find_element(*self.LAST_NAME_INPUT).send_keys(last_name)
+        self.enter_text(self.LAST_NAME_INPUT, last_name)
 
     def enter_password(self, password):
-        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
+        self.enter_text(self.PASSWORD_INPUT, password)
 
     def click_register_button(self):
-        self.driver.find_element(*self.SUBMIT_BUTTON).click()
+        self.click_element(self.REGISTER_BUTTON)
 
     def get_success_message(self):
-        return self.driver.find_element(*self.SUCCESS_MESSAGE).text
+        return self.get_element_text(self.SUCCESS_MESSAGE)
 
     def get_error_message(self):
-        return self.driver.find_element(*self.ERROR_MESSAGE).text
+        return self.get_element_text(self.ERROR_MESSAGE)
