@@ -1,65 +1,94 @@
 # utils/validation_helper.py
 
 import re
+from typing import Optional
 
-def is_valid_email(email):
-    """Validate email format using regex
+
+def validate_email(email: str) -> bool:
+    """
+    Validate email format
     
     Args:
         email (str): Email address to validate
     
     Returns:
-        bool: True if email is valid, False otherwise
+        bool: True if valid email format, False otherwise
     """
     email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return re.match(email_pattern, email) is not None
+    return bool(re.match(email_pattern, email))
 
-def is_valid_password(password, min_length=8):
-    """Validate password strength
+
+def validate_password_strength(password: str) -> dict:
+    """
+    Validate password strength
     
     Args:
         password (str): Password to validate
-        min_length (int): Minimum password length (default: 8)
     
     Returns:
-        bool: True if password meets criteria, False otherwise
+        dict: Dictionary with validation results
     """
-    if len(password) < min_length:
-        return False
+    result = {
+        'is_valid': True,
+        'errors': []
+    }
     
-    has_upper = any(c.isupper() for c in password)
-    has_lower = any(c.islower() for c in password)
-    has_digit = any(c.isdigit() for c in password)
-    has_special = any(c in '!@#$%^&*()_+-=[]{}|;:,.<>?' for c in password)
+    if len(password) < 8:
+        result['is_valid'] = False
+        result['errors'].append('Password must be at least 8 characters long')
     
-    return has_upper and has_lower and has_digit and has_special
+    if not re.search(r'[A-Z]', password):
+        result['is_valid'] = False
+        result['errors'].append('Password must contain at least one uppercase letter')
+    
+    if not re.search(r'[a-z]', password):
+        result['is_valid'] = False
+        result['errors'].append('Password must contain at least one lowercase letter')
+    
+    if not re.search(r'[0-9]', password):
+        result['is_valid'] = False
+        result['errors'].append('Password must contain at least one digit')
+    
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        result['is_valid'] = False
+        result['errors'].append('Password must contain at least one special character')
+    
+    return result
 
-def is_valid_username(username, min_length=3, max_length=20):
-    """Validate username format
+
+def validate_required_field(value: Optional[str], field_name: str) -> dict:
+    """
+    Validate that a required field is not empty
     
     Args:
-        username (str): Username to validate
-        min_length (int): Minimum username length (default: 3)
-        max_length (int): Maximum username length (default: 20)
+        value (str): Field value to validate
+        field_name (str): Name of the field
     
     Returns:
-        bool: True if username is valid, False otherwise
+        dict: Dictionary with validation results
     """
-    if not username or len(username) < min_length or len(username) > max_length:
-        return False
+    result = {
+        'is_valid': True,
+        'error': None
+    }
     
-    # Username should contain only alphanumeric characters and underscores
-    username_pattern = r'^[a-zA-Z0-9_]+$'
-    return re.match(username_pattern, username) is not None
+    if not value or value.strip() == '':
+        result['is_valid'] = False
+        result['error'] = f'{field_name} is required'
+    
+    return result
 
-def passwords_match(password, confirm_password):
-    """Check if password and confirm password match
+
+def validate_lockout_message(message: str, expected_keywords: list) -> bool:
+    """
+    Validate that lockout message contains expected keywords
     
     Args:
-        password (str): Original password
-        confirm_password (str): Confirmation password
+        message (str): Actual lockout message
+        expected_keywords (list): List of expected keywords
     
     Returns:
-        bool: True if passwords match, False otherwise
+        bool: True if all keywords are present, False otherwise
     """
-    return password == confirm_password
+    message_lower = message.lower()
+    return all(keyword.lower() in message_lower for keyword in expected_keywords)

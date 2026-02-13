@@ -1,91 +1,71 @@
-from core.driver_factory import get_driver
+# tests/ui/test_login_functionality.py
+
 from pages.login_page import LoginPage
+from core.driver_factory import get_driver
+import pytest
 
 
-def test_login_blank_username_validation():
+def test_tc_login_008_blank_username_validation():
     """
-    Test Case TC_LOGIN_008: Verify validation error when username is blank
-    
-    Steps:
-    1. Navigate to login page
-    2. Leave username field blank
-    3. Enter valid password
-    4. Click login button
-    5. Verify validation error is displayed
-    6. Verify login is prevented
+    Test Case TC_LOGIN_008: Verify login is prevented when username is blank
     """
     driver = get_driver()
-    login_page = LoginPage()
+    login_page = LoginPage(driver)
     
-    try:
-        # Step 1: Navigate to login page
-        login_page.navigate_to_login_page(driver)
-        
-        # Step 2: Enter blank username (skip entering username)
-        # Username field remains blank
-        
-        # Step 3: Enter password
-        login_page.enter_password(driver, "ValidPass123!")
-        
-        # Step 4: Click login button
-        login_page.click_login_button(driver)
-        
-        # Step 5: Verify validation error is displayed
-        assert login_page.verify_validation_error(driver), "Validation error should be displayed for blank username"
-        
-        # Step 6: Verify login is prevented
-        assert login_page.verify_login_prevented(driver), "Login should be prevented when username is blank"
-        
-    finally:
-        driver.quit()
+    # Step 1: Navigate to login page
+    login_page.navigate_to("https://ecommerce-website.com/login")
+    
+    # Step 2: Enter blank username
+    login_page.enter_username("")
+    
+    # Step 3: Enter password
+    login_page.enter_password("ValidPass123!")
+    
+    # Step 4: Click login button
+    login_page.click_login_button()
+    
+    # Step 5: Verify login is prevented and validation error is displayed
+    assert login_page.is_validation_error_displayed(), "Validation error should be displayed"
+    assert "Username is required" in login_page.get_error_message(), "Error message should indicate username is required"
+    assert login_page.is_on_login_page(), "User should remain on login page"
+    
+    driver.quit()
 
 
-def test_login_account_lockout_after_multiple_failed_attempts():
+def test_tc_login_010_account_lockout_after_multiple_failed_attempts():
     """
     Test Case TC_LOGIN_010: Verify account lockout after 5 failed login attempts
-    
-    Steps:
-    1. Navigate to login page
-    2. Enter valid username
-    3. Attempt login with 5 different wrong passwords
-    4. Attempt login with correct password (should be locked)
-    5. Verify account lockout message is displayed
-    6. Verify email notification is sent
     """
     driver = get_driver()
-    login_page = LoginPage()
+    login_page = LoginPage(driver)
     
-    try:
-        # Step 1: Navigate to login page
-        login_page.navigate_to_login_page(driver)
-        
-        # Step 2: Enter valid username
-        login_page.enter_username(driver, "validuser@example.com")
-        
-        # Step 3: Attempt login with 5 wrong passwords
-        failed_attempts = [
-            "WrongPass1",
-            "WrongPass2",
-            "WrongPass3",
-            "WrongPass4",
-            "WrongPass5"
-        ]
-        
-        for wrong_password in failed_attempts:
-            login_page.enter_password(driver, wrong_password)
-            login_page.click_login_button(driver)
-            # Each attempt should fail
-            # Note: In real scenario, you might need to clear password field between attempts
-        
-        # Step 4: Attempt login with correct password (account should be locked)
-        login_page.enter_password(driver, "ValidPass123!")
-        login_page.click_login_button(driver)
-        
-        # Step 5: Verify account lockout message is displayed
-        assert login_page.verify_account_lockout_message(driver), "Account lockout message should be displayed after 5 failed attempts"
-        
-        # Step 6: Verify email notification is sent
-        assert login_page.verify_email_notification_sent(driver), "Email notification should be sent for account lockout"
-        
-    finally:
-        driver.quit()
+    # Step 1: Navigate to login page
+    login_page.navigate_to("https://ecommerce-website.com/login")
+    
+    # Step 2: Enter valid username
+    login_page.enter_username("validuser@example.com")
+    
+    # Step 3: Attempt login with wrong passwords 5 times
+    wrong_passwords = ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"]
+    
+    for password in wrong_passwords:
+        login_page.enter_password(password)
+        login_page.click_login_button()
+        # Verify each attempt fails
+        assert login_page.is_error_message_displayed(), f"Error message should be displayed for attempt with {password}"
+    
+    # Step 4: Try with valid password after 5 failed attempts
+    login_page.enter_password("ValidPass123!")
+    login_page.click_login_button()
+    
+    # Step 5: Verify account lockout message
+    assert login_page.is_account_locked_message_displayed(), "Account locked message should be displayed"
+    lockout_message = login_page.get_lockout_message()
+    assert "Account locked due to multiple failed attempts" in lockout_message, "Lockout message should indicate account is locked"
+    assert "Please try again after 30 minutes or reset password" in lockout_message, "Lockout message should provide recovery options"
+    
+    # Verify email notification was sent (this would typically be verified through email service or logs)
+    # For now, we verify the UI indicates notification was sent
+    assert login_page.is_email_notification_indicated(), "Email notification should be indicated"
+    
+    driver.quit()
