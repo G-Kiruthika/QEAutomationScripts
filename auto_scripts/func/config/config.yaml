@@ -1,45 +1,37 @@
-# Configuration file for Python UI & API Automation Framework
-# Environment-specific settings and test data
-
+# Environment Configuration
 ui:
-  base_url: "https://example.com"
+  base_url: "https://ecommerce-website.com"
+  login_url: "https://ecommerce-website.com/login"
   browser: "chrome"
   headless: false
   implicit_wait: 10
   explicit_wait: 20
-  page_load_timeout: 30
 
 api:
   base_url: "https://api.example.com"
   timeout: 30
-  headers:
-    Content-Type: "application/json"
-    Accept: "application/json"
 
 test_data:
-  login:
-    valid_user:
-      username: "testuser@example.com"
-      password: "SecurePass123"
-    invalid_user:
-      username: "invaliduser@example.com"
-      password: "WrongPass456"
-    lockout_test:
-      username: "testuser@example.com"
-      failed_attempts:
-        - "WrongPass1"
-        - "WrongPass2"
-        - "WrongPass3"
+  valid_credentials:
+    username: "validuser@example.com"
+    password: "ValidPass123!"
+  
+  invalid_credentials:
+    empty_username: ""
+    wrong_passwords:
+      - "WrongPass1"
+      - "WrongPass2"
+      - "WrongPass3"
+      - "WrongPass4"
+      - "WrongPass5"
 
-environment:
-  name: "qa"
-  log_level: "INFO"
-  screenshot_on_failure: true
-  video_recording: false
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "automation@example.com"
+  receiver_email: "team@example.com"
 
 reporting:
-  allure_results_dir: "allure-results"
-  html_report_dir: "reports"
-  email_notifications: true
-  email_recipients:
-    - "qa-team@example.com"
+  screenshots_on_failure: true
+  video_recording: false
+  log_level: "INFO"
