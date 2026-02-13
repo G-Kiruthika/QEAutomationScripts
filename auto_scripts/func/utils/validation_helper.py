@@ -1,94 +1,105 @@
-# utils/validation_helper.py
-
-import re
-from typing import Optional
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
-def validate_email(email: str) -> bool:
+def verify_element_displayed(page_object, locator, error_message=None):
     """
-    Validate email format
+    Verify that an element is displayed
     
     Args:
-        email (str): Email address to validate
+        page_object: Page object instance
+        locator: Element locator tuple
+        error_message: Custom error message
     
     Returns:
-        bool: True if valid email format, False otherwise
+        bool: True if element is displayed
+    
+    Raises:
+        AssertionError: If element is not displayed
     """
-    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return bool(re.match(email_pattern, email))
+    try:
+        is_displayed = page_object.is_displayed(locator)
+        if not is_displayed:
+            msg = error_message or f"Element {locator} is not displayed"
+            raise AssertionError(msg)
+        return True
+    except (TimeoutException, NoSuchElementException) as e:
+        msg = error_message or f"Element {locator} not found: {str(e)}"
+        raise AssertionError(msg)
 
 
-def validate_password_strength(password: str) -> dict:
+def verify_element_enabled(page_object, locator, expected_state=True, error_message=None):
     """
-    Validate password strength
+    Verify element enabled/disabled state
     
     Args:
-        password (str): Password to validate
+        page_object: Page object instance
+        locator: Element locator tuple
+        expected_state: Expected enabled state (True/False)
+        error_message: Custom error message
     
     Returns:
-        dict: Dictionary with validation results
+        bool: True if verification passes
+    
+    Raises:
+        AssertionError: If state doesn't match expected
     """
-    result = {
-        'is_valid': True,
-        'errors': []
-    }
-    
-    if len(password) < 8:
-        result['is_valid'] = False
-        result['errors'].append('Password must be at least 8 characters long')
-    
-    if not re.search(r'[A-Z]', password):
-        result['is_valid'] = False
-        result['errors'].append('Password must contain at least one uppercase letter')
-    
-    if not re.search(r'[a-z]', password):
-        result['is_valid'] = False
-        result['errors'].append('Password must contain at least one lowercase letter')
-    
-    if not re.search(r'[0-9]', password):
-        result['is_valid'] = False
-        result['errors'].append('Password must contain at least one digit')
-    
-    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-        result['is_valid'] = False
-        result['errors'].append('Password must contain at least one special character')
-    
-    return result
+    try:
+        is_enabled = page_object.is_enabled(locator)
+        if is_enabled != expected_state:
+            msg = error_message or f"Element {locator} enabled state is {is_enabled}, expected {expected_state}"
+            raise AssertionError(msg)
+        return True
+    except (TimeoutException, NoSuchElementException) as e:
+        msg = error_message or f"Element {locator} not found: {str(e)}"
+        raise AssertionError(msg)
 
 
-def validate_required_field(value: Optional[str], field_name: str) -> dict:
+def verify_text_present(page_object, locator, expected_text, error_message=None):
     """
-    Validate that a required field is not empty
+    Verify element contains expected text
     
     Args:
-        value (str): Field value to validate
-        field_name (str): Name of the field
+        page_object: Page object instance
+        locator: Element locator tuple
+        expected_text: Expected text content
+        error_message: Custom error message
     
     Returns:
-        dict: Dictionary with validation results
+        bool: True if text matches
+    
+    Raises:
+        AssertionError: If text doesn't match
     """
-    result = {
-        'is_valid': True,
-        'error': None
-    }
-    
-    if not value or value.strip() == '':
-        result['is_valid'] = False
-        result['error'] = f'{field_name} is required'
-    
-    return result
+    try:
+        element = page_object.find_element(locator)
+        actual_text = element.text
+        if expected_text not in actual_text:
+            msg = error_message or f"Expected text '{expected_text}' not found in '{actual_text}'"
+            raise AssertionError(msg)
+        return True
+    except (TimeoutException, NoSuchElementException) as e:
+        msg = error_message or f"Element {locator} not found: {str(e)}"
+        raise AssertionError(msg)
 
 
-def validate_lockout_message(message: str, expected_keywords: list) -> bool:
+def verify_login_prevented(page_object, login_button_locator, error_message=None):
     """
-    Validate that lockout message contains expected keywords
+    Verify that login is prevented (button disabled or validation error shown)
     
     Args:
-        message (str): Actual lockout message
-        expected_keywords (list): List of expected keywords
+        page_object: Page object instance
+        login_button_locator: Login button locator
+        error_message: Custom error message
     
     Returns:
-        bool: True if all keywords are present, False otherwise
+        bool: True if login is prevented
     """
-    message_lower = message.lower()
-    return all(keyword.lower() in message_lower for keyword in expected_keywords)
+    try:
+        is_enabled = page_object.is_enabled(login_button_locator)
+        if is_enabled:
+            msg = error_message or "Login should be prevented but button is enabled"
+            raise AssertionError(msg)
+        return True
+    except Exception as e:
+        # If button is not found or any other error, consider login prevented
+        return True

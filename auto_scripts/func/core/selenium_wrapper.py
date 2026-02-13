@@ -1,5 +1,3 @@
-"""Selenium Wrapper Module for common WebDriver operations"""
-
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
@@ -8,24 +6,25 @@ import os
 
 
 def load_config():
-    """Load configuration from config.yaml"""
+    """
+    Load configuration from config.yaml
+    """
     config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
-    if os.path.exists(config_path):
-        with open(config_path, 'r') as f:
-            return yaml.safe_load(f)
-    return {}
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
 
 
 def wait_for_element(driver, locator, timeout=None):
-    """Wait for element to be present and visible
+    """
+    Wait for element to be present and visible
     
     Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
-        timeout (int): Wait timeout in seconds
+        driver: WebDriver instance
+        locator: Tuple of (By, value)
+        timeout: Maximum wait time in seconds
     
     Returns:
-        WebElement: Found element
+        WebElement: The found element
     """
     if timeout is None:
         config = load_config()
@@ -40,16 +39,14 @@ def wait_for_element(driver, locator, timeout=None):
         raise TimeoutException(f"Element {locator} not found within {timeout} seconds")
 
 
-def wait_for_element_clickable(driver, locator, timeout=None):
-    """Wait for element to be clickable
+def click_element(driver, locator, timeout=None):
+    """
+    Wait for element to be clickable and click it
     
     Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
-        timeout (int): Wait timeout in seconds
-    
-    Returns:
-        WebElement: Clickable element
+        driver: WebDriver instance
+        locator: Tuple of (By, value)
+        timeout: Maximum wait time in seconds
     """
     if timeout is None:
         config = load_config()
@@ -59,46 +56,34 @@ def wait_for_element_clickable(driver, locator, timeout=None):
         element = WebDriverWait(driver, timeout).until(
             EC.element_to_be_clickable(locator)
         )
-        return element
+        element.click()
     except TimeoutException:
         raise TimeoutException(f"Element {locator} not clickable within {timeout} seconds")
 
 
-def click_element(driver, locator, timeout=None):
-    """Click on an element after waiting for it to be clickable
-    
-    Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
-        timeout (int): Wait timeout in seconds
+def enter_text(driver, locator, text, timeout=None):
     """
-    element = wait_for_element_clickable(driver, locator, timeout)
-    element.click()
-
-
-def enter_text(driver, locator, text, timeout=None, clear_first=True):
-    """Enter text into an input field
+    Wait for element and enter text
     
     Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
-        text (str): Text to enter
-        timeout (int): Wait timeout in seconds
-        clear_first (bool): Clear field before entering text
+        driver: WebDriver instance
+        locator: Tuple of (By, value)
+        text: Text to enter
+        timeout: Maximum wait time in seconds
     """
     element = wait_for_element(driver, locator, timeout)
-    if clear_first:
-        element.clear()
+    element.clear()
     element.send_keys(text)
 
 
 def is_element_visible(driver, locator, timeout=None):
-    """Check if element is visible
+    """
+    Check if element is visible
     
     Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
-        timeout (int): Wait timeout in seconds
+        driver: WebDriver instance
+        locator: Tuple of (By, value)
+        timeout: Maximum wait time in seconds
     
     Returns:
         bool: True if element is visible, False otherwise
@@ -116,49 +101,20 @@ def is_element_visible(driver, locator, timeout=None):
         return False
 
 
-def is_element_present(driver, locator):
-    """Check if element is present in DOM
+def is_element_enabled(driver, locator, timeout=None):
+    """
+    Check if element is enabled
     
     Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
+        driver: WebDriver instance
+        locator: Tuple of (By, value)
+        timeout: Maximum wait time in seconds
     
     Returns:
-        bool: True if element is present, False otherwise
+        bool: True if element is enabled, False otherwise
     """
     try:
-        driver.find_element(*locator)
-        return True
-    except NoSuchElementException:
+        element = wait_for_element(driver, locator, timeout)
+        return element.is_enabled()
+    except (TimeoutException, NoSuchElementException):
         return False
-
-
-def get_element_text(driver, locator, timeout=None):
-    """Get text from an element
-    
-    Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
-        timeout (int): Wait timeout in seconds
-    
-    Returns:
-        str: Element text
-    """
-    element = wait_for_element(driver, locator, timeout)
-    return element.text
-
-
-def get_element_attribute(driver, locator, attribute, timeout=None):
-    """Get attribute value from an element
-    
-    Args:
-        driver (WebDriver): WebDriver instance
-        locator (tuple): Locator tuple (By.*, value)
-        attribute (str): Attribute name
-        timeout (int): Wait timeout in seconds
-    
-    Returns:
-        str: Attribute value
-    """
-    element = wait_for_element(driver, locator, timeout)
-    return element.get_attribute(attribute)

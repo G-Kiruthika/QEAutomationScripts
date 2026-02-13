@@ -1,17 +1,17 @@
-# Configuration file for Login Functionality Test Suite
-
 # Environment Configuration
 environment:
-  test_url: "https://ecommerce-website.com/login"
   base_url: "https://ecommerce-website.com"
+  login_url: "https://ecommerce-website.com/login"
 
-# Test Data Configuration
+# Test Data
 test_data:
-  login:
-    valid_username: "validuser@example.com"
-    valid_password: "ValidPass123!"
+  valid_credentials:
+    username: "validuser@example.com"
+    password: "ValidPass123!"
+  
+  invalid_credentials:
     blank_username: ""
-    invalid_passwords:
+    wrong_passwords:
       - "WrongPass1"
       - "WrongPass2"
       - "WrongPass3"
@@ -30,10 +30,10 @@ timeouts:
   element_wait: 10
   page_load: 30
   script_timeout: 30
-  lockout_wait: 1800  # 30 minutes in seconds
 
-# Reporting
-reporting:
-  screenshots_on_failure: true
-  video_recording: false
-  report_format: "html"
+# Security
+security:
+  account_lockout:
+    max_failed_attempts: 5
+    lockout_duration_minutes: 30
+    email_notification: true

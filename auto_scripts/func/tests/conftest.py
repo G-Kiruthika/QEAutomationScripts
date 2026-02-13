@@ -1,13 +1,7 @@
-# tests/conftest.py
-
 import pytest
 from core.driver_factory import get_driver
-from utils.logger import setup_logger, log_test_start, log_test_end
 import os
-
-
-# Setup logger
-logger = setup_logger()
+import yaml
 
 
 @pytest.fixture(scope="function")
@@ -15,45 +9,48 @@ def driver():
     """
     Pytest fixture to provide WebDriver instance for each test
     """
-    driver = get_driver()
-    yield driver
-    driver.quit()
-
-
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    """
-    Hook to capture test results and log them
-    """
-    outcome = yield
-    report = outcome.get_result()
-    
-    if report.when == "call":
-        test_name = item.nodeid
-        if report.passed:
-            log_test_end(logger, test_name, "PASSED")
-        elif report.failed:
-            log_test_end(logger, test_name, "FAILED")
-            logger.error(f"Error: {report.longreprtext}")
-
-
-@pytest.fixture(scope="function", autouse=True)
-def log_test_info(request):
-    """
-    Automatically log test start for each test
-    """
-    test_name = request.node.nodeid
-    log_test_start(logger, test_name)
-    yield
+    driver_instance = get_driver()
+    yield driver_instance
+    driver_instance.quit()
 
 
 @pytest.fixture(scope="session")
-def test_config():
+def config():
     """
-    Load and provide test configuration
+    Pytest fixture to load and provide configuration
     """
-    import yaml
     config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
     with open(config_path, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
+        return yaml.safe_load(f)
+
+
+@pytest.fixture(scope="function")
+def login_page(driver):
+    """
+    Pytest fixture to provide LoginPage instance
+    """
+    from pages.login_page import LoginPage
+    return LoginPage(driver)
+
+
+def pytest_configure(config):
+    """
+    Pytest configuration hook
+    """
+    # Add custom markers
+    config.addinivalue_line(
+        "markers", "login: mark test as login functionality test"
+    )
+    config.addinivalue_line(
+        "markers", "validation: mark test as validation test"
+    )
+    config.addinivalue_line(
+        "markers", "security: mark test as security test"
+    )
+
+
+def pytest_html_report_title(report):
+    """
+    Customize HTML report title
+    """
+    report.title = "Login Functionality Test Report"
