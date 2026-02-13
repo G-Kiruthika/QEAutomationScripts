@@ -1,55 +1,75 @@
+# core/driver_factory.py
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import yaml
 import os
 
-def get_driver(browser_type=None):
+
+def load_config():
+    """
+    Load configuration from config.yaml file
+    """
+    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
+    return config
+
+
+def get_driver(browser=None, headless=None):
     """
     Factory method to create and return WebDriver instance
     
     Args:
-        browser_type (str): Type of browser ('chrome', 'firefox', etc.)
+        browser (str): Browser name ('chrome', 'firefox', 'edge'). Defaults to config value.
+        headless (bool): Run browser in headless mode. Defaults to config value.
     
     Returns:
-        WebDriver: Configured WebDriver instance
+        WebDriver: Selenium WebDriver instance
     """
-    # Load configuration
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
+    config = load_config()
     
-    if os.path.exists(config_path):
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
-        browser_config = config.get('browser', {})
-        browser_type = browser_type or browser_config.get('type', 'chrome')
-        headless = browser_config.get('headless', False)
-        window_size = browser_config.get('window_size', '1920x1080')
-    else:
-        browser_type = browser_type or 'chrome'
-        headless = False
-        window_size = '1920x1080'
+    # Use provided values or fall back to config
+    browser = browser or config.get('ui', {}).get('browser', 'chrome')
+    headless = headless if headless is not None else config.get('ui', {}).get('headless', False)
     
-    if browser_type.lower() == 'chrome':
-        chrome_options = Options()
+    if browser.lower() == 'chrome':
+        chrome_options = ChromeOptions()
+        
+        # Add options from config
+        for option in config.get('selenium', {}).get('chrome_options', []):
+            chrome_options.add_argument(option)
+        
         if headless:
             chrome_options.add_argument('--headless')
-        chrome_options.add_argument(f'--window-size={window_size}')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
+        
         driver = webdriver.Chrome(options=chrome_options)
-    elif browser_type.lower() == 'firefox':
+    
+    elif browser.lower() == 'firefox':
         firefox_options = FirefoxOptions()
+        
+        # Add options from config
+        for option in config.get('selenium', {}).get('firefox_options', []):
+            firefox_options.add_argument(option)
+        
         if headless:
             firefox_options.add_argument('--headless')
+        
         driver = webdriver.Firefox(options=firefox_options)
-    else:
-        raise ValueError(f"Unsupported browser type: {browser_type}")
     
-    # Set implicit wait if configured
-    if os.path.exists(config_path):
-        implicit_wait = config.get('ui', {}).get('implicit_wait', 5)
-        driver.implicitly_wait(implicit_wait)
+    elif browser.lower() == 'edge':
+        driver = webdriver.Edge()
+    
+    else:
+        raise ValueError(f"Unsupported browser: {browser}")
+    
+    # Set timeouts from config
+    implicit_wait = config.get('ui', {}).get('implicit_wait', 10)
+    page_load_timeout = config.get('ui', {}).get('page_load_timeout', 30)
+    
+    driver.implicitly_wait(implicit_wait)
+    driver.set_page_load_timeout(page_load_timeout)
     
     return driver

@@ -1,35 +1,51 @@
+# Configuration file for Python UI & API Automation Framework
+
 # Environment Configuration
-
-ui:
+environment:
+  name: "test"
   base_url: "https://ecommerce-website.com"
+
+# UI Configuration
+ui:
   login_url: "https://ecommerce-website.com/login"
-  timeout: 10
-  implicit_wait: 5
-
-browser:
-  type: "chrome"
+  browser: "chrome"
   headless: false
-  window_size: "1920x1080"
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load_timeout: 30
 
+# Test Data
 test_data:
   valid_credentials:
     username: "validuser@example.com"
     password: "ValidPass123!"
   
   invalid_credentials:
-    blank_username: ""
-    wrong_passwords:
-      - "WrongPass1"
-      - "WrongPass2"
-      - "WrongPass3"
-      - "WrongPass4"
-      - "WrongPass5"
-
-reporting:
-  email_enabled: true
-  email_recipients:
-    - "qa-team@example.com"
+    username: "invaliduser@example.com"
+    password: "WrongPassword"
   
+  error_messages:
+    username_required: "Username is required"
+    invalid_credentials: "Invalid credentials"
+    account_locked: "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password"
+
+# Selenium Configuration
+selenium:
+  driver_path: ""
+  chrome_options:
+    - "--start-maximized"
+    - "--disable-extensions"
+    - "--disable-gpu"
+  firefox_options:
+    - "--start-maximized"
+
+# Reporting Configuration
+reporting:
+  report_path: "reports/"
+  screenshot_path: "reports/screenshots/"
+  enable_screenshots: true
+
+# Logging Configuration
 logging:
   level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  log_file: "logs/automation.log"
