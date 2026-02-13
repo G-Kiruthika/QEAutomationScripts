@@ -1,68 +1,51 @@
 {
-  "tests": [
+  "test_scripts": [
     {
-      "test_name": "test_login_valid_credentials",
-      "feature": "User Authentication",
-      "target_file": "test_login_valid_credentials.py",
-      "pages_used": ["LoginPage", "DashboardPage"],
-      "flow": [
-        {"action": "navigate_to_login_page", "page": "LoginPage", "test_data": {"url": "https://ecommerce.example.com/login"}},
-        {"assertion": "is_login_page_displayed", "page": "LoginPage"},
-        {"action": "enter_email", "page": "LoginPage", "test_data": {"email": "testuser@example.com"}},
-        {"assertion": "is_email_accepted", "page": "LoginPage"},
-        {"action": "enter_password", "page": "LoginPage", "test_data": {"password": "Test@1234"}},
-        {"assertion": "is_password_accepted", "page": "LoginPage"},
-        {"action": "click_login_button", "page": "LoginPage"},
-        {"assertion": "is_user_authenticated", "page": "LoginPage"},
-        {"assertion": "is_dashboard_displayed", "page": "DashboardPage"},
-        {"action": "verify_user_session", "page": "DashboardPage"},
-        {"assertion": "is_user_header_displayed", "page": "DashboardPage"},
-        {"assertion": "is_session_token_generated", "page": "LoginPage"}
+      "test_case_id": "501",
+      "test_case_description": "Test Case TC-POS-001",
+      "test_flow": [
+        {"step_id": 2, "action": "navigate_to_login_page", "test_data": {"url": "https://ecommerce.example.com/login"}},
+        {"step_id": 3, "action": "enter_email", "test_data": {"email": "testuser@example.com"}},
+        {"step_id": 4, "action": "enter_password", "test_data": {"password": "Test@1234"}},
+        {"step_id": 5, "action": "click_login_button", "test_data": {}},
+        {"step_id": 6, "action": "verify_user_session_created", "test_data": {}}
       ],
-      "test_data": {
-        "url": "https://ecommerce.example.com/login",
-        "email": "testuser@example.com",
-        "password": "Test@1234"
-      },
-      "framework": {
-        "base_classes_required": ["BasePage", "BaseTest"],
-        "core_dependencies": ["selenium", "pytest"],
-        "config_dependencies": ["config.yaml", "testdata.yaml"],
-        "utils_dependencies": ["error_handler.py", "reporter.py"],
-        "external_libraries": ["pytest", "selenium"],
-        "required_imports": ["from pages.login_page import LoginPage", "from pages.dashboard_page import DashboardPage", "from utils.error_handler import ErrorHandler", "from utils.reporter import Reporter"]
-      }
+      "acceptance_criteria": ["AC-LOGIN-001"],
+      "expected_results": [
+        "Login page is displayed with email and password fields",
+        "Email is accepted and displayed in the field",
+        "Password is masked and accepted",
+        "User is successfully authenticated and redirected to dashboard/home page",
+        "User name is displayed in the header and session token is generated"
+      ]
     },
     {
-      "test_name": "test_login_invalid_username",
-      "feature": "User Authentication",
-      "target_file": "test_login_invalid_username.py",
-      "pages_used": ["LoginPage"],
-      "flow": [
-        {"action": "navigate_to_login_page", "page": "LoginPage", "test_data": {"url": "https://ecommerce-website.com/login"}},
-        {"assertion": "is_login_page_displayed", "page": "LoginPage"},
-        {"action": "enter_email", "page": "LoginPage", "test_data": {"email": "invaliduser@example.com"}},
-        {"assertion": "is_email_accepted", "page": "LoginPage"},
-        {"action": "enter_password", "page": "LoginPage", "test_data": {"password": "ValidPass123!"}},
-        {"assertion": "is_password_accepted", "page": "LoginPage"},
-        {"action": "click_login_button", "page": "LoginPage"},
-        {"assertion": "is_error_message_displayed", "page": "LoginPage", "test_data": {"error_message": "Invalid username or password"}},
-        {"assertion": "is_still_on_login_page", "page": "LoginPage"}
+      "test_case_id": "504",
+      "test_case_description": "Test Case TC_LOGIN_006",
+      "test_flow": [
+        {"step_id": 1, "action": "navigate_to_login_page", "test_data": {"url": "https://ecommerce-website.com/login"}},
+        {"step_id": 2, "action": "enter_email", "test_data": {"email": "invaliduser@example.com"}},
+        {"step_id": 3, "action": "enter_password", "test_data": {"password": "ValidPass123!"}},
+        {"step_id": 4, "action": "click_login_button", "test_data": {}},
+        {"step_id": 4, "action": "verify_login_error_message", "test_data": {"expected_message": "Invalid username or password"}},
+        {"step_id": 5, "action": "verify_remain_on_login_page", "test_data": {}}
       ],
-      "test_data": {
-        "url": "https://ecommerce-website.com/login",
-        "email": "invaliduser@example.com",
-        "password": "ValidPass123!",
-        "error_message": "Invalid username or password"
-      },
-      "framework": {
-        "base_classes_required": ["BasePage", "BaseTest"],
-        "core_dependencies": ["selenium", "pytest"],
-        "config_dependencies": ["config.yaml", "testdata.yaml"],
-        "utils_dependencies": ["error_handler.py", "reporter.py"],
-        "external_libraries": ["pytest", "selenium"],
-        "required_imports": ["from pages.login_page import LoginPage", "from utils.error_handler import ErrorHandler", "from utils.reporter import Reporter"]
-      }
+      "acceptance_criteria": ["AC_LOGIN_006"],
+      "expected_results": [
+        "Login page is displayed",
+        "Invalid username is entered",
+        "Password is entered",
+        "Login fails with error message 'Invalid username or password'",
+        "User is not authenticated and stays on login page"
+      ]
     }
-  ]
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage", "BaseTest"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages", "core.driver_factory", "pages.base_page"]
+  }
 }
