@@ -1,40 +1,43 @@
-# Configuration file for UI and API automation framework
+# Test Configuration File
+# This file contains environment-specific configuration for UI and API tests
 
-# UI Configuration
-ui:
-  base_url: "http://localhost:8080"
-  browser: "chrome"
-  headless: false
-  implicit_wait: 10
-  explicit_wait: 20
-  page_load_timeout: 30
+# Browser configuration for UI tests
+browser: chrome
+headless: false
 
-# API Configuration
-api:
-  base_url: "https://api.example.com"
-  timeout: 30
-  verify_ssl: true
-  headers:
-    Content-Type: "application/json"
-    Accept: "application/json"
+# Base URL for application under test
+base_url: http://localhost:8080
 
-# Test Data
+# Test data
 test_data:
   admin:
-    username: "admin"
-    password: "valid_admin_password"
-  products:
-    sample_product:
-      name: "sample_product"
-      price: "100"
-      inventory: "50"
-      description: "additional_data"
+    username: admin
+    password: valid_admin_password
+  
+  sample_product:
+    product_name: sample_product
+    price: "100"
+    inventory: "50"
+    additional_data: additional_data
 
-# Environment
-environment: "test"
+# Timeout settings (in seconds)
+timeouts:
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load: 30
 
-# Reporting
+# Logging configuration
+logging:
+  level: INFO
+  log_file: test_execution.log
+
+# Screenshot configuration
+screenshots:
+  on_failure: true
+  directory: screenshots/
+
+# Reporting configuration
 reporting:
-  screenshots_on_failure: true
-  video_recording: false
-  report_format: "html"
+  html_report: true
+  json_report: false
+  report_directory: reports/

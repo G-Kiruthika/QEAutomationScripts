@@ -1,87 +1,79 @@
+"""Pytest configuration file for test fixtures and hooks.
+
+This file contains shared fixtures and configuration for all tests.
+"""
+
 import pytest
-from auto_scripts.core.driver_factory import get_driver
 import yaml
-import os
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+
+
+@pytest.fixture(scope="function")
+def driver(request):
+    """WebDriver fixture that initializes and tears down browser driver.
+    
+    Returns:
+        WebDriver: Selenium WebDriver instance
+    """
+    # Load configuration
+    try:
+        with open('auto_scripts/api/config/config.yaml', 'r') as f:
+            config = yaml.safe_load(f)
+    except FileNotFoundError:
+        config = {
+            'browser': 'chrome',
+            'headless': False,
+            'base_url': 'http://localhost:8080'
+        }
+    
+    browser = config.get('browser', 'chrome').lower()
+    headless = config.get('headless', False)
+    
+    # Initialize driver based on browser type
+    if browser == 'chrome':
+        options = ChromeOptions()
+        if headless:
+            options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Chrome(options=options)
+    elif browser == 'firefox':
+        options = FirefoxOptions()
+        if headless:
+            options.add_argument('--headless')
+        driver = webdriver.Firefox(options=options)
+    else:
+        raise ValueError(f"Unsupported browser: {browser}")
+    
+    driver.maximize_window()
+    driver.implicitly_wait(10)
+    
+    # Navigate to base URL if configured
+    base_url = config.get('base_url')
+    if base_url:
+        driver.get(base_url)
+    
+    yield driver
+    
+    # Teardown
+    driver.quit()
 
 
 @pytest.fixture(scope="session")
 def config():
-    """
-    Load and provide test configuration
+    """Load and provide test configuration.
     
     Returns:
         dict: Configuration dictionary
     """
-    config_path = 'auto_scripts/api/config/config.yaml'
-    with open(config_path) as f:
-        return yaml.safe_load(f)
-
-
-@pytest.fixture(scope="function")
-def driver(config):
-    """
-    Provide WebDriver instance for tests
-    
-    Args:
-        config (dict): Test configuration
-    
-    Yields:
-        WebDriver: Configured WebDriver instance
-    """
-    browser = config.get('ui', {}).get('browser', 'chrome')
-    headless = config.get('ui', {}).get('headless', False)
-    
-    driver_instance = get_driver(browser=browser, headless=headless)
-    
-    yield driver_instance
-    
-    driver_instance.quit()
-
-
-@pytest.fixture(scope="function")
-def test_data(config):
-    """
-    Provide test data from configuration
-    
-    Args:
-        config (dict): Test configuration
-    
-    Returns:
-        dict: Test data dictionary
-    """
-    return config.get('test_data', {})
-
-
-def pytest_configure(config):
-    """
-    Pytest configuration hook
-    Create necessary directories
-    """
-    # Create logs directory
-    log_dir = "auto_scripts/api/logs"
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-    
-    # Create screenshots directory
-    screenshot_dir = "auto_scripts/api/screenshots"
-    if not os.path.exists(screenshot_dir):
-        os.makedirs(screenshot_dir)
-
-
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    """
-    Hook to capture test results and take screenshots on failure
-    """
-    outcome = yield
-    report = outcome.get_result()
-    
-    if report.when == "call" and report.failed:
-        # Get driver from fixture if available
-        driver = item.funcargs.get('driver')
-        if driver:
-            screenshot_dir = "auto_scripts/api/screenshots"
-            screenshot_name = f"{item.name}_{report.when}.png"
-            screenshot_path = os.path.join(screenshot_dir, screenshot_name)
-            driver.save_screenshot(screenshot_path)
-            print(f"Screenshot saved: {screenshot_path}")
+    try:
+        with open('auto_scripts/api/config/config.yaml', 'r') as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        return {
+            'browser': 'chrome',
+            'headless': False,
+            'base_url': 'http://localhost:8080'
+        }

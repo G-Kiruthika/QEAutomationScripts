@@ -1,39 +1,42 @@
+"""Logging utility for test framework.
+
+Provides centralized logging functionality for all test components.
+"""
+
 import logging
 import os
 from datetime import datetime
 
 
-class Logger:
-    """
-    Custom logger utility for test automation framework
-    """
+class TestLogger:
+    """Custom logger class for test automation framework."""
     
-    def __init__(self, name="AutomationFramework", log_level=logging.INFO):
-        """
-        Initialize logger
+    def __init__(self, name=__name__, log_level=logging.INFO):
+        """Initialize logger with specified name and level.
         
         Args:
             name (str): Logger name
-            log_level: Logging level
+            log_level (int): Logging level (default: INFO)
         """
         self.logger = logging.getLogger(name)
         self.logger.setLevel(log_level)
         
         # Create logs directory if it doesn't exist
-        log_dir = "auto_scripts/api/logs"
+        log_dir = 'logs'
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
         
-        # File handler
-        log_file = os.path.join(log_dir, f"test_run_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+        # Create file handler with timestamp
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        log_file = os.path.join(log_dir, f'test_execution_{timestamp}.log')
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(log_level)
         
-        # Console handler
+        # Create console handler
         console_handler = logging.StreamHandler()
         console_handler.setLevel(log_level)
         
-        # Formatter
+        # Create formatter
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
@@ -41,31 +44,31 @@ class Logger:
         file_handler.setFormatter(formatter)
         console_handler.setFormatter(formatter)
         
-        # Add handlers
+        # Add handlers to logger
         if not self.logger.handlers:
             self.logger.addHandler(file_handler)
             self.logger.addHandler(console_handler)
     
     def info(self, message):
-        """Log info message"""
+        """Log info level message."""
         self.logger.info(message)
     
     def debug(self, message):
-        """Log debug message"""
+        """Log debug level message."""
         self.logger.debug(message)
     
     def warning(self, message):
-        """Log warning message"""
+        """Log warning level message."""
         self.logger.warning(message)
     
     def error(self, message):
-        """Log error message"""
+        """Log error level message."""
         self.logger.error(message)
     
     def critical(self, message):
-        """Log critical message"""
+        """Log critical level message."""
         self.logger.critical(message)
 
 
-# Create default logger instance
-default_logger = Logger()
+# Global logger instance
+logger = TestLogger()

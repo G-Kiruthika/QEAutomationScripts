@@ -1,80 +1,104 @@
+"""Wait utility functions for Selenium WebDriver.
+
+Provides reusable wait methods for common scenarios in test automation.
+"""
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from auto_scripts.api.utils.logger import logger
 
 
 class WaitUtils:
-    """
-    Utility class for custom wait conditions and helpers
-    """
+    """Utility class for WebDriver wait operations."""
     
-    @staticmethod
-    def wait_for_element_visible(driver, locator, timeout=10):
-        """
-        Wait for element to be visible
+    def __init__(self, driver, timeout=20):
+        """Initialize WaitUtils with driver and default timeout.
         
         Args:
-            driver: WebDriver instance
-            locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int): Timeout in seconds
+            driver: Selenium WebDriver instance
+            timeout (int): Default timeout in seconds
+        """
+        self.driver = driver
+        self.timeout = timeout
+        self.wait = WebDriverWait(driver, timeout)
+    
+    def wait_for_element_visible(self, locator, timeout=None):
+        """Wait for element to be visible.
+        
+        Args:
+            locator (tuple): Element locator (By.ID, 'element_id')
+            timeout (int): Custom timeout (optional)
         
         Returns:
-            WebElement: Visible element
+            WebElement: The visible element
         
         Raises:
             TimeoutException: If element not visible within timeout
         """
-        wait = WebDriverWait(driver, timeout)
-        return wait.until(EC.visibility_of_element_located(locator))
+        try:
+            wait_time = timeout if timeout else self.timeout
+            wait = WebDriverWait(self.driver, wait_time)
+            element = wait.until(EC.visibility_of_element_located(locator))
+            logger.info(f"Element {locator} is visible")
+            return element
+        except TimeoutException:
+            logger.error(f"Element {locator} not visible within {wait_time} seconds")
+            raise
     
-    @staticmethod
-    def wait_for_element_clickable(driver, locator, timeout=10):
-        """
-        Wait for element to be clickable
+    def wait_for_element_clickable(self, locator, timeout=None):
+        """Wait for element to be clickable.
         
         Args:
-            driver: WebDriver instance
-            locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int): Timeout in seconds
+            locator (tuple): Element locator
+            timeout (int): Custom timeout (optional)
         
         Returns:
-            WebElement: Clickable element
+            WebElement: The clickable element
         
         Raises:
             TimeoutException: If element not clickable within timeout
         """
-        wait = WebDriverWait(driver, timeout)
-        return wait.until(EC.element_to_be_clickable(locator))
+        try:
+            wait_time = timeout if timeout else self.timeout
+            wait = WebDriverWait(self.driver, wait_time)
+            element = wait.until(EC.element_to_be_clickable(locator))
+            logger.info(f"Element {locator} is clickable")
+            return element
+        except TimeoutException:
+            logger.error(f"Element {locator} not clickable within {wait_time} seconds")
+            raise
     
-    @staticmethod
-    def wait_for_element_present(driver, locator, timeout=10):
-        """
-        Wait for element to be present in DOM
+    def wait_for_element_presence(self, locator, timeout=None):
+        """Wait for element to be present in DOM.
         
         Args:
-            driver: WebDriver instance
-            locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int): Timeout in seconds
+            locator (tuple): Element locator
+            timeout (int): Custom timeout (optional)
         
         Returns:
-            WebElement: Present element
+            WebElement: The present element
         
         Raises:
             TimeoutException: If element not present within timeout
         """
-        wait = WebDriverWait(driver, timeout)
-        return wait.until(EC.presence_of_element_located(locator))
+        try:
+            wait_time = timeout if timeout else self.timeout
+            wait = WebDriverWait(self.driver, wait_time)
+            element = wait.until(EC.presence_of_element_located(locator))
+            logger.info(f"Element {locator} is present in DOM")
+            return element
+        except TimeoutException:
+            logger.error(f"Element {locator} not present within {wait_time} seconds")
+            raise
     
-    @staticmethod
-    def wait_for_text_in_element(driver, locator, text, timeout=10):
-        """
-        Wait for specific text to appear in element
+    def wait_for_text_in_element(self, locator, text, timeout=None):
+        """Wait for specific text to appear in element.
         
         Args:
-            driver: WebDriver instance
-            locator (tuple): Locator tuple (By.TYPE, "value")
+            locator (tuple): Element locator
             text (str): Expected text
-            timeout (int): Timeout in seconds
+            timeout (int): Custom timeout (optional)
         
         Returns:
             bool: True if text found
@@ -82,18 +106,45 @@ class WaitUtils:
         Raises:
             TimeoutException: If text not found within timeout
         """
-        wait = WebDriverWait(driver, timeout)
-        return wait.until(EC.text_to_be_present_in_element(locator, text))
+        try:
+            wait_time = timeout if timeout else self.timeout
+            wait = WebDriverWait(self.driver, wait_time)
+            result = wait.until(EC.text_to_be_present_in_element(locator, text))
+            logger.info(f"Text '{text}' found in element {locator}")
+            return result
+        except TimeoutException:
+            logger.error(f"Text '{text}' not found in element {locator} within {wait_time} seconds")
+            raise
     
-    @staticmethod
-    def wait_for_url_contains(driver, url_fragment, timeout=10):
-        """
-        Wait for URL to contain specific fragment
+    def wait_for_element_invisible(self, locator, timeout=None):
+        """Wait for element to become invisible.
         
         Args:
-            driver: WebDriver instance
-            url_fragment (str): URL fragment to wait for
-            timeout (int): Timeout in seconds
+            locator (tuple): Element locator
+            timeout (int): Custom timeout (optional)
+        
+        Returns:
+            bool: True if element invisible
+        
+        Raises:
+            TimeoutException: If element still visible after timeout
+        """
+        try:
+            wait_time = timeout if timeout else self.timeout
+            wait = WebDriverWait(self.driver, wait_time)
+            result = wait.until(EC.invisibility_of_element_located(locator))
+            logger.info(f"Element {locator} is invisible")
+            return result
+        except TimeoutException:
+            logger.error(f"Element {locator} still visible after {wait_time} seconds")
+            raise
+    
+    def wait_for_url_contains(self, url_fragment, timeout=None):
+        """Wait for URL to contain specific fragment.
+        
+        Args:
+            url_fragment (str): Expected URL fragment
+            timeout (int): Custom timeout (optional)
         
         Returns:
             bool: True if URL contains fragment
@@ -101,24 +152,12 @@ class WaitUtils:
         Raises:
             TimeoutException: If URL doesn't contain fragment within timeout
         """
-        wait = WebDriverWait(driver, timeout)
-        return wait.until(EC.url_contains(url_fragment))
-    
-    @staticmethod
-    def is_element_visible(driver, locator, timeout=5):
-        """
-        Check if element is visible (non-throwing version)
-        
-        Args:
-            driver: WebDriver instance
-            locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int): Timeout in seconds
-        
-        Returns:
-            bool: True if visible, False otherwise
-        """
         try:
-            WaitUtils.wait_for_element_visible(driver, locator, timeout)
-            return True
+            wait_time = timeout if timeout else self.timeout
+            wait = WebDriverWait(self.driver, wait_time)
+            result = wait.until(EC.url_contains(url_fragment))
+            logger.info(f"URL contains '{url_fragment}'")
+            return result
         except TimeoutException:
-            return False
+            logger.error(f"URL does not contain '{url_fragment}' within {wait_time} seconds")
+            raise
