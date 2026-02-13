@@ -1,21 +1,21 @@
-# Core test automation dependencies
+# Core Selenium Dependencies
 selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Testing Framework
 pytest==7.4.3
 pytest-html==4.1.1
 pytest-xdist==3.5.0
 
-# WebDriver management
-webdriver-manager==4.0.1
-
-# Configuration and data handling
+# Configuration Management
 PyYAML==6.0.1
 configparser==6.0.0
 
-# Logging and reporting
-allure-pytest==2.13.2
+# Logging and Reporting
+coloredlogs==15.0.1
 
-# Utilities
+# API Testing (if needed)
 requests==2.31.0
 
-# Additional dependencies
+# Utilities
 python-dotenv==1.0.0
