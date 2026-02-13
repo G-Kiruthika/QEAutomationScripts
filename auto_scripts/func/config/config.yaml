@@ -1,86 +1,45 @@
-# Automation Framework Configuration
+# Configuration file for UI & API Automation Framework
+
+# Environment Configuration
+environment:
+  base_urls:
+    login_url_1: 'https://ecommerce.example.com/login'
+    login_url_2: 'https://ecommerce-website.com/login'
+
+# Test Data Configuration
+test_data:
+  valid_user:
+    email: 'testuser@example.com'
+    password: 'Test@1234'
+  invalid_user:
+    username: 'invaliduser@example.com'
+    password: 'ValidPass123!'
 
 # Browser Configuration
-browser: chrome
-headless: false
+browser:
+  type: 'chrome'
+  headless: false
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load_timeout: 30
 
-# Timeout Configuration
-implicit_wait: 10
-explicit_wait: 20
-page_load_timeout: 30
-
-# Test Environment URLs
-environments:
-  qa:
-    base_url: https://ecommerce-website.com
-    login_url: https://ecommerce-website.com/login
-    api_base_url: https://api.ecommerce-website.com
-  
-  staging:
-    base_url: https://staging.ecommerce-website.com
-    login_url: https://staging.ecommerce-website.com/login
-    api_base_url: https://api.staging.ecommerce-website.com
-  
-  production:
-    base_url: https://www.ecommerce-website.com
-    login_url: https://www.ecommerce-website.com/login
-    api_base_url: https://api.ecommerce-website.com
-
-# Default Environment
-default_environment: qa
-
-# Test Data
-test_data:
-  valid_credentials:
-    username: validuser@example.com
-    password: ValidPass123!
-  
-  invalid_credentials:
-    username: invaliduser@example.com
-    password: InvalidPass123!
-  
-  blank_username:
-    username: ""
-    password: ValidPass123!
-  
-  wrong_passwords:
-    - WrongPass1
-    - WrongPass2
-    - WrongPass3
-    - WrongPass4
-    - WrongPass5
+# Selenium Grid Configuration (Optional)
+selenium_grid:
+  enabled: false
+  hub_url: 'http://localhost:4444/wd/hub'
 
 # Logging Configuration
 logging:
-  level: INFO
-  log_dir: logs
-  screenshot_on_failure: true
+  level: 'INFO'
+  log_file: 'logs/test_execution.log'
+
+# Screenshot Configuration
+screenshots:
+  enabled: true
+  on_failure: true
+  directory: 'screenshots/'
 
 # Reporting Configuration
 reporting:
-  report_dir: reports
-  report_format: html
-  generate_allure_report: true
-
-# Retry Configuration
-retry:
-  max_attempts: 3
-  retry_delay: 2
-
-# Email Configuration (for notifications)
-email:
-  enabled: false
-  smtp_server: smtp.gmail.com
-  smtp_port: 587
-  sender_email: automation@example.com
-  receiver_emails:
-    - qa-team@example.com
-
-# Database Configuration (if needed)
-database:
-  enabled: false
-  host: localhost
-  port: 5432
-  database: test_db
-  username: test_user
-  password: test_password
+  format: 'html'
+  directory: 'reports/'
