@@ -1,1 +1,60 @@
-{"pages": [{"page_name": "LoginPage", "class_name": "LoginPage", "file_name": "login_page.py", "elements": [{"element_name": "email_field", "locator": "placeholder_locator_email", "actions": ["enter_email"]}, {"element_name": "password_field", "locator": "placeholder_locator_password", "actions": ["enter_password"]}, {"element_name": "login_button", "locator": "placeholder_locator_login_button", "actions": ["click_login"]}, {"element_name": "error_message", "locator": "placeholder_locator_error_message", "actions": ["verify_error_message"]}, {"element_name": "user_name_header", "locator": "placeholder_locator_user_name_header", "actions": ["verify_user_name_header"]}, {"element_name": "session_token", "locator": "placeholder_locator_session_token", "actions": ["verify_session_token"]}], "unique_actions": ["navigate_to_login_page", "enter_email", "enter_password", "click_login", "verify_error_message", "verify_user_name_header", "verify_session_token"]}]}
+{
+  "pages": [
+    {
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
+      "actions": [
+        {
+          "name": "navigate_to_login",
+          "type": "navigation",
+          "locator": "url",
+          "locator_value": "https://ecommerce-website.com/login",
+          "description": "Navigates to the login page"
+        },
+        {
+          "name": "enter_username",
+          "type": "input",
+          "locator": "username_input",
+          "locator_value": "//input[@name='username']",
+          "description": "Enters the username"
+        },
+        {
+          "name": "enter_password",
+          "type": "input",
+          "locator": "password_input",
+          "locator_value": "//input[@name='password']",
+          "description": "Enters the password"
+        },
+        {
+          "name": "click_login",
+          "type": "click",
+          "locator": "login_button",
+          "locator_value": "//button[@type='submit']",
+          "description": "Clicks the login button"
+        },
+        {
+          "name": "get_validation_error",
+          "type": "get_text",
+          "locator": "validation_error",
+          "locator_value": "//div[@class='error-message']",
+          "description": "Retrieves the validation error message"
+        },
+        {
+          "name": "verify_account_lockout_notification",
+          "type": "verify",
+          "locator": "account_lockout_notification",
+          "locator_value": "//div[@class='lockout-notification']",
+          "description": "Verifies the account lockout notification display"
+        }
+      ],
+      "error_handling": [
+        {
+          "type": "email_notification",
+          "trigger": "account_lockout",
+          "handler": "send_email_report",
+          "description": "Send email notification when account is locked"
+        }
+      ]
+    }
+  ]
+}
