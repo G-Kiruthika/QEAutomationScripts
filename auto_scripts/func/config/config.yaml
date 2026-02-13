@@ -1,42 +1,42 @@
-# Configuration file for Python UI & API Automation Framework
+# Configuration file for test environment and test data
 
-# Test Environment Settings
-environment:
- name: "test"
- url: "https://test.example.com"
+ui:
+  base_url: "https://example.com"
+  registration_url: "https://example.com/register"
+  timeout: 10
+  browser: "chrome"
+  headless: false
 
-# Browser Configuration
-browser:
- type: "chrome" # Options: chrome, firefox, edge, safari
- headless: false
- implicit_wait: 10
- page_load_timeout: 30
- window_size: "1920x1080"
-
-# Test Data for Registration Tests
-test_data:
- registration:
- user_email_1:
- email: "user@example.com"
-
-# Selenium Grid Configuration (Optional)
-selenium_grid:
- enabled: false
- hub_url: "http://localhost:4444/wd/hub"
-
-# Reporting Configuration
-reporting:
- screenshot_on_failure: true
- video_recording: false
- report_format: "html" # Options: html, json, xml
-
-# API Configuration (if needed)
 api:
- base_url: "https://api.example.com"
- timeout: 30
- verify_ssl: true
+  base_url: "https://api.example.com"
+  timeout: 30
 
-# Logging Configuration
-logging:
- level: "INFO" # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
- log_file: "logs/automation.log"
+test_data:
+  registration:
+    valid_user:
+      username: "testuser_001"
+      email: "testuser001@example.com"
+      password: "SecurePass123!"
+    
+    invalid_email:
+      username: "testuser_002"
+      email: "invalid-email-format"
+      password: "SecurePass123!"
+    
+    password_mismatch:
+      username: "testuser_003"
+      email: "testuser003@example.com"
+      password: "SecurePass123!"
+      confirm_password: "DifferentPass456!"
+    
+    duplicate_username:
+      username: "existing_user"
+      email: "newemail@example.com"
+      password: "SecurePass123!"
+
+environment: "test"
+
+reporting:
+  email_enabled: false
+  recipients:
+    - "qa-team@example.com"
