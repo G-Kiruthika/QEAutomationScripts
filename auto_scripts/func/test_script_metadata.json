@@ -1,0 +1,20 @@
+{
+  "test_cases": [
+    {
+      "test_name": "test_sample_login",
+      "target_file_name": "test_sample_login",
+      "flow": [
+        {"action": "open_login_page"},
+        {"action": "enter_username", "data_ref": "username"},
+        {"action": "enter_password", "data_ref": "password"},
+        {"action": "submit_login"},
+        {"assertion": "is_logged_in"}
+      ]
+    }
+  ],
+  "test_data": {
+    "username": "standard_user",
+    "password": "secret_sauce"
+  },
+  "ecosystem_dependencies": []
+}
