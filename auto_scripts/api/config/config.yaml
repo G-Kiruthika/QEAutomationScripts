@@ -1,0 +1,37 @@
+# Configuration file for UI & API Automation Framework
+# Environment-specific settings
+
+ui:
+  base_url: "https://example.com"
+  browser: "chrome"
+  headless: false
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load_timeout: 30
+
+api:
+  base_url: "https://api.example.com"
+  timeout: 30
+  headers:
+    Content-Type: "application/json"
+    Accept: "application/json"
+
+test_data:
+  admin:
+    username: "admin"
+    password: "valid_admin_password"
+  products:
+    sample_product:
+      name: "sample_product"
+      price: "100"
+      inventory: "50"
+
+reporting:
+  email_enabled: false
+  email_recipients:
+    - "qa@example.com"
+  report_path: "reports/"
+
+logging:
+  level: "INFO"
+  log_file: "logs/automation.log"
