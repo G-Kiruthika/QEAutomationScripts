@@ -35,6 +35,18 @@ test_data:
       username: "invalidemailuser"
       email: "invalidemail.com"
       password: "SecurePass@123"
+  
+  # Login test data
+  login:
+    valid_credentials:
+      login_url: "https://ecommerce.example.com/login"
+      valid_email: "testuser@example.com"
+      valid_password: "Test@1234"
+    
+    invalid_credentials:
+      login_url: "https://ecommerce-website.com/login"
+      invalid_email: "invaliduser@example.com"
+      valid_password: "ValidPass123!"
 
 # Email reporting settings
 email:
