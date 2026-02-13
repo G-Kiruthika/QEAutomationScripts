@@ -1,11 +1,12 @@
-# Configuration file for test environment and test data
+# Configuration file for test automation framework
 
 ui:
   base_url: "https://example.com"
-  registration_url: "https://example.com/register"
-  timeout: 10
   browser: "chrome"
   headless: false
+  implicit_wait: 10
+  explicit_wait: 20
+  page_load_timeout: 30
 
 api:
   base_url: "https://api.example.com"
@@ -14,29 +15,21 @@ api:
 test_data:
   registration:
     valid_user:
-      username: "testuser_001"
-      email: "testuser001@example.com"
-      password: "SecurePass123!"
-    
-    invalid_email:
-      username: "testuser_002"
-      email: "invalid-email-format"
-      password: "SecurePass123!"
-    
-    password_mismatch:
-      username: "testuser_003"
-      email: "testuser003@example.com"
-      password: "SecurePass123!"
-      confirm_password: "DifferentPass456!"
-    
-    duplicate_username:
-      username: "existing_user"
-      email: "newemail@example.com"
-      password: "SecurePass123!"
+      first_name: "John"
+      last_name: "Doe"
+      email: "john.doe@example.com"
+      password: "Password123"
+    duplicate_email_user:
+      first_name: "Jane"
+      last_name: "Doe"
+      email: "john.doe@example.com"
+      password: "Password123"
 
-environment: "test"
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/test_execution.log"
 
 reporting:
-  email_enabled: false
-  recipients:
-    - "qa-team@example.com"
+  allure_results_dir: "allure-results"
+  html_report: "reports/test_report.html"
