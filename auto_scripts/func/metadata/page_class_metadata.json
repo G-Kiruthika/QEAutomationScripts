@@ -1,1 +1,55 @@
-{"pages": [{"class_name": "LoginPage", "file_name": "login_page", "actions": [{"action_name": "navigate_to_login_page", "locator": {"type": "url", "value": "https://ecommerce-website.com/login"}}, {"action_name": "enter_username", "locator": {"type": "input", "value": "//input[@id='username']"}}, {"action_name": "enter_password", "locator": {"type": "input", "value": "//input[@id='password']"}}, {"action_name": "click_login_button", "locator": {"type": "button", "value": "//button[@id='login']"}}], "validations": [{"validation_name": "login_page_displayed", "locator": {"type": "form", "value": "//form[@id='login-form']"}, "expected": "Login page is displayed"}, {"validation_name": "username_blank", "locator": {"type": "input", "value": "//input[@id='username']"}, "expected": "Username field remains blank"}, {"validation_name": "password_entered", "locator": {"type": "input", "value": "//input[@id='password']"}, "expected": "Password is entered"}, {"validation_name": "validation_error_username_required", "locator": {"type": "alert", "value": "//div[@class='error' and contains(text(),'Username is required')]"}, "expected": "Validation error displayed: 'Username is required'"}, {"validation_name": "login_prevented", "locator": {"type": "form", "value": "//form[@id='login-form']"}, "expected": "Login request is not submitted, user remains on login page"}, {"validation_name": "validation_error_incorrect_password", "locator": {"type": "alert", "value": "//div[@class='error' and contains(text(),'Incorrect password')]"}, "expected": "Each attempt fails with error message"}, {"validation_name": "validation_error_account_locked", "locator": {"type": "alert", "value": "//div[@class='error' and contains(text(),'Account locked')]"}, "expected": "Account is locked, error message displayed: 'Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password'"}, {"validation_name": "account_lockout_notification", "locator": {"type": "email", "value": "user@example.com"}, "expected": "Email notification sent to user about account lockout"}]}]}
+{
+  "pages": [
+    {
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
+      "actions": [
+        {
+          "action_name": "navigate_to_login_page",
+          "locator": "placeholder_url_locator",
+          "description": "Navigate to the login page"
+        },
+        {
+          "action_name": "leave_username_empty",
+          "locator": "placeholder_username_input_locator",
+          "description": "Leave username field empty"
+        },
+        {
+          "action_name": "enter_password",
+          "locator": "placeholder_password_input_locator",
+          "description": "Enter password"
+        },
+        {
+          "action_name": "enter_username",
+          "locator": "placeholder_username_input_locator",
+          "description": "Enter username"
+        },
+        {
+          "action_name": "click_login_button",
+          "locator": "placeholder_login_button_locator",
+          "description": "Click Login button"
+        },
+        {
+          "action_name": "verify_validation_error_username_required",
+          "locator": "placeholder_validation_error_locator",
+          "description": "Verify validation error for empty username"
+        },
+        {
+          "action_name": "verify_login_prevented",
+          "locator": "placeholder_login_page_locator",
+          "description": "Verify login is prevented and user remains on login page"
+        },
+        {
+          "action_name": "verify_error_message",
+          "locator": "placeholder_error_message_locator",
+          "description": "Verify error message displayed"
+        },
+        {
+          "action_name": "verify_account_lockout_notification",
+          "locator": "placeholder_notification_locator",
+          "description": "Verify account lockout notification sent"
+        }
+      ]
+    }
+  ]
+}
