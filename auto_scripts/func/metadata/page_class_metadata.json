@@ -1,1 +1,105 @@
-{"pages": [{"class_name": "RegistrationPage","file_name": "registration_page.py","actions": [{"action_name": "enter_first_name","locator": "//input[@name='first_name']"},{"action_name": "enter_last_name","locator": "//input[@name='last_name']"},{"action_name": "enter_email","locator": "//input[@name='email']"},{"action_name": "enter_password","locator": "//input[@name='password']"},{"action_name": "click_register_button","locator": "//button[@id='register']"},{"action_name": "get_success_message","locator": "//div[@class='success-message']"},{"action_name": "get_error_message","locator": "//div[@class='error-message']"}]}]}
+{
+  "pages": [
+    {
+      "page_name": "LoginPage",
+      "description": "Represents the login page of the e-commerce application.",
+      "url_patterns": [
+        "https://ecommerce.example.com/login",
+        "https://ecommerce-website.com/login"
+      ],
+      "locators": {
+        "email_field": {
+          "type": "input",
+          "selector": "email or username input field",
+          "strategy": "by_name_or_id"
+        },
+        "password_field": {
+          "type": "input",
+          "selector": "password input field",
+          "strategy": "by_name_or_id"
+        },
+        "login_button": {
+          "type": "button",
+          "selector": "Login button",
+          "strategy": "by_text_or_id"
+        },
+        "error_message": {
+          "type": "label",
+          "selector": "error message element",
+          "strategy": "by_text_or_class",
+          "optional": true
+        },
+        "user_name_header": {
+          "type": "label",
+          "selector": "user name in header",
+          "strategy": "by_class_or_id",
+          "optional": true
+        }
+      },
+      "actions": [
+        {
+          "action_name": "navigate_to_login",
+          "description": "Navigate to login page",
+          "parameters": ["url"]
+        },
+        {
+          "action_name": "enter_email",
+          "description": "Enter email or username in the email field",
+          "parameters": ["email"]
+        },
+        {
+          "action_name": "enter_password",
+          "description": "Enter password in the password field",
+          "parameters": ["password"]
+        },
+        {
+          "action_name": "click_login",
+          "description": "Click the login button",
+          "parameters": []
+        },
+        {
+          "action_name": "get_error_message",
+          "description": "Retrieve the login error message displayed",
+          "parameters": [],
+          "optional": true
+        },
+        {
+          "action_name": "get_user_name",
+          "description": "Get user name displayed after successful login",
+          "parameters": [],
+          "optional": true
+        }
+      ],
+      "validations": [
+        {
+          "validation_name": "is_login_page_displayed",
+          "description": "Verify login page is displayed with email and password fields"
+        },
+        {
+          "validation_name": "is_email_accepted",
+          "description": "Verify that the email field displays the entered email"
+        },
+        {
+          "validation_name": "is_password_masked",
+          "description": "Verify that the password field is masked and accepts input"
+        },
+        {
+          "validation_name": "is_authenticated_redirected",
+          "description": "Verify successful authentication and redirection to dashboard/home page"
+        },
+        {
+          "validation_name": "is_session_created",
+          "description": "Verify user session is created and user name is shown in header"
+        },
+        {
+          "validation_name": "is_login_failed_error_displayed",
+          "description": "Verify login fails and error message is displayed"
+        },
+        {
+          "validation_name": "is_user_remains_on_login_page",
+          "description": "Verify user is not authenticated and remains on login page"
+        }
+      ]
+    }
+  ]
+}

@@ -1,1 +1,101 @@
-{"test_cases": [{"name": "Register New User","flow": [{"page": "RegistrationPage","action": "enter_first_name","data": "John"},{"page": "RegistrationPage","action": "enter_last_name","data": "Doe"},{"page": "RegistrationPage","action": "enter_email","data": "john.doe@example.com"},{"page": "RegistrationPage","action": "enter_password","data": "Password123"},{"page": "RegistrationPage","action": "click_register_button"},{"page": "RegistrationPage","action": "get_success_message"}],"test_data": {"first_name": "John","last_name": "Doe","email": "john.doe@example.com","password": "Password123"},"expected_result": "Success message is displayed."},{"name": "Register Duplicate Email","flow": [{"page": "RegistrationPage","action": "enter_first_name","data": "Jane"},{"page": "RegistrationPage","action": "enter_last_name","data": "Doe"},{"page": "RegistrationPage","action": "enter_email","data": "john.doe@example.com"},{"page": "RegistrationPage","action": "enter_password","data": "Password123"},{"page": "RegistrationPage","action": "click_register_button"},{"page": "RegistrationPage","action": "get_error_message"}],"test_data": {"first_name": "Jane","last_name": "Doe","email": "john.doe@example.com","password": "Password123"},"expected_result": "Error message for duplicate email is displayed."}],"framework": {"base_classes_required": ["BasePage", "BaseTest"],"core_dependencies": ["selenium", "pytest"],"config_dependencies": ["configparser", "os"],"utils_dependencies": ["logging", "exceptions"],"external_libraries": ["webdriver_manager"],"required_imports": ["from selenium.webdriver.common.by import By","from selenium.webdriver.common.keys import Keys","import pytest","import logging"],"ecosystem_sync": true}}
+{
+  "test_scripts": [
+    {
+      "test_case_id": "501",
+      "test_case_description": "Test Case TC-POS-001",
+      "flow_logic": [
+        {
+          "step_id": 1,
+          "action": "navigate_to_login",
+          "page": "LoginPage",
+          "validation": "is_login_page_displayed"
+        },
+        {
+          "step_id": 2,
+          "action": "enter_email",
+          "page": "LoginPage",
+          "validation": "is_email_accepted"
+        },
+        {
+          "step_id": 3,
+          "action": "enter_password",
+          "page": "LoginPage",
+          "validation": "is_password_masked"
+        },
+        {
+          "step_id": 4,
+          "action": "click_login",
+          "page": "LoginPage",
+          "validation": "is_authenticated_redirected"
+        },
+        {
+          "step_id": 5,
+          "action": "get_user_name",
+          "page": "LoginPage",
+          "validation": "is_session_created"
+        }
+      ],
+      "test_data": {
+        "url": "https://ecommerce.example.com/login",
+        "email": "testuser@example.com",
+        "password": "Test@1234"
+      }
+    },
+    {
+      "test_case_id": "504",
+      "test_case_description": "Test Case TC_LOGIN_006",
+      "flow_logic": [
+        {
+          "step_id": 1,
+          "action": "navigate_to_login",
+          "page": "LoginPage",
+          "validation": "is_login_page_displayed"
+        },
+        {
+          "step_id": 2,
+          "action": "enter_email",
+          "page": "LoginPage",
+          "validation": "is_email_accepted"
+        },
+        {
+          "step_id": 3,
+          "action": "enter_password",
+          "page": "LoginPage",
+          "validation": "is_password_masked"
+        },
+        {
+          "step_id": 4,
+          "action": "click_login",
+          "page": "LoginPage",
+          "validation": "is_login_failed_error_displayed"
+        },
+        {
+          "step_id": 5,
+          "action": "get_error_message",
+          "page": "LoginPage",
+          "validation": "is_user_remains_on_login_page"
+        }
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "email": "invaliduser@example.com",
+        "password": "ValidPass123!"
+      }
+    }
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage", "BaseTest"],
+    "core_dependencies": ["selenium.webdriver", "selenium.webdriver.common.by"],
+    "config_dependencies": ["configparser", "os"],
+    "utils_dependencies": ["error_handler", "reporting_util"],
+    "external_libraries": ["selenium"],
+    "required_imports": [
+      "from selenium import webdriver",
+      "from selenium.webdriver.common.by import By",
+      "from framework.base_page import BasePage",
+      "from framework.base_test import BaseTest",
+      "from utils.error_handler import handle_error",
+      "from utils.reporting_util import report_step"
+    ]
+  }
+}
