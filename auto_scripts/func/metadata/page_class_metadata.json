@@ -1,25 +1,51 @@
 {
   "pages": [
     {
-      "class_name": "RegistrationPage",
-      "file_name": "registration_page.py",
-      "base_class": "BasePage",
-      "locators": {
-        "email_field": "//input[@id='email']",
-        "name_field": "//input[@id='name']",
-        "password_field": "//input[@id='password']",
-        "register_button": "//button[@id='register']",
-        "error_message": "//div[@class='error-message']"
-      },
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
       "actions": [
-        "enter_email(email)",
-        "enter_name(name)",
-        "enter_password(password)",
-        "click_register()"
-      ],
-      "validations": [
-        "validate_error_message(expected_message)",
-        "validate_registration_failed()"
+        {
+          "action": "navigate_to_login",
+          "locator": "//input[@id='login-url']" // placeholder
+        },
+        {
+          "action": "enter_email",
+          "locator": "//input[@id='email']" // placeholder
+        },
+        {
+          "action": "enter_password",
+          "locator": "//input[@id='password']" // placeholder
+        },
+        {
+          "action": "click_login",
+          "locator": "//button[@id='login']" // placeholder
+        },
+        {
+          "action": "verify_login_page_displayed",
+          "locator": "//div[@id='login-form']" // placeholder
+        },
+        {
+          "action": "verify_error_message",
+          "locator": "//div[@class='error-message']" // placeholder
+        },
+        {
+          "action": "verify_user_session",
+          "locator": "//header[@id='user-header']" // placeholder
+        }
+      ]
+    },
+    {
+      "class_name": "DashboardPage",
+      "file_name": "dashboard_page.py",
+      "actions": [
+        {
+          "action": "verify_dashboard_displayed",
+          "locator": "//div[@id='dashboard']" // placeholder
+        },
+        {
+          "action": "verify_user_name_displayed",
+          "locator": "//span[@id='user-name']" // placeholder
+        }
       ]
     }
   ]

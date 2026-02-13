@@ -1,68 +1,63 @@
 {
-  "test_suite": "registration_negative_tests",
+  "test_suite": "LoginFunctionality",
   "test_cases": [
     {
-      "test_name": "invalid_email_registration_fails",
-      "feature": "registration",
-      "target_file": "test_registration_invalid_email.py",
-      "pages_used": ["RegistrationPage"],
+      "test_case_id": "501",
+      "description": "Test Case TC-POS-001",
       "flow": [
-        "navigate_to_registration_page",
-        "enter_email('invalid_email')",
-        "enter_name('Test User')",
-        "enter_password('ValidPassword123')",
-        "click_register()",
-        "validate_error_message('Invalid email address')",
-        "validate_registration_failed()"
+        "navigate_to_login",
+        "enter_email",
+        "enter_password",
+        "click_login",
+        "verify_user_session"
       ],
       "test_data": {
-        "email": "invalid_email",
-        "name": "Test User",
-        "password": "ValidPassword123"
-      }
+        "url": "https://ecommerce.example.com/login",
+        "email": "testuser@example.com",
+        "password": "Test@1234"
+      },
+      "expected_results": [
+        "Login page is displayed with email and password fields",
+        "Email is accepted and displayed in the field",
+        "Password is masked and accepted",
+        "User is successfully authenticated and redirected to dashboard/home page",
+        "User name is displayed in the header and session token is generated"
+      ]
     },
     {
-      "test_name": "short_password_registration_fails",
-      "feature": "registration",
-      "target_file": "test_registration_short_password.py",
-      "pages_used": ["RegistrationPage"],
+      "test_case_id": "504",
+      "description": "Test Case TC_LOGIN_006",
       "flow": [
-        "navigate_to_registration_page",
-        "enter_email('valid.email@example.com')",
-        "enter_name('Test User')",
-        "enter_password('123')",
-        "click_register()",
-        "validate_error_message('Password is too short')",
-        "validate_registration_failed()"
+        "navigate_to_login",
+        "enter_email",
+        "enter_password",
+        "click_login",
+        "verify_error_message",
+        "verify_login_page_displayed"
       ],
       "test_data": {
-        "email": "valid.email@example.com",
-        "name": "Test User",
-        "password": "123"
-      }
+        "url": "https://ecommerce-website.com/login",
+        "username": "invaliduser@example.com",
+        "password": "ValidPass123!"
+      },
+      "expected_results": [
+        "Login page is displayed",
+        "Invalid username is entered",
+        "Password is entered",
+        "Login fails with error message 'Invalid username or password'",
+        "User is not authenticated and stays on login page"
+      ]
     }
   ],
   "framework": {
-    "base_classes_required": ["BasePage"],
-    "core_dependencies": [
-      "core/driver_factory.py",
-      "core/selenium_wrapper.py"
-    ],
-    "config_dependencies": [
-      "config/config.yaml"
-    ],
-    "external_libraries": [
+    "dependencies": [
       "selenium",
       "pytest",
-      "pyyaml"
+      "robust_error_handling",
+      "page_object_model",
+      "metadata_sync",
+      "session_management"
     ],
-    "required_imports": [
-      "pages.registration_page",
-      "pages.base_page",
-      "core.driver_factory"
-    ],
-    "utils_dependencies": [
-      "utils/send_email_report.py"
-    ]
+    "kb_folder_structure": "auto_scripts/func/metadata"
   }
 }
