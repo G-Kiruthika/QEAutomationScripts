@@ -1,191 +1,243 @@
-"""Selenium Wrapper Module
-
-Provides enhanced wrapper methods for common Selenium operations
-with built-in waits, error handling, and logging.
-"""
+# core/selenium_wrapper.py
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
     TimeoutException,
     NoSuchElementException,
-    StaleElementReferenceException,
-    ElementNotInteractableException
+    ElementNotInteractableException,
+    StaleElementReferenceException
 )
-import logging
-
-logger = logging.getLogger(__name__)
+from selenium.webdriver.common.action_chains import ActionChains
+import time
 
 
 class SeleniumWrapper:
-    """Enhanced Selenium wrapper with robust wait mechanisms."""
+    """
+    Wrapper class for common Selenium operations with enhanced error handling and waits.
+    """
     
     def __init__(self, driver, timeout=10):
-        """Initialize the wrapper.
+        """
+        Initialize the wrapper with a WebDriver instance.
         
         Args:
-            driver (WebDriver): Selenium WebDriver instance
+            driver: WebDriver instance
             timeout (int): Default timeout for waits in seconds
         """
         self.driver = driver
         self.timeout = timeout
         self.wait = WebDriverWait(driver, timeout)
     
-    def wait_for_element(self, locator, timeout=None, condition='presence'):
-        """Wait for element with specified condition.
+    def wait_for_element(self, locator, timeout=None):
+        """
+        Wait for an element to be present in the DOM.
         
         Args:
-            locator (tuple): Element locator (By.TYPE, 'value')
-            timeout (int, optional): Custom timeout. Defaults to instance timeout.
-            condition (str): Wait condition ('presence', 'visible', 'clickable')
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout, uses default if not provided
         
         Returns:
-            WebElement: Located element
-        
-        Raises:
-            TimeoutException: If element not found within timeout
+            WebElement: The found element
         """
-        timeout = timeout or self.timeout
-        wait = WebDriverWait(self.driver, timeout)
-        
+        wait_time = timeout or self.timeout
+        wait = WebDriverWait(self.driver, wait_time)
         try:
-            if condition == 'presence':
-                element = wait.until(EC.presence_of_element_located(locator))
-            elif condition == 'visible':
-                element = wait.until(EC.visibility_of_element_located(locator))
-            elif condition == 'clickable':
-                element = wait.until(EC.element_to_be_clickable(locator))
-            else:
-                raise ValueError(f"Invalid condition: {condition}")
-            
-            logger.debug(f"Element found: {locator}")
+            element = wait.until(EC.presence_of_element_located(locator))
             return element
-            
         except TimeoutException:
-            logger.error(f"Element not found within {timeout}s: {locator}")
-            raise
+            raise TimeoutException(f"Element {locator} not found within {wait_time} seconds")
+    
+    def wait_for_element_visible(self, locator, timeout=None):
+        """
+        Wait for an element to be visible.
+        
+        Args:
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout
+        
+        Returns:
+            WebElement: The visible element
+        """
+        wait_time = timeout or self.timeout
+        wait = WebDriverWait(self.driver, wait_time)
+        try:
+            element = wait.until(EC.visibility_of_element_located(locator))
+            return element
+        except TimeoutException:
+            raise TimeoutException(f"Element {locator} not visible within {wait_time} seconds")
+    
+    def wait_for_element_clickable(self, locator, timeout=None):
+        """
+        Wait for an element to be clickable.
+        
+        Args:
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout
+        
+        Returns:
+            WebElement: The clickable element
+        """
+        wait_time = timeout or self.timeout
+        wait = WebDriverWait(self.driver, wait_time)
+        try:
+            element = wait.until(EC.element_to_be_clickable(locator))
+            return element
+        except TimeoutException:
+            raise TimeoutException(f"Element {locator} not clickable within {wait_time} seconds")
     
     def click_element(self, locator, timeout=None):
-        """Click on element with wait.
-        
-        Args:
-            locator (tuple): Element locator
-            timeout (int, optional): Custom timeout
         """
-        try:
-            element = self.wait_for_element(locator, timeout, 'clickable')
-            element.click()
-            logger.info(f"Clicked element: {locator}")
-        except Exception as e:
-            logger.error(f"Failed to click element {locator}: {str(e)}")
-            raise
-    
-    def enter_text(self, locator, text, timeout=None, clear_first=True):
-        """Enter text into element.
+        Click an element with wait and retry logic.
         
         Args:
-            locator (tuple): Element locator
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout
+        """
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                element = self.wait_for_element_clickable(locator, timeout)
+                element.click()
+                return
+            except (StaleElementReferenceException, ElementNotInteractableException) as e:
+                if attempt == max_attempts - 1:
+                    raise
+                time.sleep(0.5)
+    
+    def enter_text(self, locator, text, clear_first=True, timeout=None):
+        """
+        Enter text into an input field.
+        
+        Args:
+            locator (tuple): Locator tuple (By.TYPE, 'value')
             text (str): Text to enter
-            timeout (int, optional): Custom timeout
-            clear_first (bool): Clear field before entering text
+            clear_first (bool): Whether to clear the field first
+            timeout (int): Custom timeout
         """
-        try:
-            element = self.wait_for_element(locator, timeout, 'visible')
-            if clear_first:
-                element.clear()
-            element.send_keys(text)
-            logger.info(f"Entered text into element: {locator}")
-        except Exception as e:
-            logger.error(f"Failed to enter text into {locator}: {str(e)}")
-            raise
+        element = self.wait_for_element_visible(locator, timeout)
+        if clear_first:
+            element.clear()
+        element.send_keys(text)
     
-    def get_element_text(self, locator, timeout=None):
-        """Get text from element.
+    def get_text(self, locator, timeout=None):
+        """
+        Get text from an element.
         
         Args:
-            locator (tuple): Element locator
-            timeout (int, optional): Custom timeout
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout
         
         Returns:
             str: Element text
         """
-        try:
-            element = self.wait_for_element(locator, timeout, 'visible')
-            text = element.text
-            logger.debug(f"Retrieved text from {locator}: {text}")
-            return text
-        except Exception as e:
-            logger.error(f"Failed to get text from {locator}: {str(e)}")
-            raise
+        element = self.wait_for_element_visible(locator, timeout)
+        return element.text
     
-    def is_element_visible(self, locator, timeout=None):
-        """Check if element is visible.
+    def is_element_visible(self, locator, timeout=2):
+        """
+        Check if an element is visible.
         
         Args:
-            locator (tuple): Element locator
-            timeout (int, optional): Custom timeout
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Timeout for check
         
         Returns:
             bool: True if visible, False otherwise
         """
         try:
-            self.wait_for_element(locator, timeout or 5, 'visible')
+            self.wait_for_element_visible(locator, timeout)
             return True
-        except TimeoutException:
+        except (TimeoutException, NoSuchElementException):
             return False
     
-    def is_element_present(self, locator, timeout=None):
-        """Check if element is present in DOM.
+    def is_element_present(self, locator, timeout=2):
+        """
+        Check if an element is present in DOM.
         
         Args:
-            locator (tuple): Element locator
-            timeout (int, optional): Custom timeout
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Timeout for check
         
         Returns:
             bool: True if present, False otherwise
         """
         try:
-            self.wait_for_element(locator, timeout or 5, 'presence')
+            self.wait_for_element(locator, timeout)
             return True
-        except TimeoutException:
+        except (TimeoutException, NoSuchElementException):
             return False
     
-    def get_attribute(self, locator, attribute, timeout=None):
-        """Get attribute value from element.
+    def scroll_to_element(self, locator, timeout=None):
+        """
+        Scroll to an element.
         
         Args:
-            locator (tuple): Element locator
-            attribute (str): Attribute name
-            timeout (int, optional): Custom timeout
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout
+        """
+        element = self.wait_for_element(locator, timeout)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        time.sleep(0.3)  # Small delay for smooth scrolling
+    
+    def hover_over_element(self, locator, timeout=None):
+        """
+        Hover over an element.
+        
+        Args:
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout
+        """
+        element = self.wait_for_element_visible(locator, timeout)
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).perform()
+    
+    def get_attribute(self, locator, attribute_name, timeout=None):
+        """
+        Get an attribute value from an element.
+        
+        Args:
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            attribute_name (str): Name of the attribute
+            timeout (int): Custom timeout
         
         Returns:
             str: Attribute value
         """
-        try:
-            element = self.wait_for_element(locator, timeout, 'presence')
-            value = element.get_attribute(attribute)
-            logger.debug(f"Retrieved attribute '{attribute}' from {locator}: {value}")
-            return value
-        except Exception as e:
-            logger.error(f"Failed to get attribute from {locator}: {str(e)}")
-            raise
+        element = self.wait_for_element(locator, timeout)
+        return element.get_attribute(attribute_name)
     
     def wait_for_url_contains(self, url_fragment, timeout=None):
-        """Wait for URL to contain specified fragment.
+        """
+        Wait for URL to contain a specific fragment.
         
         Args:
             url_fragment (str): URL fragment to wait for
-            timeout (int, optional): Custom timeout
+            timeout (int): Custom timeout
         
         Returns:
             bool: True if URL contains fragment
         """
-        timeout = timeout or self.timeout
-        wait = WebDriverWait(self.driver, timeout)
+        wait_time = timeout or self.timeout
+        wait = WebDriverWait(self.driver, wait_time)
         try:
-            wait.until(EC.url_contains(url_fragment))
-            logger.info(f"URL contains: {url_fragment}")
-            return True
+            return wait.until(EC.url_contains(url_fragment))
         except TimeoutException:
-            logger.error(f"URL does not contain '{url_fragment}' within {timeout}s")
-            return False
+            raise TimeoutException(f"URL did not contain '{url_fragment}' within {wait_time} seconds")
+    
+    def switch_to_frame(self, locator, timeout=None):
+        """
+        Switch to an iframe.
+        
+        Args:
+            locator (tuple): Locator tuple (By.TYPE, 'value')
+            timeout (int): Custom timeout
+        """
+        element = self.wait_for_element(locator, timeout)
+        self.driver.switch_to.frame(element)
+    
+    def switch_to_default_content(self):
+        """
+        Switch back to default content from iframe.
+        """
+        self.driver.switch_to.default_content()

@@ -1,49 +1,54 @@
-# Python UI & API Automation Framework Configuration
-# Environment-specific settings for test execution
+# Configuration file for UI and API automation framework
 
-# Application URLs
-app:
+# Environment settings
+environment:
   base_url: "https://example.com"
-  registration_url: "https://example.com/register"
-  login_url: "https://example.com/login"
+  timeout: 10
+  implicit_wait: 5
 
-# Browser Configuration
+# Browser settings
 browser:
-  default: "chrome"
+  type: "chrome"  # Options: chrome, firefox, edge, safari
   headless: false
-  implicit_wait: 10
-  page_load_timeout: 30
   window_size: "1920x1080"
 
-# Test Data
+# Test data for registration tests
 test_data:
   registration:
     valid_user:
-      first_name: "John"
-      last_name: "Doe"
-      email: "john.doe@example.com"
-      password: "Password123"
-    duplicate_user:
-      first_name: "Jane"
-      last_name: "Doe"
-      email: "john.doe@example.com"
-      password: "Password123"
+      username: "testuser123"
+      email: "testuser123@example.com"
+      password: "SecurePass@123"
+    
+    existing_email:
+      username: "existinguser"
+      email: "existing@example.com"
+      password: "SecurePass@123"
+    
+    password_mismatch:
+      username: "mismatchuser"
+      email: "mismatch@example.com"
+      password: "SecurePass@123"
+      confirm_password: "DifferentPass@123"
+    
+    invalid_email:
+      username: "invalidemailuser"
+      email: "invalidemail.com"
+      password: "SecurePass@123"
 
-# Logging Configuration
-logging:
-  level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  file: "logs/test_execution.log"
+# Email reporting settings
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "automation@example.com"
+  sender_password: "your_password_here"
+  recipient_emails:
+    - "qa-team@example.com"
+  subject: "Automation Test Report"
 
-# Reporting
-reporting:
-  screenshots_on_failure: true
-  screenshot_path: "reports/screenshots/"
-  html_report: true
-  report_path: "reports/html/"
-
-# API Configuration (for future use)
+# API settings (if needed)
 api:
   base_url: "https://api.example.com"
   timeout: 30
-  retry_count: 3
+  headers:
+    Content-Type: "application/json"
