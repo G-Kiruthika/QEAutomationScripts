@@ -1,25 +1,41 @@
-# Environment Configuration for EcommerceLoginFlow Test Suite
+# Environment Configuration
+environment:
+  base_url: "https://ecommerce-website.com"
+  login_url: "https://ecommerce-website.com/login"
 
-ecommerce:
-  login_urls:
-    primary: 'https://ecommerce.example.com/login'
-    secondary: 'https://ecommerce-website.com/login'
+# Test Data
+test_data:
+  valid_user:
+    username: "validuser@example.com"
+    password: "ValidPass123!"
   
-  test_users:
-    valid_user:
-      email: 'testuser@example.com'
-      password: 'Test@1234'
-    
-    invalid_user:
-      email: 'invaliduser@example.com'
-      password: 'ValidPass123!'
+  invalid_credentials:
+    empty_username: ""
+    valid_password: "ValidPass123!"
+    incorrect_passwords:
+      - "WrongPass1"
+      - "WrongPass2"
+      - "WrongPass3"
+      - "WrongPass4"
+      - "WrongPass5"
 
+# Browser Configuration
 browser:
-  default: 'chrome'
+  default: "chrome"
   headless: false
   implicit_wait: 10
-  page_load_timeout: 30
+  explicit_wait: 20
 
+# Email Configuration
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender: "automation@example.com"
+  recipients:
+    - "qa-team@example.com"
+
+# Reporting
 reporting:
   screenshots_on_failure: true
-  log_level: 'INFO'
+  video_recording: false
+  allure_results: "allure-results/"
