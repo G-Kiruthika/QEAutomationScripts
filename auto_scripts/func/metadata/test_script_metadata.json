@@ -1,1 +1,62 @@
-{"test_scripts": [{"test_case_id": "508","test_case_description": "Test Case TC_LOGIN_008","flow_logic": [{"action": "navigate_to_login_page", "parameters": {"url": "https://ecommerce-website.com/login"}}, {"action": "enter_username", "parameters": {"username": ""}}, {"action": "enter_password", "parameters": {"password": "ValidPass123!"}}, {"action": "click_login_button", "parameters": {}}, {"action": "verify_validation_error", "parameters": {"expected_message": "Username is required"}}, {"action": "verify_user_remains_on_login_page", "parameters": {}}],"test_data": {"url": "https://ecommerce-website.com/login","username": "","password": "ValidPass123!","expected_validation_error": "Username is required"},"acceptance_criteria": "AC_LOGIN_008"},{"test_case_id": "510","test_case_description": "Test Case TC_LOGIN_010","flow_logic": [{"action": "navigate_to_login_page", "parameters": {"url": "https://ecommerce-website.com/login"}}, {"action": "enter_username", "parameters": {"username": "validuser@example.com"}}, {"action": "enter_password", "parameters": {"password": "WrongPass1"}}, {"action": "click_login_button", "parameters": {}}, {"action": "enter_password", "parameters": {"password": "WrongPass2"}}, {"action": "click_login_button", "parameters": {}}, {"action": "enter_password", "parameters": {"password": "WrongPass3"}}, {"action": "click_login_button", "parameters": {}}, {"action": "enter_password", "parameters": {"password": "WrongPass4"}}, {"action": "click_login_button", "parameters": {}}, {"action": "enter_password", "parameters": {"password": "WrongPass5"}}, {"action": "click_login_button", "parameters": {}}, {"action": "enter_password", "parameters": {"password": "ValidPass123!"}}, {"action": "click_login_button", "parameters": {}}, {"action": "verify_account_lockout_message", "parameters": {"expected_message": "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password"}}],"test_data": {"url": "https://ecommerce-website.com/login","username": "validuser@example.com","wrong_passwords": ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"],"correct_password": "ValidPass123!","expected_lockout_message": "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password"},"acceptance_criteria": "AC_LOGIN_010"}],"framework": {"base_classes_required": ["PageObjectBase", "TestBase"],"core_dependencies": ["selenium", "pytest"],"config_dependencies": ["configparser"],"utils_dependencies": ["logging", "reporting"],"external_libraries": ["email"],"required_imports": ["from selenium import webdriver","from selenium.webdriver.common.by import By","import pytest","import logging"]}}
+{
+  "test_scripts": [
+    {
+      "test_case_id": "508",
+      "test_case_description": "Test Case TC_LOGIN_008",
+      "flow": [
+        {"step_id": 1, "action": "navigate_to_login_page", "page": "LoginPage"},
+        {"step_id": 2, "action": "enter_username", "page": "LoginPage", "data": ""},
+        {"step_id": 3, "action": "enter_password", "page": "LoginPage", "data": "ValidPass123!"},
+        {"step_id": 4, "action": "click_login_button", "page": "LoginPage"},
+        {"step_id": 5, "action": "verify_validation_error", "page": "LoginPage", "expected": "Username is required"},
+        {"step_id": 6, "action": "verify_login_prevented", "page": "LoginPage", "expected": "user remains on login page"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "username": "",
+        "password": "ValidPass123!"
+      }
+    },
+    {
+      "test_case_id": "510",
+      "test_case_description": "Test Case TC_LOGIN_010",
+      "flow": [
+        {"step_id": 1, "action": "navigate_to_login_page", "page": "LoginPage"},
+        {"step_id": 2, "action": "enter_username", "page": "LoginPage", "data": "validuser@example.com"},
+        {"step_id": 3, "action": "enter_password", "page": "LoginPage", "data": "WrongPass1"},
+        {"step_id": 4, "action": "click_login_button", "page": "LoginPage"},
+        {"step_id": 5, "action": "verify_validation_error", "page": "LoginPage", "expected": "error message"},
+        {"step_id": 6, "action": "enter_password", "page": "LoginPage", "data": "WrongPass2"},
+        {"step_id": 7, "action": "click_login_button", "page": "LoginPage"},
+        {"step_id": 8, "action": "verify_validation_error", "page": "LoginPage", "expected": "error message"},
+        {"step_id": 9, "action": "enter_password", "page": "LoginPage", "data": "WrongPass3"},
+        {"step_id": 10, "action": "click_login_button", "page": "LoginPage"},
+        {"step_id": 11, "action": "verify_validation_error", "page": "LoginPage", "expected": "error message"},
+        {"step_id": 12, "action": "enter_password", "page": "LoginPage", "data": "WrongPass4"},
+        {"step_id": 13, "action": "click_login_button", "page": "LoginPage"},
+        {"step_id": 14, "action": "verify_validation_error", "page": "LoginPage", "expected": "error message"},
+        {"step_id": 15, "action": "enter_password", "page": "LoginPage", "data": "WrongPass5"},
+        {"step_id": 16, "action": "click_login_button", "page": "LoginPage"},
+        {"step_id": 17, "action": "verify_validation_error", "page": "LoginPage", "expected": "error message"},
+        {"step_id": 18, "action": "enter_password", "page": "LoginPage", "data": "ValidPass123!"},
+        {"step_id": 19, "action": "click_login_button", "page": "LoginPage"},
+        {"step_id": 20, "action": "verify_account_lockout_notification", "page": "LoginPage", "expected": "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password"},
+        {"step_id": 21, "action": "verify_account_lockout_notification", "page": "LoginPage", "expected": "Email notification sent to user about account lockout"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "username": "validuser@example.com",
+        "wrong_passwords": ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"],
+        "correct_password": "ValidPass123!"
+      }
+    }
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "config_dependencies": ["config/config.yaml"],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"],
+    "utils_dependencies": ["utils/send_email_report.py"]
+  }
+}

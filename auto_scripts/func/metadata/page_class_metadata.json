@@ -1,1 +1,26 @@
-{"pages": [{"class_name": "LoginPage","file_name": "login_page.py","locators": {"username_field": "//input[@name='username']", "password_field": "//input[@name='password']", "login_button": "//button[@id='login']", "validation_error": "//div[@class='error-message']", "account_lockout_message": "//div[@class='lockout-message']"},"actions": [{"name": "navigate_to_login_page","description": "Navigate to the login page","parameters": ["url"],"locator": null},{"name": "enter_username","description": "Enter username in the username field","parameters": ["username"],"locator": "username_field"},{"name": "enter_password","description": "Enter password in the password field","parameters": ["password"],"locator": "password_field"},{"name": "click_login_button","description": "Click the login button","parameters": [],"locator": "login_button"},{"name": "verify_validation_error","description": "Verify validation error is displayed","parameters": ["expected_message"],"locator": "validation_error"},{"name": "verify_account_lockout_message","description": "Verify account lockout message is displayed","parameters": ["expected_message"],"locator": "account_lockout_message"},{"name": "verify_login_page_displayed","description": "Verify login page is displayed","parameters": [],"locator": null},{"name": "verify_user_remains_on_login_page","description": "Verify user remains on login page","parameters": [],"locator": null}]}]}
+{
+  "pages": [
+    {
+      "page_name": "LoginPage",
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
+      "base_class": "BasePage",
+      "locators": [
+        {"element": "username_field", "locator": "//input[@name='username']", "locator_type": "xpath"},
+        {"element": "password_field", "locator": "//input[@name='password']", "locator_type": "xpath"},
+        {"element": "login_button", "locator": "//button[@id='login']", "locator_type": "xpath"},
+        {"element": "validation_error", "locator": "//div[@class='error-message']", "locator_type": "xpath"},
+        {"element": "account_lockout_notification", "locator": "//div[@class='notification']", "locator_type": "xpath"}
+      ],
+      "actions": [
+        "navigate_to_login_page",
+        "enter_username",
+        "enter_password",
+        "click_login_button",
+        "verify_validation_error",
+        "verify_login_prevented",
+        "verify_account_lockout_notification"
+      ]
+    }
+  ]
+}
