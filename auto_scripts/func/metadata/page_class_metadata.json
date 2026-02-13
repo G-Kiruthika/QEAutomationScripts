@@ -1,35 +1,33 @@
 {
-  "pages": {
-    "RegistrationPage": {
-      "file_name": "registration_page.py",
+  "pages": [
+    {
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
       "locators": {
-        "email_input": {"by": "id", "value": "email_input_placeholder"},
-        "password_input": {"by": "id", "value": "password_input_placeholder"},
-        "name_input": {"by": "id", "value": "name_input_placeholder"},
-        "register_button": {"by": "id", "value": "register_button_placeholder"},
-        "error_message": {"by": "id", "value": "error_message_placeholder"}
+        "email_field": {"strategy": "id", "value": "email_field_id_placeholder"},
+        "password_field": {"strategy": "id", "value": "password_field_id_placeholder"},
+        "login_button": {"strategy": "id", "value": "login_button_id_placeholder"},
+        "error_message": {"strategy": "id", "value": "error_message_id_placeholder"},
+        "user_name_header": {"strategy": "id", "value": "user_name_header_id_placeholder"},
+        "session_token": {"strategy": "custom", "value": "session_token_locator_placeholder"}
       },
       "actions": [
-        "register_user(email, password, name)",
-        "submit_registration()"
+        {"action_name": "navigate_to_login_page", "parameters": ["url"], "description": "Navigate to the login page using the provided URL."},
+        {"action_name": "enter_email", "parameters": ["email"], "description": "Enter the email address in the email field."},
+        {"action_name": "enter_password", "parameters": ["password"], "description": "Enter the password in the password field."},
+        {"action_name": "click_login_button", "parameters": [], "description": "Click the Login button."},
+        {"action_name": "verify_user_session_created", "parameters": [], "description": "Verify that user session is created and user name is displayed in header."},
+        {"action_name": "verify_login_error_message", "parameters": ["expected_message"], "description": "Verify that the login error message is displayed."},
+        {"action_name": "verify_remain_on_login_page", "parameters": [], "description": "Verify that user remains on login page after failed login attempt."}
       ],
       "validations": [
-        "validate_registration_success()",
-        "validate_error_message()"
-      ]
-    },
-    "DatabasePage": {
-      "file_name": "database_page.py",
-      "locators": {
-        "user_record": {"by": "db", "value": "user_record_placeholder"},
-        "password_hash": {"by": "db", "value": "password_hash_placeholder"}
-      },
-      "actions": [
-        "retrieve_user_record(email)"
-      ],
-      "validations": [
-        "validate_password_hash()"
+        {"validation_name": "is_login_page_displayed", "description": "Check if login page is displayed with email and password fields."},
+        {"validation_name": "is_email_accepted", "description": "Check if email is accepted and displayed in the field."},
+        {"validation_name": "is_password_masked_and_accepted", "description": "Check if password is masked and accepted."},
+        {"validation_name": "is_user_authenticated_and_redirected", "description": "Check if user is authenticated and redirected to dashboard/home page."},
+        {"validation_name": "is_error_message_displayed", "description": "Check if error message 'Invalid username or password' is displayed after failed login."},
+        {"validation_name": "is_user_remain_on_login_page", "description": "Check if user stays on login page after failed authentication."}
       ]
     }
-  }
+  ]
 }
