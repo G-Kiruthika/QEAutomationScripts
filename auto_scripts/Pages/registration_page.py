@@ -19,6 +19,15 @@ class RegistrationPage(BasePage):
     def enter_email(self, email):
         self.enter_text(self.EMAIL_INPUT, email)
 
+    def enter_name(self, name):
+        self.enter_text(self.NAME_FIELD, name)
+
+    def enter_password(self, password):
+        self.enter_text(self.PASSWORD_INPUT, password)
+
+    def click_register(self):
+        self.click_element(self.REGISTER_BUTTON)
+
     def submit_registration(self):
         self.click_element(self.SUBMIT_BUTTON)
 
@@ -34,9 +43,6 @@ class RegistrationPage(BasePage):
     def enter_last_name(self, last_name):
         self.enter_text(self.LAST_NAME_INPUT, last_name)
 
-    def enter_password(self, password):
-        self.enter_text(self.PASSWORD_INPUT, password)
-
     def click_register_button(self):
         self.click_element(self.REGISTER_BUTTON)
 
@@ -45,3 +51,9 @@ class RegistrationPage(BasePage):
 
     def get_error_message(self):
         return self.get_element_text(self.ERROR_MESSAGE)
+
+    def validate_error_message(self, expected_message):
+        return self.get_element_text(self.ERROR_MESSAGE) == expected_message
+
+    def validate_registration_failed(self):
+        return self.is_element_visible(self.ERROR_MESSAGE)
