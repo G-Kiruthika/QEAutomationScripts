@@ -1,93 +1,61 @@
-# core/driver_factory.py
+"""Driver Factory Module
+
+Provides WebDriver instantiation and management.
+Follows Singleton pattern for driver instances.
+"""
 
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
 import yaml
 import os
 
 
-def get_driver(browser_type=None, headless=None):
-    """
-    Factory method to create and return a WebDriver instance.
+def get_driver(browser="chrome", headless=False):
+    """Get WebDriver instance
     
     Args:
-        browser_type (str): Type of browser ('chrome', 'firefox', 'edge')
-        headless (bool): Whether to run browser in headless mode
+        browser (str): Browser type (chrome, firefox, edge)
+        headless (bool): Run browser in headless mode
     
     Returns:
-        WebDriver: Configured WebDriver instance
+        WebDriver: Selenium WebDriver instance
     """
     # Load configuration
     config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
-    with open(config_path) as f:
-        config = yaml.safe_load(f)
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+            browser = config.get('browser', {}).get('default', browser)
+            headless = config.get('browser', {}).get('headless', headless)
     
-    # Use provided parameters or fall back to config
-    browser = browser_type or config['browser']['type']
-    is_headless = headless if headless is not None else config['browser']['headless']
-    window_size = config['browser'].get('window_size', '1920x1080')
-    timeout = config['environment'].get('timeout', 10)
-    implicit_wait = config['environment'].get('implicit_wait', 5)
-    
-    driver = None
-    
-    if browser.lower() == 'chrome':
-        options = webdriver.ChromeOptions()
-        if is_headless:
-            options.add_argument('--headless')
-        options.add_argument(f'--window-size={window_size}')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-gpu')
+    if browser.lower() == "chrome":
+        chrome_options = Options()
+        if headless:
+            chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--window-size=1920,1080")
         
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
-    
-    elif browser.lower() == 'firefox':
-        options = webdriver.FirefoxOptions()
-        if is_headless:
-            options.add_argument('--headless')
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    elif browser.lower() == "firefox":
+        from selenium.webdriver.firefox.service import Service as FirefoxService
+        from webdriver_manager.firefox import GeckoDriverManager
+        
+        firefox_options = webdriver.FirefoxOptions()
+        if headless:
+            firefox_options.add_argument("--headless")
         
         service = FirefoxService(GeckoDriverManager().install())
-        driver = webdriver.Firefox(service=service, options=options)
-    
-    elif browser.lower() == 'edge':
-        options = webdriver.EdgeOptions()
-        if is_headless:
-            options.add_argument('--headless')
-        options.add_argument(f'--window-size={window_size}')
-        
-        service = EdgeService(EdgeChromiumDriverManager().install())
-        driver = webdriver.Edge(service=service, options=options)
-    
+        driver = webdriver.Firefox(service=service, options=firefox_options)
     else:
-        raise ValueError(f"Unsupported browser type: {browser}")
+        raise ValueError(f"Unsupported browser: {browser}")
     
-    # Set timeouts
-    driver.implicitly_wait(implicit_wait)
-    driver.set_page_load_timeout(timeout)
-    
-    # Maximize window if not headless
-    if not is_headless:
-        driver.maximize_window()
+    # Set implicit wait and page load timeout
+    driver.implicitly_wait(10)
+    driver.set_page_load_timeout(30)
     
     return driver
-
-
-def quit_driver(driver):
-    """
-    Safely quit the WebDriver instance.
-    
-    Args:
-        driver: WebDriver instance to quit
-    """
-    if driver:
-        try:
-            driver.quit()
-        except Exception as e:
-            print(f"Error while quitting driver: {str(e)}")

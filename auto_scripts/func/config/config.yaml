@@ -1,32 +1,25 @@
-# Environment Configuration
-environment: test
+# Configuration file for Python UI & API Automation Framework
+# Environment-specific settings and test data
 
-# Test Data
-test_data:
-  user_registration:
-    valid_user:
-      email: "user@example.com"
-      password: "SecurePass123"
-      name: "John Doe"
-    invalid_user:
-      email: "user@example.com"
+ui:
+  login:
+    urls:
+      ecommerce_primary: "https://ecommerce.example.com/login"
+      ecommerce_secondary: "https://ecommerce-website.com/login"
+    test_users:
+      valid_user:
+        email: "testuser@example.com"
+        password: "Test@1234"
+      invalid_user:
+        email: "invaliduser@example.com"
+        password: "ValidPass123!"
 
-# Database Configuration
-database:
-  host: "localhost"
-  port: 5432
-  name: "test_db"
-  user: "test_user"
-  password: "test_password"
-
-# Browser Configuration
 browser:
-  type: "chrome"
+  default: "chrome"
   headless: false
   implicit_wait: 10
   page_load_timeout: 30
 
-# Application URLs
-app:
-  base_url: "https://example.com"
-  registration_url: "https://example.com/register"
+reporting:
+  screenshots_on_failure: true
+  log_level: "INFO"
