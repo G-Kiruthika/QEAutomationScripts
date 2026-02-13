@@ -1,219 +1,170 @@
-"""Base Page Module
-
-Provides common page object functionality for all page classes.
-Includes element interaction, waiting, and navigation methods.
-"""
-
-import logging
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-
+from selenium.common.exceptions import TimeoutException
+from core.selenium_wrapper import SeleniumWrapper
 
 class BasePage:
-    """Base class for all page objects.
-    
-    Provides common methods for element interaction and page navigation.
-    All page classes should inherit from this base class.
+    """
+    Base Page class that all page objects inherit from.
+    Provides common functionality for all pages.
     """
     
-    def __init__(self, driver, timeout=30):
-        """Initialize BasePage with WebDriver instance.
+    def __init__(self, driver, timeout=10):
+        """
+        Initialize BasePage
         
         Args:
-            driver (WebDriver): Selenium WebDriver instance
-            timeout (int): Default timeout for waits in seconds
+            driver: WebDriver instance
+            timeout (int): Default timeout for waits
         """
         self.driver = driver
         self.timeout = timeout
-        self.logger = logging.getLogger(__name__)
+        self.wait = WebDriverWait(driver, timeout)
+        self.wrapper = SeleniumWrapper(driver, timeout)
     
-    def find_element(self, locator):
-        """Find and return a single element.
+    def find_element(self, locator, timeout=None):
+        """
+        Find element with explicit wait
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Custom timeout, uses default if None
         
         Returns:
             WebElement: Found element
         """
-        try:
-            return self.driver.find_element(*locator)
-        except NoSuchElementException as e:
-            self.logger.error(f"Element not found: {locator}")
-            raise
+        return self.wrapper.wait_for_element(locator, timeout)
     
-    def find_elements(self, locator):
-        """Find and return multiple elements.
+    def find_elements(self, locator, timeout=None):
+        """
+        Find multiple elements with explicit wait
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Custom timeout, uses default if None
         
         Returns:
             list: List of WebElements
         """
+        wait_time = timeout if timeout else self.timeout
+        wait = WebDriverWait(self.driver, wait_time)
+        wait.until(EC.presence_of_element_located(locator))
         return self.driver.find_elements(*locator)
     
-    def wait_for_element(self, locator, timeout=None):
-        """Wait for element to be present in DOM.
+    def click_element(self, locator, timeout=None):
+        """
+        Click element with explicit wait
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int, optional): Custom timeout in seconds
-        
-        Returns:
-            WebElement: Found element
+            timeout (int): Custom timeout, uses default if None
         """
-        timeout = timeout or self.timeout
-        try:
-            return WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located(locator)
-            )
-        except TimeoutException:
-            self.logger.error(f"Timeout waiting for element: {locator}")
-            raise
+        self.wrapper.click_element(locator, timeout)
     
-    def wait_for_element_visible(self, locator, timeout=None):
-        """Wait for element to be visible.
-        
-        Args:
-            locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int, optional): Custom timeout in seconds
-        
-        Returns:
-            WebElement: Visible element
+    def enter_text(self, locator, text, timeout=None, clear_first=True):
         """
-        timeout = timeout or self.timeout
-        try:
-            return WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located(locator)
-            )
-        except TimeoutException:
-            self.logger.error(f"Timeout waiting for element visibility: {locator}")
-            raise
-    
-    def wait_for_element_clickable(self, locator, timeout=None):
-        """Wait for element to be clickable.
-        
-        Args:
-            locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int, optional): Custom timeout in seconds
-        
-        Returns:
-            WebElement: Clickable element
-        """
-        timeout = timeout or self.timeout
-        try:
-            return WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable(locator)
-            )
-        except TimeoutException:
-            self.logger.error(f"Timeout waiting for element to be clickable: {locator}")
-            raise
-    
-    def click_element(self, locator):
-        """Click on an element.
-        
-        Args:
-            locator (tuple): Locator tuple (By.TYPE, "value")
-        """
-        element = self.wait_for_element_clickable(locator)
-        element.click()
-        self.logger.info(f"Clicked element: {locator}")
-    
-    def enter_text(self, locator, text):
-        """Enter text into an input field.
+        Enter text into element
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
             text (str): Text to enter
+            timeout (int): Custom timeout, uses default if None
+            clear_first (bool): Clear field before entering text
         """
-        element = self.wait_for_element_visible(locator)
-        element.clear()
-        element.send_keys(text)
-        self.logger.info(f"Entered text '{text}' into element: {locator}")
+        self.wrapper.enter_text(locator, text, timeout, clear_first)
     
-    def get_element_text(self, locator):
-        """Get text from an element.
+    def get_text(self, locator, timeout=None):
+        """
+        Get element text
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Custom timeout, uses default if None
         
         Returns:
             str: Element text
         """
-        element = self.wait_for_element_visible(locator)
-        text = element.text
-        self.logger.info(f"Retrieved text '{text}' from element: {locator}")
-        return text
+        return self.wrapper.get_text(locator, timeout)
     
-    def is_element_visible(self, locator, timeout=5):
-        """Check if element is visible.
+    def is_element_visible(self, locator, timeout=None):
+        """
+        Check if element is visible
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
-            timeout (int): Timeout in seconds
+            timeout (int): Custom timeout, uses default if None
         
         Returns:
             bool: True if visible, False otherwise
         """
-        try:
-            self.wait_for_element_visible(locator, timeout)
-            return True
-        except TimeoutException:
-            return False
+        return self.wrapper.is_element_visible(locator, timeout)
     
-    def is_element_present(self, locator):
-        """Check if element is present in DOM.
+    def is_element_present(self, locator, timeout=None):
+        """
+        Check if element is present in DOM
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Custom timeout, uses default if None
         
         Returns:
             bool: True if present, False otherwise
         """
-        try:
-            self.find_element(locator)
-            return True
-        except NoSuchElementException:
-            return False
+        return self.wrapper.is_element_present(locator, timeout)
     
-    def get_page_title(self):
-        """Get current page title.
-        
-        Returns:
-            str: Page title
+    def navigate_to(self, url):
         """
-        return self.driver.title
+        Navigate to URL
+        
+        Args:
+            url (str): URL to navigate to
+        """
+        self.driver.get(url)
     
     def get_current_url(self):
-        """Get current page URL.
+        """
+        Get current page URL
         
         Returns:
             str: Current URL
         """
         return self.driver.current_url
     
-    def navigate_to(self, url):
-        """Navigate to a specific URL.
-        
-        Args:
-            url (str): Target URL
+    def get_page_title(self):
         """
-        self.driver.get(url)
-        self.logger.info(f"Navigated to: {url}")
+        Get page title
+        
+        Returns:
+            str: Page title
+        """
+        return self.driver.title
     
     def refresh_page(self):
-        """Refresh the current page."""
+        """
+        Refresh current page
+        """
         self.driver.refresh()
-        self.logger.info("Page refreshed")
     
-    def scroll_to_element(self, locator):
-        """Scroll to an element.
+    def scroll_to_element(self, locator, timeout=None):
+        """
+        Scroll to element
         
         Args:
             locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Custom timeout, uses default if None
         """
-        element = self.wait_for_element(locator)
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-        self.logger.info(f"Scrolled to element: {locator}")
+        self.wrapper.scroll_to_element(locator, timeout)
+    
+    def get_attribute(self, locator, attribute, timeout=None):
+        """
+        Get element attribute value
+        
+        Args:
+            locator (tuple): Locator tuple (By.TYPE, "value")
+            attribute (str): Attribute name
+            timeout (int): Custom timeout, uses default if None
+        
+        Returns:
+            str: Attribute value
+        """
+        return self.wrapper.get_attribute(locator, attribute, timeout)

@@ -1,54 +1,43 @@
-# Configuration file for UI and API automation framework
+# Configuration file for UI & API Automation Framework
 
-# Environment settings
-environment:
-  base_url: "https://example.com"
-  timeout: 10
-  implicit_wait: 5
-
-# Browser settings
+# Browser configuration
 browser:
-  type: "chrome"  # Options: chrome, firefox, edge, safari
+  type: chrome  # Options: chrome, firefox, edge
   headless: false
-  window_size: "1920x1080"
+  implicit_wait: 10
+  page_load_timeout: 30
 
-# Test data for registration tests
+# Application URLs
+urls:
+  base_url: https://ecommerce.example.com
+  login_url: https://ecommerce.example.com/login
+  dashboard_url: https://ecommerce.example.com/dashboard
+  alternative_login_url: https://ecommerce-website.com/login
+
+# Test data
 test_data:
-  registration:
-    valid_user:
-      username: "testuser123"
-      email: "testuser123@example.com"
-      password: "SecurePass@123"
-    
-    existing_email:
-      username: "existinguser"
-      email: "existing@example.com"
-      password: "SecurePass@123"
-    
-    password_mismatch:
-      username: "mismatchuser"
-      email: "mismatch@example.com"
-      password: "SecurePass@123"
-      confirm_password: "DifferentPass@123"
-    
-    invalid_email:
-      username: "invalidemailuser"
-      email: "invalidemail.com"
-      password: "SecurePass@123"
+  valid_user:
+    email: testuser@example.com
+    password: Test@1234
+  invalid_user:
+    email: invaliduser@example.com
+    password: ValidPass123!
+    expected_error: Invalid username or password
 
-# Email reporting settings
-email:
-  smtp_server: "smtp.gmail.com"
-  smtp_port: 587
-  sender_email: "automation@example.com"
-  sender_password: "your_password_here"
-  recipient_emails:
-    - "qa-team@example.com"
-  subject: "Automation Test Report"
+# Timeouts (in seconds)
+timeouts:
+  default: 10
+  short: 5
+  long: 30
+  page_load: 30
 
-# API settings (if needed)
-api:
-  base_url: "https://api.example.com"
-  timeout: 30
-  headers:
-    Content-Type: "application/json"
+# Reporting
+reporting:
+  screenshots_on_failure: true
+  video_recording: false
+  report_format: html
+
+# Logging
+logging:
+  level: INFO
+  file: logs/automation.log
