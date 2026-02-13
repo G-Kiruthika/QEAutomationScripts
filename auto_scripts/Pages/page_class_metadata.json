@@ -1,0 +1,43 @@
+{
+  "pages": [
+    {
+      "page_name": "LoginPage",
+      "class_name": "LoginPage",
+      "file_path": "auto_scripts/Pages/LoginPage.py",
+      "locators": [
+        {
+          "element_name": "username_input",
+          "locator_type": "ID",
+          "locator_value": "username"
+        },
+        {
+          "element_name": "password_input",
+          "locator_type": "ID",
+          "locator_value": "password"
+        },
+        {
+          "element_name": "login_button",
+          "locator_type": "XPATH",
+          "locator_value": "//button[@type='submit']"
+        }
+      ]
+    },
+    {
+      "page_name": "HomePage",
+      "class_name": "HomePage",
+      "file_path": "auto_scripts/Pages/HomePage.py",
+      "locators": [
+        {
+          "element_name": "welcome_banner",
+          "locator_type": "CSS_SELECTOR",
+          "locator_value": ".welcome-banner"
+        },
+        {
+          "element_name": "logout_link",
+          "locator_type": "LINK_TEXT",
+          "locator_value": "Logout"
+        }
+      ]
+    }
+  ]
+}
