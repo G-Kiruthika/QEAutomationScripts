@@ -1,33 +1,46 @@
-# Configuration file for UI and API automation framework
+# Configuration file for Python UI & API Automation Framework
+# Environment-specific settings and test data
 
+# UI Test Configuration
 ui:
-  base_url: "https://www.saucedemo.com"
+  base_url: "https://ecommerce.example.com"
+  login_url: "https://ecommerce.example.com/login"
+  alternative_login_url: "https://ecommerce-website.com/login"
+  
+  # Browser settings
   browser: "chrome"
   headless: false
   implicit_wait: 10
   explicit_wait: 20
   page_load_timeout: 30
 
+# Test Data
+test_data:
+  valid_user:
+    email: "testuser@example.com"
+    password: "Test@1234"
+  
+  invalid_user:
+    email: "invaliduser@example.com"
+    password: "ValidPass123!"
+    expected_error: "Invalid username or password"
+
+# API Configuration (for future use)
 api:
   base_url: "https://api.example.com"
   timeout: 30
-  verify_ssl: true
 
-test_data:
-  valid_user:
-    username: "standard_user"
-    password: "secret_sauce"
-  invalid_user:
-    username: "invalid_user"
-    password: "secret_sauce"
-
-environment: "test"
-
+# Reporting Configuration
 reporting:
   screenshots_on_failure: true
-  html_report: true
-  allure_report: false
+  screenshot_path: "reports/screenshots"
+  report_path: "reports/test_results"
 
-logging:
-  level: "INFO"
-  file: "logs/automation.log"
+# Email Configuration (for test reports)
+email:
+  enabled: false
+  smtp_server: "smtp.example.com"
+  smtp_port: 587
+  sender: "automation@example.com"
+  recipients:
+    - "qa-team@example.com"
