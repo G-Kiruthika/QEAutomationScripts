@@ -5,9 +5,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class ValidationHelpers:
-    """Enhanced validation helpers for test assertions"""
+    """Helper class for common validation operations in test automation"""
     
     def __init__(self, driver, timeout=10):
         self.driver = driver
@@ -16,26 +15,26 @@ class ValidationHelpers:
     
     def wait_for_element_visible(self, locator, timeout=None):
         """Wait for element to be visible"""
+        wait_time = timeout if timeout else self.timeout
         try:
-            wait_time = timeout or self.timeout
             element = WebDriverWait(self.driver, wait_time).until(
                 EC.visibility_of_element_located(locator)
             )
             return element
         except TimeoutException:
-            logger.error(f"Element {locator} not visible after {wait_time} seconds")
+            logger.error(f"Element {locator} not visible within {wait_time} seconds")
             return None
     
     def wait_for_element_clickable(self, locator, timeout=None):
         """Wait for element to be clickable"""
+        wait_time = timeout if timeout else self.timeout
         try:
-            wait_time = timeout or self.timeout
             element = WebDriverWait(self.driver, wait_time).until(
                 EC.element_to_be_clickable(locator)
             )
             return element
         except TimeoutException:
-            logger.error(f"Element {locator} not clickable after {wait_time} seconds")
+            logger.error(f"Element {locator} not clickable within {wait_time} seconds")
             return None
     
     def is_element_present(self, locator):
@@ -46,49 +45,76 @@ class ValidationHelpers:
         except NoSuchElementException:
             return False
     
+    def is_element_visible(self, locator):
+        """Check if element is visible on page"""
+        try:
+            element = self.driver.find_element(*locator)
+            return element.is_displayed()
+        except NoSuchElementException:
+            return False
+    
     def get_element_text(self, locator):
         """Get text from element"""
         try:
             element = self.wait_for_element_visible(locator)
-            return element.text if element else None
+            if element:
+                return element.text
+            return None
         except Exception as e:
-            logger.error(f"Failed to get text from element {locator}: {str(e)}")
+            logger.error(f"Error getting text from element {locator}: {str(e)}")
             return None
     
-    def verify_text_in_element(self, locator, expected_text):
-        """Verify that element contains expected text"""
-        actual_text = self.get_element_text(locator)
-        return expected_text in actual_text if actual_text else False
+    def get_element_attribute(self, locator, attribute):
+        """Get attribute value from element"""
+        try:
+            element = self.wait_for_element_visible(locator)
+            if element:
+                return element.get_attribute(attribute)
+            return None
+        except Exception as e:
+            logger.error(f"Error getting attribute {attribute} from element {locator}: {str(e)}")
+            return None
     
     def wait_for_url_contains(self, url_fragment, timeout=None):
         """Wait for URL to contain specific fragment"""
+        wait_time = timeout if timeout else self.timeout
         try:
-            wait_time = timeout or self.timeout
             WebDriverWait(self.driver, wait_time).until(
                 EC.url_contains(url_fragment)
             )
             return True
         except TimeoutException:
-            logger.error(f"URL does not contain '{url_fragment}' after {wait_time} seconds")
+            logger.error(f"URL does not contain '{url_fragment}' within {wait_time} seconds")
             return False
     
-    def verify_element_attribute(self, locator, attribute, expected_value):
-        """Verify element attribute value"""
+    def wait_for_title_contains(self, title_fragment, timeout=None):
+        """Wait for page title to contain specific fragment"""
+        wait_time = timeout if timeout else self.timeout
         try:
-            element = self.wait_for_element_visible(locator)
-            if element:
-                actual_value = element.get_attribute(attribute)
-                return actual_value == expected_value
-            return False
-        except Exception as e:
-            logger.error(f"Failed to verify attribute {attribute} for element {locator}: {str(e)}")
+            WebDriverWait(self.driver, wait_time).until(
+                EC.title_contains(title_fragment)
+            )
+            return True
+        except TimeoutException:
+            logger.error(f"Title does not contain '{title_fragment}' within {wait_time} seconds")
             return False
     
-    def count_elements(self, locator):
-        """Count number of elements matching locator"""
-        try:
-            elements = self.driver.find_elements(*locator)
-            return len(elements)
-        except Exception as e:
-            logger.error(f"Failed to count elements {locator}: {str(e)}")
-            return 0
+    def validate_element_text(self, locator, expected_text):
+        """Validate element text matches expected value"""
+        actual_text = self.get_element_text(locator)
+        if actual_text == expected_text:
+            logger.info(f"Element text validation passed: '{actual_text}' == '{expected_text}'")
+            return True
+        else:
+            logger.error(f"Element text validation failed: '{actual_text}' != '{expected_text}'")
+            return False
+    
+    def validate_element_attribute(self, locator, attribute, expected_value):
+        """Validate element attribute matches expected value"""
+        actual_value = self.get_element_attribute(locator, attribute)
+        if actual_value == expected_value:
+            logger.info(f"Element attribute validation passed: {attribute}='{actual_value}'")
+            return True
+        else:
+            logger.error(f"Element attribute validation failed: {attribute}='{actual_value}' != '{expected_value}'")
+            return False
