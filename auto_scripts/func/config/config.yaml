@@ -1,43 +1,33 @@
-# Configuration file for UI & API Automation Framework
+# Configuration file for UI and API automation framework
 
-# Browser configuration
-browser:
-  type: chrome  # Options: chrome, firefox, edge
+ui:
+  base_url: "https://www.saucedemo.com"
+  browser: "chrome"
   headless: false
   implicit_wait: 10
+  explicit_wait: 20
   page_load_timeout: 30
 
-# Application URLs
-urls:
-  base_url: https://ecommerce.example.com
-  login_url: https://ecommerce.example.com/login
-  dashboard_url: https://ecommerce.example.com/dashboard
-  alternative_login_url: https://ecommerce-website.com/login
+api:
+  base_url: "https://api.example.com"
+  timeout: 30
+  verify_ssl: true
 
-# Test data
 test_data:
   valid_user:
-    email: testuser@example.com
-    password: Test@1234
+    username: "standard_user"
+    password: "secret_sauce"
   invalid_user:
-    email: invaliduser@example.com
-    password: ValidPass123!
-    expected_error: Invalid username or password
+    username: "invalid_user"
+    password: "secret_sauce"
 
-# Timeouts (in seconds)
-timeouts:
-  default: 10
-  short: 5
-  long: 30
-  page_load: 30
+environment: "test"
 
-# Reporting
 reporting:
   screenshots_on_failure: true
-  video_recording: false
-  report_format: html
+  html_report: true
+  allure_report: false
 
-# Logging
 logging:
-  level: INFO
-  file: logs/automation.log
+  level: "INFO"
+  file: "logs/automation.log"
