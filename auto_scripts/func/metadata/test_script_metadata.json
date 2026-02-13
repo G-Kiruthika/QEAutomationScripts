@@ -1,1 +1,57 @@
-{"test_cases": [{"test_name": "tc_001", "feature": "Product Catalog Listing", "target_file": "test_tc_001.py", "pages_used": ["LoginPage", "ProductCatalogPage"], "flow": [{"action": "LoginPage.login_as_admin", "assertion": "LoginPage.assert_admin_login_successful", "test_data": {"username": "admin", "password": "valid_admin_password"}}, {"action": "ProductCatalogPage.navigate_to_catalog", "assertion": "ProductCatalogPage.assert_product_catalog_displayed", "test_data": {}}, {"action": "ProductCatalogPage.view_all_products", "assertion": "ProductCatalogPage.assert_all_products_listed", "test_data": {}}]}, {"test_name": "tc_002", "feature": "Add Product", "target_file": "test_tc_002.py", "pages_used": ["LoginPage", "AddProductPage"], "flow": [{"action": "LoginPage.login_as_admin", "assertion": "LoginPage.assert_admin_login_successful", "test_data": {"username": "admin", "password": "valid_admin_password"}}, {"action": "AddProductPage.navigate_to_add_product", "assertion": "AddProductPage.assert_add_product_form_displayed", "test_data": {}}, {"action": "AddProductPage.enter_product_details_and_submit", "assertion": "AddProductPage.assert_product_created_successfully", "test_data": {"product_name": "sample_product", "price": "100", "inventory": "50", "etc": "additional_data"}}]}], "framework": {"base_classes_required": ["BasePage", "BaseTest"], "core_dependencies": ["selenium.webdriver", "pytest"], "config_dependencies": ["config/test_config.py"], "utils_dependencies": ["utils/logger.py", "utils/wait_utils.py"], "external_libraries": ["selenium", "pytest"], "required_imports": ["from kb.pages.login_page import LoginPage", "from kb.pages.product_catalog_page import ProductCatalogPage", "from kb.pages.add_product_page import AddProductPage", "from kb.base.base_page import BasePage", "from kb.base.base_test import BaseTest"]}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "C42": {
+      "test_name": "test_register_new_user_and_verify_password_storage",
+      "feature": "User Registration",
+      "target_file": "test_registration.py",
+      "pages_used": ["RegistrationPage", "DatabasePage"],
+      "flow": [
+        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data"},
+        {"page": "RegistrationPage", "assertion": "validate_registration_success"},
+        {"page": "DatabasePage", "action": "retrieve_user_record", "data_ref": "user_data"},
+        {"page": "DatabasePage", "assertion": "validate_password_hash"}
+      ],
+      "test_data": {
+        "user_data": {
+          "email": "user@example.com",
+          "password": "SecurePass123",
+          "name": "John Doe"
+        }
+      }
+    },
+    "C43": {
+      "test_name": "test_register_with_valid_and_invalid_details",
+      "feature": "User Registration",
+      "target_file": "test_registration.py",
+      "pages_used": ["RegistrationPage"],
+      "flow": [
+        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data_valid"},
+        {"page": "RegistrationPage", "assertion": "validate_registration_success"},
+        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data_invalid"},
+        {"page": "RegistrationPage", "assertion": "validate_error_message"}
+      ],
+      "test_data": {
+        "user_data_valid": {
+          "email": "user@example.com",
+          "password": "SecurePass123",
+          "name": "John Doe"
+        },
+        "user_data_invalid": {
+          "email": "user@example.com"
+        }
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "api_dependencies": [],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": [],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
