@@ -1,57 +1,60 @@
 {
-  "test_suite": "Functional UI Suite",
-  "test_cases": {
-    "C42": {
-      "test_name": "test_register_new_user_and_verify_password_storage",
-      "feature": "User Registration",
-      "target_file": "test_registration.py",
-      "pages_used": ["RegistrationPage", "DatabasePage"],
-      "flow": [
-        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data"},
-        {"page": "RegistrationPage", "assertion": "validate_registration_success"},
-        {"page": "DatabasePage", "action": "retrieve_user_record", "data_ref": "user_data"},
-        {"page": "DatabasePage", "assertion": "validate_password_hash"}
+  "test_scripts": [
+    {
+      "test_case_id": "501",
+      "test_case_description": "Test Case TC-POS-001",
+      "flow_logic": [
+        {"step": 1, "action": "navigate_to_login_page", "page": "LoginPage", "parameters": {"url": "https://ecommerce.example.com/login"}},
+        {"step": 2, "action": "verify_login_page_displayed", "page": "LoginPage", "parameters": {}},
+        {"step": 3, "action": "login_with_credentials", "page": "LoginPage", "parameters": {"email": "testuser@example.com", "password": "Test@1234"}},
+        {"step": 4, "action": "verify_login_success", "page": "LoginPage", "parameters": {}},
+        {"step": 5, "action": "verify_user_session", "page": "DashboardPage", "parameters": {}}
       ],
       "test_data": {
-        "user_data": {
-          "email": "user@example.com",
-          "password": "SecurePass123",
-          "name": "John Doe"
-        }
-      }
+        "url": "https://ecommerce.example.com/login",
+        "email": "testuser@example.com",
+        "password": "Test@1234"
+      },
+      "acceptance_criteria": ["AC-LOGIN-001"]
     },
-    "C43": {
-      "test_name": "test_register_with_valid_and_invalid_details",
-      "feature": "User Registration",
-      "target_file": "test_registration.py",
-      "pages_used": ["RegistrationPage"],
-      "flow": [
-        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data_valid"},
-        {"page": "RegistrationPage", "assertion": "validate_registration_success"},
-        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data_invalid"},
-        {"page": "RegistrationPage", "assertion": "validate_error_message"}
+    {
+      "test_case_id": "504",
+      "test_case_description": "Test Case TC_LOGIN_006",
+      "flow_logic": [
+        {"step": 1, "action": "navigate_to_login_page", "page": "LoginPage", "parameters": {"url": "https://ecommerce-website.com/login"}},
+        {"step": 2, "action": "login_with_credentials", "page": "LoginPage", "parameters": {"email": "invaliduser@example.com", "password": "ValidPass123!"}},
+        {"step": 3, "action": "verify_login_failure", "page": "LoginPage", "parameters": {"error_message": "Invalid username or password"}},
+        {"step": 4, "action": "verify_login_page_displayed", "page": "LoginPage", "parameters": {}}
       ],
       "test_data": {
-        "user_data_valid": {
-          "email": "user@example.com",
-          "password": "SecurePass123",
-          "name": "John Doe"
-        },
-        "user_data_invalid": {
-          "email": "user@example.com"
-        }
-      }
+        "url": "https://ecommerce-website.com/login",
+        "email": "invaliduser@example.com",
+        "password": "ValidPass123!",
+        "error_message": "Invalid username or password"
+      },
+      "acceptance_criteria": ["AC_LOGIN_006"]
     }
-  },
+  ],
   "framework": {
-    "architecture": "python-ui-api-automation-framework",
-    "type": "ui",
-    "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
-    "api_dependencies": [],
-    "config_dependencies": ["config/config.yaml"],
-    "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+    "dependencies": [
+      {
+        "name": "selenium",
+        "version": ">=4.0.0",
+        "description": "Used for web browser automation and element interaction"
+      },
+      {
+        "name": "pytest",
+        "version": ">=7.0.0",
+        "description": "Test execution and reporting"
+      },
+      {
+        "name": "pytest-html",
+        "version": ">=3.1.1",
+        "description": "HTML reporting for pytest"
+      }
+    ],
+    "metadata": {
+      "sync_rules": "Page Object Model structure enforced. Test scripts separated from test data. Actions and locators validated against test steps. No duplicate elements or actions. All dependencies listed."
+    }
   }
 }

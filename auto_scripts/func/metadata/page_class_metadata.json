@@ -1,35 +1,86 @@
 {
-  "pages": {
-    "RegistrationPage": {
-      "file_name": "registration_page.py",
-      "locators": {
-        "email_input": {"by": "id", "value": "email_input_placeholder"},
-        "password_input": {"by": "id", "value": "password_input_placeholder"},
-        "name_input": {"by": "id", "value": "name_input_placeholder"},
-        "register_button": {"by": "id", "value": "register_button_placeholder"},
-        "error_message": {"by": "id", "value": "error_message_placeholder"}
-      },
-      "actions": [
-        "register_user(email, password, name)",
-        "submit_registration()"
+  "pages": [
+    {
+      "page_name": "LoginPage",
+      "description": "Login page for e-commerce website",
+      "elements": [
+        {
+          "element_name": "email_field",
+          "locator": "//input[@type='email']",
+          "locator_type": "xpath",
+          "actions": ["enter_text", "verify_displayed"]
+        },
+        {
+          "element_name": "password_field",
+          "locator": "//input[@type='password']",
+          "locator_type": "xpath",
+          "actions": ["enter_text", "verify_masked", "verify_displayed"]
+        },
+        {
+          "element_name": "login_button",
+          "locator": "//button[contains(text(),'Login')]",
+          "locator_type": "xpath",
+          "actions": ["click", "verify_displayed"]
+        },
+        {
+          "element_name": "error_message",
+          "locator": "//div[contains(@class,'error')]",
+          "locator_type": "xpath",
+          "actions": ["verify_text"]
+        }
       ],
-      "validations": [
-        "validate_registration_success()",
-        "validate_error_message()"
+      "actions": [
+        {
+          "action_name": "navigate_to_login_page",
+          "description": "Navigate to login page",
+          "parameters": ["url"]
+        },
+        {
+          "action_name": "login_with_credentials",
+          "description": "Enter email and password, click login",
+          "parameters": ["email", "password"]
+        },
+        {
+          "action_name": "verify_login_success",
+          "description": "Verify user is authenticated and redirected",
+          "parameters": []
+        },
+        {
+          "action_name": "verify_login_failure",
+          "description": "Verify error message is displayed",
+          "parameters": ["error_message"]
+        },
+        {
+          "action_name": "verify_user_session",
+          "description": "Verify user session is created",
+          "parameters": []
+        }
       ]
     },
-    "DatabasePage": {
-      "file_name": "database_page.py",
-      "locators": {
-        "user_record": {"by": "db", "value": "user_record_placeholder"},
-        "password_hash": {"by": "db", "value": "password_hash_placeholder"}
-      },
-      "actions": [
-        "retrieve_user_record(email)"
+    {
+      "page_name": "DashboardPage",
+      "description": "Dashboard/home page for authenticated users",
+      "elements": [
+        {
+          "element_name": "user_name_header",
+          "locator": "//header//span[@class='username']",
+          "locator_type": "xpath",
+          "actions": ["verify_displayed"]
+        },
+        {
+          "element_name": "session_token",
+          "locator": "//meta[@name='session-token']",
+          "locator_type": "xpath",
+          "actions": ["verify_generated"]
+        }
       ],
-      "validations": [
-        "validate_password_hash()"
+      "actions": [
+        {
+          "action_name": "verify_dashboard_displayed",
+          "description": "Verify dashboard is displayed after login",
+          "parameters": []
+        }
       ]
     }
-  }
+  ]
 }
