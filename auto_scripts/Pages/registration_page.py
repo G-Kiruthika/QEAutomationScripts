@@ -3,6 +3,7 @@ from pages.base_page import BasePage
 
 class RegistrationPage(BasePage):
     EMAIL_INPUT = (By.ID, 'email_input')
+    EMAIL_INPUT_XPATH = (By.XPATH, "//input[@name='email']")
     SUBMIT_BUTTON = (By.ID, 'submit_button')
     ERROR_MESSAGE = (By.ID, 'error_message')
     CONFIRMATION_MESSAGE = (By.ID, 'confirmation_message')
