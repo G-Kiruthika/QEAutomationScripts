@@ -1,66 +1,35 @@
-# Configuration file for UI and API automation framework
+# Environment Configuration
 
-# Environment settings
-environment:
-  base_url: "https://example.com"
+ui:
+  base_url: "https://ecommerce-website.com"
+  login_url: "https://ecommerce-website.com/login"
   timeout: 10
   implicit_wait: 5
 
-# Browser settings
 browser:
-  type: "chrome"  # Options: chrome, firefox, edge, safari
+  type: "chrome"
   headless: false
   window_size: "1920x1080"
 
-# Test data for registration tests
 test_data:
-  registration:
-    valid_user:
-      username: "testuser123"
-      email: "testuser123@example.com"
-      password: "SecurePass@123"
-    
-    existing_email:
-      username: "existinguser"
-      email: "existing@example.com"
-      password: "SecurePass@123"
-    
-    password_mismatch:
-      username: "mismatchuser"
-      email: "mismatch@example.com"
-      password: "SecurePass@123"
-      confirm_password: "DifferentPass@123"
-    
-    invalid_email:
-      username: "invalidemailuser"
-      email: "invalidemail.com"
-      password: "SecurePass@123"
+  valid_credentials:
+    username: "validuser@example.com"
+    password: "ValidPass123!"
   
-  # Login test data
-  login:
-    valid_credentials:
-      login_url: "https://ecommerce.example.com/login"
-      valid_email: "testuser@example.com"
-      valid_password: "Test@1234"
-    
-    invalid_credentials:
-      login_url: "https://ecommerce-website.com/login"
-      invalid_email: "invaliduser@example.com"
-      valid_password: "ValidPass123!"
+  invalid_credentials:
+    blank_username: ""
+    wrong_passwords:
+      - "WrongPass1"
+      - "WrongPass2"
+      - "WrongPass3"
+      - "WrongPass4"
+      - "WrongPass5"
 
-# Email reporting settings
-email:
-  smtp_server: "smtp.gmail.com"
-  smtp_port: 587
-  sender_email: "automation@example.com"
-  sender_password: "your_password_here"
-  recipient_emails:
+reporting:
+  email_enabled: true
+  email_recipients:
     - "qa-team@example.com"
-  subject: "Automation Test Report"
-
-# API settings (if needed)
-api:
-  base_url: "https://api.example.com"
-  timeout: 30
-  headers:
-    Content-Type: "application/json"
+  
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
