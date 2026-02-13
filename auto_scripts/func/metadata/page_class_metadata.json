@@ -1,1 +1,28 @@
-{"pages": [{"page_name": "LoginPage", "file_name": "login_page.py", "locators": {"username_field": {"locator": "//input[@name='username']", "type": "xpath"}, "password_field": {"locator": "//input[@name='password']", "type": "xpath"}, "login_button": {"locator": "//button[@id='login']", "type": "xpath"}, "validation_error": {"locator": "//div[@class='error-message']", "type": "xpath"}}, "actions": [{"action_name": "navigate_to_login", "parameters": ["url"], "description": "Navigate to the login page"}, {"action_name": "enter_username", "parameters": ["username"], "description": "Enter username into username field"}, {"action_name": "enter_password", "parameters": ["password"], "description": "Enter password into password field"}, {"action_name": "click_login_button", "parameters": [], "description": "Click the login button"}], "validations": [{"validation_name": "is_login_page_displayed", "description": "Verify login page is displayed", "locator": "//input[@name='username']"}, {"validation_name": "is_username_blank", "description": "Verify username field is blank", "locator": "//input[@name='username']"}, {"validation_name": "is_password_entered", "description": "Verify password is entered", "locator": "//input[@name='password']"}, {"validation_name": "is_validation_error_displayed", "description": "Verify validation error is displayed", "locator": "//div[@class='error-message']"}, {"validation_name": "is_login_prevented", "description": "Verify login is prevented and user remains on login page", "locator": "//input[@name='username']"}, {"validation_name": "is_account_locked_error_displayed", "description": "Verify account locked error is displayed", "locator": "//div[@class='error-message']"}, {"validation_name": "is_lockout_notification_sent", "description": "Verify lockout notification email is sent", "locator": "email_service_placeholder"}]}]}
+{
+  "pages": {
+    "LoginPage": {
+      "file_name": "login_page.py",
+      "locators": {
+        "username_field": {"by": "placeholder", "value": "locator_placeholder_username_field"},
+        "password_field": {"by": "placeholder", "value": "locator_placeholder_password_field"},
+        "login_button": {"by": "placeholder", "value": "locator_placeholder_login_button"},
+        "validation_error": {"by": "placeholder", "value": "locator_placeholder_validation_error"}
+      },
+      "actions": [
+        "navigate_to_login_page()",
+        "enter_username(username)",
+        "enter_password(password)",
+        "click_login_button()"
+      ],
+      "validations": [
+        "is_login_page_displayed()",
+        "is_username_blank()",
+        "is_password_entered()",
+        "is_validation_error_displayed()",
+        "is_login_prevented()",
+        "is_account_locked()",
+        "is_account_lockout_notification_sent()"
+      ]
+    }
+  }
+}

@@ -1,1 +1,56 @@
-{"test_suite": "Login Functionality", "test_cases": [{"test_case_id": "508", "test_case_name": "TC_LOGIN_008", "description": "Verify login fails when username is empty", "test_steps": [{"step_id": 1, "action": "navigate_to_login", "test_data": {"url": "https://ecommerce-website.com/login"}, "expected": "Login page is displayed", "acceptance_criteria": "AC_LOGIN_008"}, {"step_id": 2, "action": "enter_username", "test_data": {"username": ""}, "expected": "Username field remains blank", "acceptance_criteria": "AC_LOGIN_008"}, {"step_id": 3, "action": "enter_password", "test_data": {"password": "ValidPass123!"}, "expected": "Password is entered", "acceptance_criteria": "AC_LOGIN_008"}, {"step_id": 4, "action": "click_login_button", "test_data": {}, "expected": "Validation error displayed: 'Username is required'", "acceptance_criteria": "AC_LOGIN_008"}, {"step_id": 5, "action": "is_login_prevented", "test_data": {}, "expected": "Login request is not submitted, user remains on login page", "acceptance_criteria": "AC_LOGIN_008"}]}, {"test_case_id": "510", "test_case_name": "TC_LOGIN_010", "description": "Verify account lockout after multiple failed login attempts", "test_steps": [{"step_id": 1, "action": "navigate_to_login", "test_data": {"url": "https://ecommerce-website.com/login"}, "expected": "Login page is displayed", "acceptance_criteria": "AC_LOGIN_010"}, {"step_id": 2, "action": "enter_username", "test_data": {"username": "validuser@example.com"}, "expected": "Credentials are entered", "acceptance_criteria": "AC_LOGIN_010"}, {"step_id": 2, "action": "enter_password", "test_data": {"password": "WrongPass1"}, "expected": "Credentials are entered", "acceptance_criteria": "AC_LOGIN_010"}, {"step_id": 3, "action": "click_login_button", "test_data": {"attempts": 5, "passwords": ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"]}, "expected": "Each attempt fails with error message", "acceptance_criteria": "AC_LOGIN_010"}, {"step_id": 4, "action": "enter_password", "test_data": {"password": "ValidPass123!"}, "expected": "Account is locked, error message displayed: 'Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password'", "acceptance_criteria": "AC_LOGIN_010"}, {"step_id": 4, "action": "click_login_button", "test_data": {}, "expected": "Account is locked, error message displayed: 'Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password'", "acceptance_criteria": "AC_LOGIN_010"}, {"step_id": 5, "action": "is_lockout_notification_sent", "test_data": {}, "expected": "Email notification sent to user about account lockout", "acceptance_criteria": "AC_LOGIN_010"}]}], "test_data": {"login_url": "https://ecommerce-website.com/login", "valid_username": "validuser@example.com", "valid_password": "ValidPass123!", "invalid_passwords": ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"]}, "framework": {"dependencies": ["selenium", "pytest", "requests", "email-validator"], "config_paths": ["config/", "utils/", "core/"], "requirements_path": "requirements.txt"}}
+{
+  "test_suite": "Functional UI Suite",
+  "test_cases": {
+    "508": {
+      "test_name": "test_login_username_blank",
+      "feature": "Login",
+      "target_file": "test_login_username_blank.py",
+      "pages_used": ["LoginPage"],
+      "flow": [
+        {"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": {"url": "https://ecommerce-website.com/login"}},
+        {"page": "LoginPage", "action": "enter_username", "data_ref": {"username": ""}},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": {"password": "ValidPass123!"}},
+        {"page": "LoginPage", "action": "click_login_button", "data_ref": null},
+        {"page": "LoginPage", "assertion": "is_validation_error_displayed"},
+        {"page": "LoginPage", "assertion": "is_login_prevented"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "username": "",
+        "password": "ValidPass123!"
+      }
+    },
+    "510": {
+      "test_name": "test_login_account_lockout",
+      "feature": "Login",
+      "target_file": "test_login_account_lockout.py",
+      "pages_used": ["LoginPage"],
+      "flow": [
+        {"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": {"url": "https://ecommerce-website.com/login"}},
+        {"page": "LoginPage", "action": "enter_username", "data_ref": {"username": "validuser@example.com"}},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": {"password": "WrongPass1"}},
+        {"page": "LoginPage", "action": "click_login_button", "data_ref": {"attempts": 5, "passwords": ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5"]}},
+        {"page": "LoginPage", "assertion": "is_validation_error_displayed"},
+        {"page": "LoginPage", "action": "enter_password", "data_ref": {"password": "ValidPass123!"}},
+        {"page": "LoginPage", "action": "click_login_button", "data_ref": null},
+        {"page": "LoginPage", "assertion": "is_account_locked"},
+        {"page": "LoginPage", "assertion": "is_account_lockout_notification_sent"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "username": "validuser@example.com",
+        "passwords": ["WrongPass1", "WrongPass2", "WrongPass3", "WrongPass4", "WrongPass5", "ValidPass123!"]
+      }
+    }
+  },
+  "framework": {
+    "architecture": "python-ui-api-automation-framework",
+    "type": "ui",
+    "base_classes_required": ["BasePage"],
+    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
+    "config_dependencies": ["config/config.yaml"],
+    "utils_dependencies": ["utils/send_email_report.py"],
+    "external_libraries": ["selenium", "pytest", "pyyaml"],
+    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
+  }
+}
