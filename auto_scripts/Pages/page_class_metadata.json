@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "description": "Metadata template for Selenium Page Object classes. Maps UI pages to structured Python Page Classes for orchestration, synchronization, and code generation.",
+  "pages": [
+    {
+      "page_name": "SampleLoginPage",
+      "class_name": "LoginPage",
+      "file_path": "auto_scripts/Pages/LoginPage.py",
+      "elements": [
+        {
+          "element_name": "username_input",
+          "locator_type": "id",
+          "locator_value": "username"
+        },
+        {
+          "element_name": "password_input",
+          "locator_type": "id",
+          "locator_value": "password"
+        },
+        {
+          "element_name": "login_button",
+          "locator_type": "xpath",
+          "locator_value": "//button[@type='submit']"
+        }
+      ],
+      "actions": [
+        "enter_username",
+        "enter_password",
+        "click_login"
+      ],
+      "last_updated": "2024-06-13T00:00:00Z"
+    }
+  ],
+  "sync_policy": {
+    "auto_update": true,
+    "strict_locator_validation": true,
+    "class_integrity_checks": true
+  }
+}
