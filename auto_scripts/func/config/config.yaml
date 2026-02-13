@@ -1,30 +1,43 @@
 # Environment Configuration
 environment:
   base_url: "https://ecommerce-website.com"
-  login_url: "https://ecommerce-website.com/login"
+  timeout: 10
+  implicit_wait: 5
 
-# Test Data
+# Browser Configuration
+browser:
+  type: "chrome"
+  headless: false
+  window_size: "1920x1080"
+
+# Test Data for Login Feature
 test_data:
-  login:
-    valid_username: "validuser@example.com"
-    valid_password: "ValidPass123!"
-    empty_username: ""
+  TC_LOGIN_008:
+    url: "https://ecommerce-website.com/login"
+    username: ""
+    password: "ValidPass123!"
+  
+  TC_LOGIN_010:
+    url: "https://ecommerce-website.com/login"
+    username: "validuser@example.com"
     incorrect_passwords:
       - "WrongPass1"
       - "WrongPass2"
       - "WrongPass3"
       - "WrongPass4"
       - "WrongPass5"
+    correct_password: "ValidPass123!"
 
-# Browser Configuration
-browser:
-  default: "chrome"
-  headless: false
-  implicit_wait: 10
-  page_load_timeout: 30
+# Email Configuration
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "automation@example.com"
+  sender_password: "${EMAIL_PASSWORD}"
+  recipient_email: "qa-team@example.com"
 
-# Reporting
+# Reporting Configuration
 reporting:
-  screenshots_on_failure: true
-  video_recording: false
-  report_format: "html"
+  report_path: "reports/"
+  screenshot_path: "reports/screenshots/"
+  log_level: "INFO"

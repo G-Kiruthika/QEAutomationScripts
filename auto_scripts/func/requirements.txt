@@ -1,24 +1,32 @@
-# Core Dependencies
-selenium>=4.0.0
-pytest>=7.0.0
-pytest-html>=3.1.0
-pytest-xdist>=2.5.0
+# Core Selenium and WebDriver dependencies
+selenium==4.15.2
+webdriver-manager==4.0.1
 
-# Configuration Management
-PyYAML>=6.0
-configparser>=5.0.0
+# Testing framework
+pytest==7.4.3
+pytest-html==4.1.1
+pytest-xdist==3.5.0
 
-# Reporting and Logging
-allure-pytest>=2.9.0
-pytest-json-report>=1.5.0
+# Configuration and data handling
+PyYAML==6.0.1
+python-dotenv==1.0.0
+
+# Reporting and logging
+allure-pytest==2.13.2
+coloredlogs==15.0.1
+
+# Email functionality
+secure-smtplib==0.1.1
 
 # Utilities
-requests>=2.28.0
-python-dotenv>=0.19.0
+requests==2.31.0
+openpyxl==3.1.2
+pandas==2.1.4
 
-# Email Support
-secure-smtplib>=0.1.1
+# API testing
+requests-toolbelt==1.0.0
+jsonschema==4.20.0
 
-# Additional Testing Tools
-faker>=15.0.0
-pillow>=9.0.0
+# Additional utilities
+pillow==10.1.0
+python-dateutil==2.8.2
