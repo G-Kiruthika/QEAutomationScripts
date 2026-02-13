@@ -1,1 +1,40 @@
-{"pages": [{"page_name": "LoginPage", "class_name": "LoginPage", "file_name": "login_page.py", "locators": [{"element_name": "username_field", "locator": "placeholder_locator_username", "locator_type": "placeholder"}, {"element_name": "password_field", "locator": "placeholder_locator_password", "locator_type": "placeholder"}, {"element_name": "login_button", "locator": "placeholder_locator_login_button", "locator_type": "placeholder"}, {"element_name": "validation_error_message", "locator": "placeholder_locator_validation_error_message", "locator_type": "placeholder"}, {"element_name": "account_lockout_message", "locator": "placeholder_locator_account_lockout_message", "locator_type": "placeholder"}, {"element_name": "email_notification", "locator": "placeholder_locator_email_notification", "locator_type": "placeholder"}], "actions": [{"method_name": "navigate_to_login_page", "description": "Navigate to the login page using provided URL"}, {"method_name": "enter_username", "description": "Enter username into the username field"}, {"method_name": "enter_password", "description": "Enter password into the password field"}, {"method_name": "click_login_button", "description": "Click the login button"}, {"method_name": "get_validation_error_message", "description": "Retrieve validation error message displayed on login page"}, {"method_name": "get_account_lockout_message", "description": "Retrieve account lockout message after failed attempts"}, {"method_name": "verify_email_notification_sent", "description": "Verify that account lockout email notification was sent"}]}]}
+{
+  "pages": [
+    {
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
+      "description": "Page Object for Login Page interactions",
+      "locators": {
+        "username_field": {
+          "locator_type": "placeholder",
+          "locator_value": "//input[@name='username']"
+        },
+        "password_field": {
+          "locator_type": "placeholder",
+          "locator_value": "//input[@name='password']"
+        },
+        "login_button": {
+          "locator_type": "placeholder",
+          "locator_value": "//button[@id='login']"
+        },
+        "error_message": {
+          "locator_type": "placeholder",
+          "locator_value": "//div[@class='error-message']"
+        },
+        "account_lockout_notification": {
+          "locator_type": "placeholder",
+          "locator_value": "//div[@class='notification']"
+        }
+      },
+      "actions": [
+        "navigate_to_login",
+        "enter_username",
+        "enter_password",
+        "click_login",
+        "verify_error_message",
+        "verify_login_prevented",
+        "verify_account_lockout_notification"
+      ]
+    }
+  ]
+}
