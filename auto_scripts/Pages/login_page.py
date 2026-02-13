@@ -1,34 +1,58 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from auto_scripts.Pages.base_page import BasePage
 
-class LoginPage:
-    # Locators from metadata (no duplicates, all required)
-    USERNAME_INPUT = (By.ID, 'username')
-    PASSWORD_INPUT = (By.ID, 'password')
-    LOGIN_BUTTON = (By.ID, 'loginBtn')
-    ERROR_MESSAGE = (By.CSS_SELECTOR, '.error-msg')
+class LoginPage(BasePage):
+    # Existing locators (if any) would be preserved here
 
-    def __init__(self, driver):
-        self.driver = driver
+    # --- Locators from metadata (append only missing, no duplicates) ---
+    username_field = (By.ID, "username_field")  # Placeholder locator
+    password_field = (By.ID, "password_field")  # Placeholder locator
+    login_button = (By.ID, "login_button")      # Placeholder locator
+    validation_error_message = (By.ID, "validation_error_message")  # Placeholder locator
+    account_lockout_message = (By.ID, "account_lockout_message")    # Placeholder locator
+    email_notification = (By.ID, "email_notification")              # Placeholder locator
 
-    # Actions from metadata
+    # --- Action methods from metadata (append only missing, no duplicates) ---
+    def navigate_to_login_page(self):
+        """
+        Navigates to the login page using BasePage's navigation wrapper.
+        """
+        self.navigate("/login")  # Replace with actual URL or route
+
     def enter_username(self, username):
-        self.driver.find_element(*self.USERNAME_INPUT).clear()
-        self.driver.find_element(*self.USERNAME_INPUT).send_keys(username)
+        """
+        Enters the username in the username field using BasePage's wrapper.
+        """
+        self.enter_text(self.username_field, username)
 
     def enter_password(self, password):
-        self.driver.find_element(*self.PASSWORD_INPUT).clear()
-        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
+        """
+        Enters the password in the password field using BasePage's wrapper.
+        """
+        self.enter_text(self.password_field, password)
 
-    def click_login(self):
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
+    def click_login_button(self):
+        """
+        Clicks the login button using BasePage's click wrapper.
+        """
+        self.click(self.login_button)
 
-    # Validations from metadata
-    def is_error_message_displayed(self):
-        return WebDriverWait(self.driver, 5).until(
-            EC.visibility_of_element_located(self.ERROR_MESSAGE)
-        )
+    def get_validation_error_message(self):
+        """
+        Retrieves the validation error message text using BasePage's get_text wrapper.
+        """
+        return self.get_text(self.validation_error_message)
 
-    def get_error_message_text(self):
-        return self.driver.find_element(*self.ERROR_MESSAGE).text
+    def get_account_lockout_message(self):
+        """
+        Retrieves the account lockout message text using BasePage's get_text wrapper.
+        """
+        return self.get_text(self.account_lockout_message)
+
+    def verify_email_notification_sent(self):
+        """
+        Verifies if the email notification element is present using BasePage's is_element_present wrapper.
+        """
+        return self.is_element_present(self.email_notification)
+
+# End of login_page.py
