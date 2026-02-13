@@ -1,105 +1,74 @@
 {
-  "pages": [
-    {
-      "page_name": "LoginPage",
-      "description": "Represents the login page of the e-commerce application.",
-      "url_patterns": [
-        "https://ecommerce.example.com/login",
-        "https://ecommerce-website.com/login"
-      ],
+  "pages": {
+    "LoginPage": {
+      "url": "https://ecommerce-website.com/login",
       "locators": {
-        "email_field": {
+        "username_field": {
           "type": "input",
-          "selector": "email or username input field",
-          "strategy": "by_name_or_id"
+          "strategy": "by_name_or_id",
+          "validation": "blank_allowed"
         },
         "password_field": {
           "type": "input",
-          "selector": "password input field",
           "strategy": "by_name_or_id"
         },
         "login_button": {
           "type": "button",
-          "selector": "Login button",
           "strategy": "by_text_or_id"
         },
-        "error_message": {
-          "type": "label",
-          "selector": "error message element",
-          "strategy": "by_text_or_class",
-          "optional": true
-        },
-        "user_name_header": {
-          "type": "label",
-          "selector": "user name in header",
-          "strategy": "by_class_or_id",
-          "optional": true
+        "validation_error": {
+          "type": "message",
+          "strategy": "by_text",
+          "text_variants": ["Username is required", "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password"]
         }
       },
-      "actions": [
-        {
-          "action_name": "navigate_to_login",
-          "description": "Navigate to login page",
-          "parameters": ["url"]
+      "actions": {
+        "navigate_to_login": {
+          "url": "https://ecommerce-website.com/login"
         },
-        {
-          "action_name": "enter_email",
-          "description": "Enter email or username in the email field",
-          "parameters": ["email"]
+        "enter_username": {
+          "field": "username_field"
         },
-        {
-          "action_name": "enter_password",
-          "description": "Enter password in the password field",
-          "parameters": ["password"]
+        "enter_password": {
+          "field": "password_field"
         },
-        {
-          "action_name": "click_login",
-          "description": "Click the login button",
-          "parameters": []
+        "click_login": {
+          "element": "login_button"
         },
-        {
-          "action_name": "get_error_message",
-          "description": "Retrieve the login error message displayed",
-          "parameters": [],
-          "optional": true
+        "verify_error_message": {
+          "element": "validation_error",
+          "expected_text": "Username is required"
         },
-        {
-          "action_name": "get_user_name",
-          "description": "Get user name displayed after successful login",
-          "parameters": [],
-          "optional": true
+        "verify_account_lockout_message": {
+          "element": "validation_error",
+          "expected_text": "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password"
+        },
+        "verify_login_blocked": {
+          "condition": "user_remains_on_login_page"
         }
-      ],
-      "validations": [
-        {
-          "validation_name": "is_login_page_displayed",
-          "description": "Verify login page is displayed with email and password fields"
+      },
+      "validations": {
+        "login_page_displayed": {
+          "condition": "url_matches",
+          "url": "https://ecommerce-website.com/login"
         },
-        {
-          "validation_name": "is_email_accepted",
-          "description": "Verify that the email field displays the entered email"
+        "username_blank": {
+          "condition": "field_empty",
+          "field": "username_field"
         },
-        {
-          "validation_name": "is_password_masked",
-          "description": "Verify that the password field is masked and accepts input"
+        "password_entered": {
+          "condition": "field_filled",
+          "field": "password_field"
         },
-        {
-          "validation_name": "is_authenticated_redirected",
-          "description": "Verify successful authentication and redirection to dashboard/home page"
+        "error_message_displayed": {
+          "condition": "element_text",
+          "element": "validation_error"
         },
-        {
-          "validation_name": "is_session_created",
-          "description": "Verify user session is created and user name is shown in header"
-        },
-        {
-          "validation_name": "is_login_failed_error_displayed",
-          "description": "Verify login fails and error message is displayed"
-        },
-        {
-          "validation_name": "is_user_remains_on_login_page",
-          "description": "Verify user is not authenticated and remains on login page"
+        "account_lockout_notification": {
+          "condition": "email_sent",
+          "recipient": "user"
         }
-      ]
+      }
     }
-  ]
+  }
 }

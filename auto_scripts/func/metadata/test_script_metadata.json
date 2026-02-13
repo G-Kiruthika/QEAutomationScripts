@@ -1,101 +1,113 @@
 {
   "test_scripts": [
     {
-      "test_case_id": "501",
-      "test_case_description": "Test Case TC-POS-001",
-      "flow_logic": [
+      "testCaseId": "508",
+      "testCaseDescription": "Test Case TC_LOGIN_008",
+      "page": "LoginPage",
+      "steps": [
         {
-          "step_id": 1,
           "action": "navigate_to_login",
-          "page": "LoginPage",
-          "validation": "is_login_page_displayed"
+          "validation": "login_page_displayed",
+          "test_data": {"url": "https://ecommerce-website.com/login"},
+          "acceptance_criteria": "AC_LOGIN_008"
         },
         {
-          "step_id": 2,
-          "action": "enter_email",
-          "page": "LoginPage",
-          "validation": "is_email_accepted"
+          "action": "enter_username",
+          "test_data": {"username": ""},
+          "validation": "username_blank",
+          "acceptance_criteria": "AC_LOGIN_008"
         },
         {
-          "step_id": 3,
           "action": "enter_password",
-          "page": "LoginPage",
-          "validation": "is_password_masked"
+          "test_data": {"password": "ValidPass123!"},
+          "validation": "password_entered",
+          "acceptance_criteria": "AC_LOGIN_008"
         },
         {
-          "step_id": 4,
           "action": "click_login",
-          "page": "LoginPage",
-          "validation": "is_authenticated_redirected"
+          "validation": "error_message_displayed",
+          "expected": "Username is required",
+          "acceptance_criteria": "AC_LOGIN_008"
         },
         {
-          "step_id": 5,
-          "action": "get_user_name",
-          "page": "LoginPage",
-          "validation": "is_session_created"
+          "action": "verify_login_blocked",
+          "validation": "login_page_displayed",
+          "acceptance_criteria": "AC_LOGIN_008"
         }
-      ],
-      "test_data": {
-        "url": "https://ecommerce.example.com/login",
-        "email": "testuser@example.com",
-        "password": "Test@1234"
-      }
+      ]
     },
     {
-      "test_case_id": "504",
-      "test_case_description": "Test Case TC_LOGIN_006",
-      "flow_logic": [
+      "testCaseId": "510",
+      "testCaseDescription": "Test Case TC_LOGIN_010",
+      "page": "LoginPage",
+      "steps": [
         {
-          "step_id": 1,
           "action": "navigate_to_login",
-          "page": "LoginPage",
-          "validation": "is_login_page_displayed"
+          "validation": "login_page_displayed",
+          "test_data": {"url": "https://ecommerce-website.com/login"},
+          "acceptance_criteria": "AC_LOGIN_010"
         },
         {
-          "step_id": 2,
-          "action": "enter_email",
-          "page": "LoginPage",
-          "validation": "is_email_accepted"
+          "action": "enter_username",
+          "test_data": {"username": "validuser@example.com"},
+          "validation": "field_filled",
+          "acceptance_criteria": "AC_LOGIN_010"
         },
         {
-          "step_id": 3,
           "action": "enter_password",
-          "page": "LoginPage",
-          "validation": "is_password_masked"
+          "test_data": {"password": "WrongPass1"},
+          "validation": "password_entered",
+          "acceptance_criteria": "AC_LOGIN_010"
         },
         {
-          "step_id": 4,
           "action": "click_login",
-          "page": "LoginPage",
-          "validation": "is_login_failed_error_displayed"
+          "validation": "error_message_displayed",
+          "expected": "Invalid credentials",
+          "acceptance_criteria": "AC_LOGIN_010",
+          "repeat": 5,
+          "repeat_test_data": [
+            {"password": "WrongPass1"},
+            {"password": "WrongPass2"},
+            {"password": "WrongPass3"},
+            {"password": "WrongPass4"},
+            {"password": "WrongPass5"}
+          ]
         },
         {
-          "step_id": 5,
-          "action": "get_error_message",
-          "page": "LoginPage",
-          "validation": "is_user_remains_on_login_page"
+          "action": "enter_password",
+          "test_data": {"password": "ValidPass123!"},
+          "validation": "password_entered",
+          "acceptance_criteria": "AC_LOGIN_010"
+        },
+        {
+          "action": "click_login",
+          "validation": "verify_account_lockout_message",
+          "expected": "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password",
+          "acceptance_criteria": "AC_LOGIN_010"
+        },
+        {
+          "action": "verify_account_lockout_notification",
+          "validation": "account_lockout_notification",
+          "acceptance_criteria": "AC_LOGIN_010"
         }
-      ],
-      "test_data": {
-        "url": "https://ecommerce-website.com/login",
-        "email": "invaliduser@example.com",
-        "password": "ValidPass123!"
-      }
+      ]
     }
   ],
   "framework": {
-    "base_classes_required": ["BasePage", "BaseTest"],
-    "core_dependencies": ["selenium.webdriver", "selenium.webdriver.common.by"],
-    "config_dependencies": ["configparser", "os"],
-    "utils_dependencies": ["error_handler", "reporting_util"],
-    "external_libraries": ["selenium"],
-    "required_imports": [
-      "from selenium import webdriver",
-      "from selenium.webdriver.common.by import By",
-      "from framework.base_page import BasePage",
-      "from framework.base_test import BaseTest",
-      "from utils.error_handler import handle_error",
-      "from utils.reporting_util import report_step"
-    ]
+    "dependencies": [
+      "selenium",
+      "pytest",
+      "email_validator",
+      "ecosystem_sync"
+    ],
+    "ecosystem_sync": {
+      "enabled": true,
+      "required": [
+        "page_object_layer",
+        "metadata_validator",
+        "error_handler",
+        "git_integration"
+      ]
+    }
   }
 }
