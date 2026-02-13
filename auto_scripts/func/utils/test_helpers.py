@@ -1,95 +1,103 @@
-"""Test Helper Utilities
+"""Test Helper Utilities for Login Test Suite"""
 
-Provides utility functions for test execution, data handling,
-and common test operations.
-"""
-
-import logging
-import yaml
+import time
 import os
-from typing import Any, Dict
+from datetime import datetime
 
 
-logger = logging.getLogger(__name__)
-
-
-def load_config(config_path: str = "config/config.yaml") -> Dict[str, Any]:
-    """Load configuration from YAML file.
+def wait_for_lockout_period(seconds=1800):
+    """Wait for account lockout period to expire
     
     Args:
-        config_path (str): Path to the configuration file
-        
-    Returns:
-        Dict[str, Any]: Configuration dictionary
+        seconds (int): Number of seconds to wait (default: 1800 = 30 minutes)
     """
-    try:
-        with open(config_path, 'r') as file:
-            config = yaml.safe_load(file)
-            logger.info(f"Configuration loaded from {config_path}")
-            return config
-    except FileNotFoundError:
-        logger.error(f"Configuration file not found: {config_path}")
-        raise
-    except yaml.YAMLError as e:
-        logger.error(f"Error parsing YAML configuration: {str(e)}")
-        raise
+    print(f"Waiting for lockout period: {seconds} seconds ({seconds/60} minutes)")
+    time.sleep(seconds)
 
 
-def get_test_data(test_name: str, config_path: str = "config/config.yaml") -> Dict[str, Any]:
-    """Retrieve test data for a specific test.
+def generate_timestamp():
+    """Generate timestamp string for logging and reporting
+    
+    Returns:
+        str: Formatted timestamp string
+    """
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def take_screenshot(driver, test_name, screenshot_dir="screenshots"):
+    """Take screenshot and save with test name and timestamp
     
     Args:
+        driver (WebDriver): WebDriver instance
         test_name (str): Name of the test
-        config_path (str): Path to the configuration file
-        
+        screenshot_dir (str): Directory to save screenshots
+    
     Returns:
-        Dict[str, Any]: Test data dictionary
+        str: Path to saved screenshot
     """
-    config = load_config(config_path)
-    test_data = config.get('test_data', {}).get(test_name, {})
-    logger.info(f"Test data retrieved for: {test_name}")
-    return test_data
+    if not os.path.exists(screenshot_dir):
+        os.makedirs(screenshot_dir)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{test_name}_{timestamp}.png"
+    filepath = os.path.join(screenshot_dir, filename)
+    
+    driver.save_screenshot(filepath)
+    print(f"Screenshot saved: {filepath}")
+    return filepath
 
 
-def assert_with_logging(condition: bool, message: str):
-    """Assert with logging support.
+def log_test_step(step_number, description, status="INFO"):
+    """Log test step with timestamp
     
     Args:
-        condition (bool): Condition to assert
-        message (str): Assertion message
-        
+        step_number (int): Step number
+        description (str): Step description
+        status (str): Status (INFO, PASS, FAIL, WARNING)
+    """
+    timestamp = generate_timestamp()
+    print(f"[{timestamp}] [{status}] Step {step_number}: {description}")
+
+
+def retry_action(action_func, max_retries=3, delay=1):
+    """Retry an action multiple times with delay
+    
+    Args:
+        action_func (callable): Function to retry
+        max_retries (int): Maximum number of retries
+        delay (int): Delay between retries in seconds
+    
+    Returns:
+        Result of action_func if successful
+    
     Raises:
-        AssertionError: If condition is False
+        Exception: Last exception if all retries fail
     """
-    if not condition:
-        logger.error(f"Assertion failed: {message}")
-        assert condition, message
-    else:
-        logger.info(f"Assertion passed: {message}")
+    last_exception = None
+    
+    for attempt in range(max_retries):
+        try:
+            return action_func()
+        except Exception as e:
+            last_exception = e
+            if attempt < max_retries - 1:
+                print(f"Attempt {attempt + 1} failed: {str(e)}. Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                print(f"All {max_retries} attempts failed.")
+    
+    raise last_exception
 
 
-def create_directory_if_not_exists(directory_path: str):
-    """Create directory if it doesn't exist.
+def validate_error_message(actual_message, expected_keywords):
+    """Validate that error message contains expected keywords
     
     Args:
-        directory_path (str): Path to the directory
-    """
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-        logger.info(f"Directory created: {directory_path}")
-
-
-def validate_email(email: str) -> bool:
-    """Validate email format.
+        actual_message (str): Actual error message displayed
+        expected_keywords (list): List of keywords that should be in the message
     
-    Args:
-        email (str): Email address to validate
-        
     Returns:
-        bool: True if valid, False otherwise
+        bool: True if all keywords are found, False otherwise
     """
-    import re
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    is_valid = bool(re.match(pattern, email))
-    logger.debug(f"Email validation for {email}: {is_valid}")
-    return is_valid
+    actual_lower = actual_message.lower()
+    return all(keyword.lower() in actual_lower for keyword in expected_keywords)

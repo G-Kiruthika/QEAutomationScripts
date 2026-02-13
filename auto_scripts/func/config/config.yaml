@@ -1,45 +1,39 @@
-# Configuration file for UI & API Automation Framework
+# Configuration file for Login Functionality Test Suite
 
 # Environment Configuration
 environment:
+  test_url: "https://ecommerce-website.com/login"
   base_url: "https://ecommerce-website.com"
-  login_url: "https://ecommerce-website.com/login"
 
-# Browser Configuration
-browser:
-  default: "chrome"
-  headless: false
-  implicit_wait: 10
-  explicit_wait: 20
-
-# Test Data
+# Test Data Configuration
 test_data:
-  valid_credentials:
-    username: "validuser@example.com"
-    password: "ValidPass123!"
-  
-  invalid_credentials:
+  login:
+    valid_username: "validuser@example.com"
+    valid_password: "ValidPass123!"
     blank_username: ""
-    wrong_passwords:
+    invalid_passwords:
       - "WrongPass1"
       - "WrongPass2"
       - "WrongPass3"
       - "WrongPass4"
       - "WrongPass5"
 
-# Lockout Configuration
-lockout:
-  max_attempts: 5
-  lockout_duration_minutes: 30
-  lockout_message: "Account locked due to multiple failed attempts. Please try again after 30 minutes or reset password"
+# Browser Configuration
+browser:
+  default: "chrome"
+  headless: false
+  implicit_wait: 10
+  page_load_timeout: 30
 
-# Email Configuration
-email:
-  notification_enabled: true
-  smtp_server: "smtp.example.com"
-  smtp_port: 587
+# Timeouts
+timeouts:
+  element_wait: 10
+  page_load: 30
+  script_timeout: 30
+  lockout_wait: 1800  # 30 minutes in seconds
 
-# Logging Configuration
-logging:
-  level: "INFO"
-  log_file: "logs/automation.log"
+# Reporting
+reporting:
+  screenshots_on_failure: true
+  video_recording: false
+  report_format: "html"
