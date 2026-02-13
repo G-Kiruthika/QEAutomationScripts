@@ -1,21 +1,24 @@
-# Configuration file for UI & API Automation Framework
-# Environment-specific settings
+# Configuration file for UI and API automation framework
 
+# UI Configuration
 ui:
-  base_url: "https://example.com"
+  base_url: "http://localhost:8080"
   browser: "chrome"
   headless: false
   implicit_wait: 10
   explicit_wait: 20
   page_load_timeout: 30
 
+# API Configuration
 api:
   base_url: "https://api.example.com"
   timeout: 30
+  verify_ssl: true
   headers:
     Content-Type: "application/json"
     Accept: "application/json"
 
+# Test Data
 test_data:
   admin:
     username: "admin"
@@ -25,13 +28,13 @@ test_data:
       name: "sample_product"
       price: "100"
       inventory: "50"
+      description: "additional_data"
 
+# Environment
+environment: "test"
+
+# Reporting
 reporting:
-  email_enabled: false
-  email_recipients:
-    - "qa@example.com"
-  report_path: "reports/"
-
-logging:
-  level: "INFO"
-  log_file: "logs/automation.log"
+  screenshots_on_failure: true
+  video_recording: false
+  report_format: "html"

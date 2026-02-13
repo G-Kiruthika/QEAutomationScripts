@@ -1,70 +1,71 @@
-# Logger utility for automation framework
-# Provides centralized logging functionality
-
 import logging
 import os
 from datetime import datetime
-import yaml
 
 
-def load_config():
-    """Load configuration from config.yaml"""
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
-
-
-def setup_logger(name=__name__, log_file=None, level=None):
-    """Setup logger with file and console handlers
-    
-    Args:
-        name (str): Logger name
-        log_file (str): Log file path
-        level (str): Logging level
-    
-    Returns:
-        logging.Logger: Configured logger instance
+class Logger:
     """
-    config = load_config()
+    Custom logger utility for test automation framework
+    """
     
-    if level is None:
-        level = config['logging'].get('level', 'INFO')
+    def __init__(self, name="AutomationFramework", log_level=logging.INFO):
+        """
+        Initialize logger
+        
+        Args:
+            name (str): Logger name
+            log_level: Logging level
+        """
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(log_level)
+        
+        # Create logs directory if it doesn't exist
+        log_dir = "auto_scripts/api/logs"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+        
+        # File handler
+        log_file = os.path.join(log_dir, f"test_run_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(log_level)
+        
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(log_level)
+        
+        # Formatter
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        file_handler.setFormatter(formatter)
+        console_handler.setFormatter(formatter)
+        
+        # Add handlers
+        if not self.logger.handlers:
+            self.logger.addHandler(file_handler)
+            self.logger.addHandler(console_handler)
     
-    if log_file is None:
-        log_file = config['logging'].get('log_file', 'logs/automation.log')
+    def info(self, message):
+        """Log info message"""
+        self.logger.info(message)
     
-    # Create logs directory if it doesn't exist
-    log_dir = os.path.dirname(log_file)
-    if log_dir and not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+    def debug(self, message):
+        """Log debug message"""
+        self.logger.debug(message)
     
-    # Create logger
-    logger = logging.getLogger(name)
-    logger.setLevel(getattr(logging, level.upper()))
+    def warning(self, message):
+        """Log warning message"""
+        self.logger.warning(message)
     
-    # Remove existing handlers
-    logger.handlers = []
+    def error(self, message):
+        """Log error message"""
+        self.logger.error(message)
     
-    # Create formatters
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    
-    # File handler
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(getattr(logging, level.upper()))
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-    
-    # Console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(getattr(logging, level.upper()))
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
-    
-    return logger
+    def critical(self, message):
+        """Log critical message"""
+        self.logger.critical(message)
 
 
 # Create default logger instance
-logger = setup_logger()
+default_logger = Logger()

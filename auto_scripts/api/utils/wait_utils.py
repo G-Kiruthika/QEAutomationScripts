@@ -1,131 +1,124 @@
-# Wait utilities for automation framework
-# Provides custom wait conditions and helpers
-
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-import time
 
 
-class CustomWaitConditions:
-    """Custom wait conditions for Selenium"""
+class WaitUtils:
+    """
+    Utility class for custom wait conditions and helpers
+    """
     
     @staticmethod
-    def element_has_text(locator, text):
-        """Wait condition for element to have specific text
+    def wait_for_element_visible(driver, locator, timeout=10):
+        """
+        Wait for element to be visible
         
         Args:
-            locator (tuple): Locator tuple (By.*, value)
+            driver: WebDriver instance
+            locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Timeout in seconds
+        
+        Returns:
+            WebElement: Visible element
+        
+        Raises:
+            TimeoutException: If element not visible within timeout
+        """
+        wait = WebDriverWait(driver, timeout)
+        return wait.until(EC.visibility_of_element_located(locator))
+    
+    @staticmethod
+    def wait_for_element_clickable(driver, locator, timeout=10):
+        """
+        Wait for element to be clickable
+        
+        Args:
+            driver: WebDriver instance
+            locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Timeout in seconds
+        
+        Returns:
+            WebElement: Clickable element
+        
+        Raises:
+            TimeoutException: If element not clickable within timeout
+        """
+        wait = WebDriverWait(driver, timeout)
+        return wait.until(EC.element_to_be_clickable(locator))
+    
+    @staticmethod
+    def wait_for_element_present(driver, locator, timeout=10):
+        """
+        Wait for element to be present in DOM
+        
+        Args:
+            driver: WebDriver instance
+            locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Timeout in seconds
+        
+        Returns:
+            WebElement: Present element
+        
+        Raises:
+            TimeoutException: If element not present within timeout
+        """
+        wait = WebDriverWait(driver, timeout)
+        return wait.until(EC.presence_of_element_located(locator))
+    
+    @staticmethod
+    def wait_for_text_in_element(driver, locator, text, timeout=10):
+        """
+        Wait for specific text to appear in element
+        
+        Args:
+            driver: WebDriver instance
+            locator (tuple): Locator tuple (By.TYPE, "value")
             text (str): Expected text
+            timeout (int): Timeout in seconds
         
         Returns:
-            function: Wait condition function
+            bool: True if text found
+        
+        Raises:
+            TimeoutException: If text not found within timeout
         """
-        def _predicate(driver):
-            try:
-                element = driver.find_element(*locator)
-                return text in element.text
-            except:
-                return False
-        return _predicate
+        wait = WebDriverWait(driver, timeout)
+        return wait.until(EC.text_to_be_present_in_element(locator, text))
     
     @staticmethod
-    def element_attribute_contains(locator, attribute, value):
-        """Wait condition for element attribute to contain value
+    def wait_for_url_contains(driver, url_fragment, timeout=10):
+        """
+        Wait for URL to contain specific fragment
         
         Args:
-            locator (tuple): Locator tuple (By.*, value)
-            attribute (str): Attribute name
-            value (str): Expected value
+            driver: WebDriver instance
+            url_fragment (str): URL fragment to wait for
+            timeout (int): Timeout in seconds
         
         Returns:
-            function: Wait condition function
+            bool: True if URL contains fragment
+        
+        Raises:
+            TimeoutException: If URL doesn't contain fragment within timeout
         """
-        def _predicate(driver):
-            try:
-                element = driver.find_element(*locator)
-                attr_value = element.get_attribute(attribute)
-                return value in attr_value if attr_value else False
-            except:
-                return False
-        return _predicate
+        wait = WebDriverWait(driver, timeout)
+        return wait.until(EC.url_contains(url_fragment))
     
     @staticmethod
-    def url_contains(url_fragment):
-        """Wait condition for URL to contain fragment
+    def is_element_visible(driver, locator, timeout=5):
+        """
+        Check if element is visible (non-throwing version)
         
         Args:
-            url_fragment (str): URL fragment to check
+            driver: WebDriver instance
+            locator (tuple): Locator tuple (By.TYPE, "value")
+            timeout (int): Timeout in seconds
         
         Returns:
-            function: Wait condition function
+            bool: True if visible, False otherwise
         """
-        def _predicate(driver):
-            return url_fragment in driver.current_url
-        return _predicate
-
-
-def wait_for_condition(driver, condition, timeout=20, poll_frequency=0.5):
-    """Wait for custom condition
-    
-    Args:
-        driver: WebDriver instance
-        condition: Wait condition function
-        timeout (int): Maximum wait time in seconds
-        poll_frequency (float): Polling interval in seconds
-    
-    Returns:
-        bool: True if condition met, False otherwise
-    """
-    try:
-        WebDriverWait(driver, timeout, poll_frequency).until(condition)
-        return True
-    except TimeoutException:
-        return False
-
-
-def wait_for_page_load(driver, timeout=30):
-    """Wait for page to load completely
-    
-    Args:
-        driver: WebDriver instance
-        timeout (int): Maximum wait time in seconds
-    
-    Returns:
-        bool: True if page loaded, False otherwise
-    """
-    try:
-        WebDriverWait(driver, timeout).until(
-            lambda d: d.execute_script('return document.readyState') == 'complete'
-        )
-        return True
-    except TimeoutException:
-        return False
-
-
-def wait_for_ajax(driver, timeout=20):
-    """Wait for AJAX requests to complete (jQuery)
-    
-    Args:
-        driver: WebDriver instance
-        timeout (int): Maximum wait time in seconds
-    
-    Returns:
-        bool: True if AJAX completed, False otherwise
-    """
-    try:
-        WebDriverWait(driver, timeout).until(
-            lambda d: d.execute_script('return jQuery.active == 0')
-        )
-        return True
-    except:
-        return False
-
-
-def smart_wait(seconds):
-    """Smart wait with logging
-    
-    Args:
-        seconds (int/float): Wait time in seconds
-    """
-    time.sleep(seconds)
+        try:
+            WaitUtils.wait_for_element_visible(driver, locator, timeout)
+            return True
+        except TimeoutException:
+            return False

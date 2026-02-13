@@ -1,4 +1,4 @@
-# Python dependencies for UI & API Automation Framework
+# Python UI & API Automation Framework Dependencies
 
 # Selenium for UI automation
 selenium==4.15.2
@@ -11,14 +11,14 @@ pytest-xdist==3.5.0
 # Requests for API testing
 requests==2.31.0
 
-# YAML configuration
+# YAML parser for configuration
 PyYAML==6.0.1
 
 # Logging and reporting
 allure-pytest==2.13.2
 
-# Utilities
-python-dotenv==1.0.0
-
-# WebDriver manager (optional, for automatic driver management)
+# WebDriver Manager (optional, for automatic driver management)
 webdriver-manager==4.0.1
+
+# Additional utilities
+python-dotenv==1.0.0
