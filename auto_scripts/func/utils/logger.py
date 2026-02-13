@@ -1,53 +1,61 @@
-"""Logger Utility Module
+"""Logging Utility Module
 
-This module provides logging configuration and utilities for the automation framework.
+Provides centralized logging configuration for the automation framework.
 """
 
-import os
 import logging
+import os
 from datetime import datetime
 
 
-def setup_logger(name=__name__, log_level=logging.INFO, log_file=None):
-    """Set up and configure a logger.
+def setup_logger(name=__name__, log_level=logging.INFO):
+    """Set up and configure logger.
     
     Args:
-        name (str): Logger name. Defaults to module name.
-        log_level (int): Logging level. Defaults to INFO.
-        log_file (str, optional): Path to log file. If None, logs to console only.
+        name (str): Logger name
+        log_level (int): Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     
     Returns:
-        logging.Logger: Configured logger instance
+        Logger: Configured logger instance
     """
+    # Create logs directory if it doesn't exist
+    log_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    
+    # Create logger
     logger = logging.getLogger(name)
     logger.setLevel(log_level)
     
-    # Remove existing handlers to avoid duplicates
-    logger.handlers = []
+    # Prevent duplicate handlers
+    if logger.handlers:
+        return logger
     
-    # Create formatter
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    # Create formatters
+    detailed_formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     
-    # Console handler
+    simple_formatter = logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    
+    # File handler - detailed logs
+    log_filename = f"test_execution_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    log_filepath = os.path.join(log_dir, log_filename)
+    file_handler = logging.FileHandler(log_filepath)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(detailed_formatter)
+    
+    # Console handler - simple logs
     console_handler = logging.StreamHandler()
     console_handler.setLevel(log_level)
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    console_handler.setFormatter(simple_formatter)
     
-    # File handler (if log_file is provided)
-    if log_file:
-        # Create logs directory if it doesn't exist
-        log_dir = os.path.dirname(log_file)
-        if log_dir and not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-        
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setLevel(log_level)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+    # Add handlers to logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
     
     return logger
 
@@ -56,77 +64,9 @@ def get_logger(name=__name__):
     """Get or create a logger instance.
     
     Args:
-        name (str): Logger name. Defaults to module name.
+        name (str): Logger name
     
     Returns:
-        logging.Logger: Logger instance
+        Logger: Logger instance
     """
-    return logging.getLogger(name)
-
-
-class TestLogger:
-    """Test-specific logger with enhanced functionality."""
-    
-    def __init__(self, test_name, log_dir='logs'):
-        """Initialize TestLogger.
-        
-        Args:
-            test_name (str): Name of the test
-            log_dir (str): Directory to store log files
-        """
-        self.test_name = test_name
-        self.log_dir = log_dir
-        
-        # Create log directory if it doesn't exist
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-        
-        # Create log file with timestamp
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        log_file = os.path.join(log_dir, f"{test_name}_{timestamp}.log")
-        
-        self.logger = setup_logger(
-            name=test_name,
-            log_level=logging.DEBUG,
-            log_file=log_file
-        )
-    
-    def info(self, message):
-        """Log info message."""
-        self.logger.info(message)
-    
-    def debug(self, message):
-        """Log debug message."""
-        self.logger.debug(message)
-    
-    def warning(self, message):
-        """Log warning message."""
-        self.logger.warning(message)
-    
-    def error(self, message):
-        """Log error message."""
-        self.logger.error(message)
-    
-    def critical(self, message):
-        """Log critical message."""
-        self.logger.critical(message)
-    
-    def step(self, step_number, description):
-        """Log test step.
-        
-        Args:
-            step_number (int): Step number
-            description (str): Step description
-        """
-        self.logger.info(f"STEP {step_number}: {description}")
-    
-    def result(self, passed, message=""):
-        """Log test result.
-        
-        Args:
-            passed (bool): Whether test passed
-            message (str): Additional message
-        """
-        status = "PASSED" if passed else "FAILED"
-        log_method = self.logger.info if passed else self.logger.error
-        log_method(f"TEST {status}: {self.test_name} - {message}")
+    return logging.getLogger(name) if logging.getLogger(name).handlers else setup_logger(name)

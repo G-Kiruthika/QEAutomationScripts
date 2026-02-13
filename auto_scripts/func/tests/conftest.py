@@ -1,65 +1,32 @@
 """Pytest Configuration and Fixtures
 
-This module contains pytest configuration and shared fixtures
-for the automation test suite.
+Provides shared fixtures and configuration for all test modules.
 """
 
-import os
 import pytest
+import os
 import logging
 from datetime import datetime
 from core.driver_factory import get_driver, quit_driver
 from utils.logger import setup_logger
 
-# Set up logging
-logger = setup_logger(__name__, log_level=logging.INFO)
 
-
-def pytest_configure(config):
-    """Pytest configuration hook."""
-    # Create logs directory if it doesn't exist
-    if not os.path.exists('logs'):
-        os.makedirs('logs')
-    
-    # Create screenshots directory if it doesn't exist
-    if not os.path.exists('screenshots'):
-        os.makedirs('screenshots')
-    
-    logger.info("Pytest configuration completed")
+# Setup logging
+logger = setup_logger(__name__)
 
 
 @pytest.fixture(scope="function")
-def driver(request):
-    """Fixture to provide WebDriver instance for tests.
-    
-    Args:
-        request: Pytest request object
+def driver():
+    """Fixture to provide WebDriver instance for each test.
     
     Yields:
         WebDriver: Configured WebDriver instance
     """
-    logger.info(f"Setting up driver for test: {request.node.name}")
+    logger.info("Initializing WebDriver")
     driver_instance = get_driver()
-    
     yield driver_instance
-    
-    # Teardown: Take screenshot on failure and quit driver
-    if request.node.rep_call.failed:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        screenshot_name = f"screenshots/{request.node.name}_{timestamp}.png"
-        driver_instance.save_screenshot(screenshot_name)
-        logger.error(f"Test failed. Screenshot saved: {screenshot_name}")
-    
-    logger.info(f"Tearing down driver for test: {request.node.name}")
+    logger.info("Quitting WebDriver")
     quit_driver(driver_instance)
-
-
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    """Hook to make test result available in fixtures."""
-    outcome = yield
-    rep = outcome.get_result()
-    setattr(item, f"rep_{rep.when}", rep)
 
 
 @pytest.fixture(scope="session")
@@ -71,71 +38,70 @@ def test_config():
     """
     import yaml
     config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
-    
-    if os.path.exists(config_path):
-        with open(config_path, 'r') as config_file:
-            config = yaml.safe_load(config_file)
-            logger.info("Test configuration loaded")
-            return config
-    else:
-        logger.warning("Config file not found, using default configuration")
-        return {}
+    with open(config_path, 'r') as config_file:
+        config = yaml.safe_load(config_file)
+    return config
 
 
-@pytest.fixture(scope="function")
-def test_logger(request):
-    """Fixture to provide test-specific logger.
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """Hook to capture test results and take screenshots on failure.
     
     Args:
-        request: Pytest request object
-    
-    Returns:
-        logging.Logger: Test-specific logger
+        item: Test item
+        call: Test call
     """
-    test_name = request.node.name
-    test_logger_instance = setup_logger(
-        name=test_name,
-        log_level=logging.DEBUG,
-        log_file=f"logs/{test_name}.log"
-    )
-    return test_logger_instance
+    outcome = yield
+    report = outcome.get_result()
+    
+    if report.when == "call" and report.failed:
+        # Get driver from fixture if available
+        driver = None
+        if hasattr(item, 'funcargs'):
+            driver = item.funcargs.get('driver')
+        
+        if driver:
+            # Create screenshots directory
+            screenshot_dir = os.path.join(os.path.dirname(__file__), '..', 'screenshots')
+            os.makedirs(screenshot_dir, exist_ok=True)
+            
+            # Take screenshot
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            screenshot_name = f"{item.name}_{timestamp}.png"
+            screenshot_path = os.path.join(screenshot_dir, screenshot_name)
+            
+            try:
+                driver.save_screenshot(screenshot_path)
+                logger.info(f"Screenshot saved: {screenshot_path}")
+            except Exception as e:
+                logger.error(f"Failed to take screenshot: {str(e)}")
 
 
-def pytest_addoption(parser):
-    """Add custom command line options."""
-    parser.addoption(
-        "--browser",
-        action="store",
-        default="chrome",
-        help="Browser to run tests: chrome, firefox, edge"
-    )
-    parser.addoption(
-        "--headless",
-        action="store_true",
-        default=False,
-        help="Run tests in headless mode"
-    )
-    parser.addoption(
-        "--env",
-        action="store",
-        default="test",
-        help="Environment to run tests: dev, test, staging, prod"
-    )
+def pytest_configure(config):
+    """Configure pytest with custom markers and settings.
+    
+    Args:
+        config: Pytest config object
+    """
+    config.addinivalue_line("markers", "smoke: mark test as smoke test")
+    config.addinivalue_line("markers", "regression: mark test as regression test")
+    config.addinivalue_line("markers", "ui: mark test as UI test")
+    config.addinivalue_line("markers", "api: mark test as API test")
+    config.addinivalue_line("markers", "slow: mark test as slow running")
 
 
-@pytest.fixture(scope="session")
-def browser(request):
-    """Fixture to get browser from command line."""
-    return request.config.getoption("--browser")
-
-
-@pytest.fixture(scope="session")
-def headless(request):
-    """Fixture to get headless mode from command line."""
-    return request.config.getoption("--headless")
-
-
-@pytest.fixture(scope="session")
-def env(request):
-    """Fixture to get environment from command line."""
-    return request.config.getoption("--env")
+def pytest_collection_modifyitems(config, items):
+    """Modify test collection to add markers automatically.
+    
+    Args:
+        config: Pytest config object
+        items: List of collected test items
+    """
+    for item in items:
+        # Auto-mark UI tests
+        if "test_ui" in item.nodeid or "/ui/" in item.nodeid:
+            item.add_marker(pytest.mark.ui)
+        
+        # Auto-mark API tests
+        if "test_api" in item.nodeid or "/api/" in item.nodeid:
+            item.add_marker(pytest.mark.api)

@@ -1,19 +1,21 @@
-# Configuration file for Python UI & API Automation Framework
+# Python UI & API Automation Framework Configuration
+# Environment-specific settings for test execution
 
-# Application URLs
+# Application Under Test Configuration
 app:
   base_url: "https://example.com"
   registration_url: "https://example.com/register"
+  timeout: 30
+  implicit_wait: 10
 
 # Browser Configuration
 browser:
-  name: "chrome"  # Options: chrome, firefox, edge, safari
+  type: "chrome"  # Options: chrome, firefox, edge, safari
   headless: false
-  implicit_wait: 10
-  page_load_timeout: 30
   window_size: "1920x1080"
+  download_path: "./downloads"
 
-# Test Data
+# Test Data Configuration
 test_data:
   registration:
     valid_user:
@@ -27,20 +29,31 @@ test_data:
       email: "john.doe@example.com"
       password: "Password123"
 
+# Selenium Grid Configuration (Optional)
+selenium_grid:
+  enabled: false
+  hub_url: "http://localhost:4444/wd/hub"
+
 # Logging Configuration
 logging:
   level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  log_file: "logs/automation.log"
+  log_file: "logs/test_execution.log"
   console_output: true
 
-# Reporting
+# Screenshot Configuration
+screenshots:
+  on_failure: true
+  path: "screenshots/"
+
+# Reporting Configuration
 reporting:
   html_report: true
-  screenshot_on_failure: true
-  video_recording: false
+  report_path: "reports/"
+  email_report: false
+  email_recipients: []
 
-# Timeouts (in seconds)
-timeouts:
-  element_wait: 10
-  page_load: 30
-  script_timeout: 30
+# API Configuration (for future API tests)
+api:
+  base_url: "https://api.example.com"
+  timeout: 30
+  verify_ssl: true
