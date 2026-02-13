@@ -1,43 +1,26 @@
-# Environment Configuration for UI & API Automation Framework
+# Configuration file for Python UI & API Automation Framework
+# Environment-specific settings and test data
 
-# Browser Configuration
-browser:
-  type: chrome
-  headless: false
-  implicit_wait: 10
-  page_load_timeout: 30
-
-# Application URLs
-app:
-  base_url: https://example.com
-  registration_url: https://example.com/register
-  login_url: https://example.com/login
-
-# Test Data
 test_data:
-  valid_user:
-    first_name: John
-    last_name: Doe
-    email: john.doe@example.com
-    password: Password123
-  duplicate_user:
-    first_name: Jane
-    last_name: Doe
-    email: john.doe@example.com
-    password: Password123
+  registration:
+    new_user:
+      first_name: "John"
+      last_name: "Doe"
+      email: "john.doe@example.com"
+      password: "Password123"
+    duplicate_user:
+      first_name: "Jane"
+      last_name: "Doe"
+      email: "john.doe@example.com"
+      password: "Password123"
 
-# Logging Configuration
+environment:
+  base_url: "https://example.com"
+  timeout: 10
+  browser: "chrome"
+  headless: false
+
 logging:
-  level: INFO
-  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-  file: logs/test_execution.log
-
-# Screenshot Configuration
-screenshots:
-  on_failure: true
-  directory: screenshots/
-
-# Reporting
-reporting:
-  html_report: true
-  report_directory: reports/
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/automation.log"

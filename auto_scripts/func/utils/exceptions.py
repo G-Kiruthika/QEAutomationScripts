@@ -1,69 +1,58 @@
-"""Custom exceptions for the automation framework"""
+"""Custom Exception Classes
+
+Defines custom exceptions for the automation framework.
+"""
+
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class AutomationFrameworkException(Exception):
-    """Base exception for automation framework"""
-    pass
+    """Base exception for automation framework."""
+    
+    def __init__(self, message: str):
+        self.message = message
+        logger.error(f"AutomationFrameworkException: {message}")
+        super().__init__(self.message)
 
 
 class ElementNotFoundException(AutomationFrameworkException):
-    """Exception raised when element is not found"""
+    """Exception raised when an element is not found."""
     
-    def __init__(self, locator, message="Element not found"):
-        self.locator = locator
-        self.message = f"{message}: {locator}"
-        super().__init__(self.message)
-
-
-class ElementNotClickableException(AutomationFrameworkException):
-    """Exception raised when element is not clickable"""
-    
-    def __init__(self, locator, message="Element not clickable"):
-        self.locator = locator
-        self.message = f"{message}: {locator}"
-        super().__init__(self.message)
-
-
-class ElementNotVisibleException(AutomationFrameworkException):
-    """Exception raised when element is not visible"""
-    
-    def __init__(self, locator, message="Element not visible"):
-        self.locator = locator
-        self.message = f"{message}: {locator}"
-        super().__init__(self.message)
+    def __init__(self, locator: str):
+        message = f"Element not found with locator: {locator}"
+        super().__init__(message)
 
 
 class PageLoadException(AutomationFrameworkException):
-    """Exception raised when page fails to load"""
+    """Exception raised when a page fails to load."""
     
-    def __init__(self, url, message="Page failed to load"):
-        self.url = url
-        self.message = f"{message}: {url}"
-        super().__init__(self.message)
-
-
-class TestDataException(AutomationFrameworkException):
-    """Exception raised for test data related errors"""
-    
-    def __init__(self, data_key, message="Test data error"):
-        self.data_key = data_key
-        self.message = f"{message}: {data_key}"
-        super().__init__(self.message)
+    def __init__(self, page_name: str):
+        message = f"Page failed to load: {page_name}"
+        super().__init__(message)
 
 
 class ConfigurationException(AutomationFrameworkException):
-    """Exception raised for configuration related errors"""
+    """Exception raised for configuration errors."""
     
-    def __init__(self, config_key, message="Configuration error"):
-        self.config_key = config_key
-        self.message = f"{message}: {config_key}"
-        super().__init__(self.message)
+    def __init__(self, config_item: str):
+        message = f"Configuration error: {config_item}"
+        super().__init__(message)
+
+
+class TestDataException(AutomationFrameworkException):
+    """Exception raised for test data errors."""
+    
+    def __init__(self, data_key: str):
+        message = f"Test data error: {data_key}"
+        super().__init__(message)
 
 
 class DriverException(AutomationFrameworkException):
-    """Exception raised for WebDriver related errors"""
+    """Exception raised for WebDriver errors."""
     
-    def __init__(self, driver_type, message="Driver error"):
-        self.driver_type = driver_type
-        self.message = f"{message}: {driver_type}"
-        super().__init__(self.message)
+    def __init__(self, driver_type: str):
+        message = f"WebDriver error: {driver_type}"
+        super().__init__(message)
