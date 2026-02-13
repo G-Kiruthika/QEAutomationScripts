@@ -1,35 +1,49 @@
 {
- "test_suite": "Functional UI Suite",
- "test_cases": {
- "C39": {
- "test_name": "test_registration_with_existing_email",
- "feature": "Registration",
- "target_file": "test_registration_with_existing_email.py",
- "pages_used": ["RegistrationPage", "ConfirmationPage"],
- "flow": [
- {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_email_1"},
- {"page": "RegistrationPage", "action": "submit_registration", "data_ref": null},
- {"page": "ConfirmationPage", "assertion": "is_confirmation_displayed"},
- {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_email_1"},
- {"page": "RegistrationPage", "action": "submit_registration", "data_ref": null},
- {"page": "RegistrationPage", "assertion": "is_error_displayed"}
- ],
- "test_data": {
- "user_email_1": {
- "email": "user@example.com"
- }
- }
- }
- },
- "framework": {
- "architecture": "python-ui-api-automation-framework",
- "type": "ui",
- "base_classes_required": ["BasePage"],
- "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
- "api_dependencies": [],
- "config_dependencies": ["config/config.yaml"],
- "utils_dependencies": [],
- "external_libraries": ["selenium", "pytest", "pyyaml"],
- "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
- }
+  "test_cases": [
+    {
+      "name": "Register New User",
+      "flow": [
+        {"page": "RegistrationPage", "action": "enter_first_name", "data": "John"},
+        {"page": "RegistrationPage", "action": "enter_last_name", "data": "Doe"},
+        {"page": "RegistrationPage", "action": "enter_email", "data": "john.doe@example.com"},
+        {"page": "RegistrationPage", "action": "enter_password", "data": "Password123"},
+        {"page": "RegistrationPage", "action": "click_register_button"},
+        {"page": "RegistrationPage", "action": "get_success_message"}
+      ],
+      "test_data": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@example.com",
+        "password": "Password123"
+      },
+      "expected_result": "Success message is displayed."
+    },
+    {
+      "name": "Register Duplicate Email",
+      "flow": [
+        {"page": "RegistrationPage", "action": "enter_first_name", "data": "Jane"},
+        {"page": "RegistrationPage", "action": "enter_last_name", "data": "Doe"},
+        {"page": "RegistrationPage", "action": "enter_email", "data": "john.doe@example.com"},
+        {"page": "RegistrationPage", "action": "enter_password", "data": "Password123"},
+        {"page": "RegistrationPage", "action": "click_register_button"},
+        {"page": "RegistrationPage", "action": "get_error_message"}
+      ],
+      "test_data": {
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "email": "john.doe@example.com",
+        "password": "Password123"
+      },
+      "expected_result": "Error message for duplicate email is displayed."
+    }
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage", "BaseTest"],
+    "core_dependencies": ["selenium", "pytest"],
+    "config_dependencies": ["configparser", "os"],
+    "utils_dependencies": ["logging", "exceptions"],
+    "external_libraries": ["webdriver_manager"],
+    "required_imports": ["from selenium.webdriver.common.by import By", "from selenium.webdriver.common.keys import Keys", "import pytest", "import logging"],
+    "ecosystem_sync": true
+  }
 }

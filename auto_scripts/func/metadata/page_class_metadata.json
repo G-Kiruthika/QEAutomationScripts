@@ -1,33 +1,38 @@
 {
- "pages": {
- "RegistrationPage": {
- "file_name": "registration_page.py",
- "locators": {
- "email_input": {"by": "id", "value": "email_input_placeholder"},
- "submit_button": {"by": "id", "value": "submit_button_placeholder"},
- "error_message": {"by": "id", "value": "error_message_placeholder"},
- "confirmation_message": {"by": "id", "value": "confirmation_message_placeholder"}
- },
- "actions": [
- "enter_email(email)",
- "submit_registration()"
- ],
- "validations": [
- "is_confirmation_displayed()",
- "is_error_displayed()"
- ]
- },
- "ConfirmationPage": {
- "file_name": "confirmation_page.py",
- "locators": {
- "confirmation_text": {"by": "id", "value": "confirmation_text_placeholder"}
- },
- "actions": [
- "get_confirmation_text()"
- ],
- "validations": [
- "is_confirmation_text_correct()"
- ]
- }
- }
+  "pages": [
+    {
+      "class_name": "RegistrationPage",
+      "file_name": "registration_page.py",
+      "actions": [
+        {
+          "action_name": "enter_first_name",
+          "locator": "//input[@name='first_name']"
+        },
+        {
+          "action_name": "enter_last_name",
+          "locator": "//input[@name='last_name']"
+        },
+        {
+          "action_name": "enter_email",
+          "locator": "//input[@name='email']"
+        },
+        {
+          "action_name": "enter_password",
+          "locator": "//input[@name='password']"
+        },
+        {
+          "action_name": "click_register_button",
+          "locator": "//button[@id='register']"
+        },
+        {
+          "action_name": "get_success_message",
+          "locator": "//div[@class='success-message']"
+        },
+        {
+          "action_name": "get_error_message",
+          "locator": "//div[@class='error-message']"
+        }
+      ]
+    }
+  ]
 }
