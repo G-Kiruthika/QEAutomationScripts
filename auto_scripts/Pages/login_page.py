@@ -3,19 +3,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
 class LoginPage:
-    # Existing locators (preserved)
-    # Adding missing locators
-    username_field = (By.ID, 'username')
-    password_field = (By.ID, 'password')
-    login_button = (By.ID, 'login')
-    error_message = (By.ID, 'error-message')
+    # Locators (updated per metadata, using placeholder values)
+    username_field = (By.PLACEHOLDER, 'placeholder_locator_username_field')
+    password_field = (By.PLACEHOLDER, 'placeholder_locator_password_field')
+    login_button = (By.PLACEHOLDER, 'placeholder_locator_login_button')
+    error_message = (By.PLACEHOLDER, 'placeholder_locator_error_message')
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
 
-    # Existing methods (preserved)
-
-    # Adding missing action methods
+    # Action methods (all per metadata)
     def navigate_to_login_page(self, url):
         self.driver.get(url)
 
@@ -33,7 +30,7 @@ class LoginPage:
     def click_login(self):
         self.driver.find_element(*self.login_button).click()
 
-    # Adding missing validation methods
+    # Validation methods (all per metadata)
     def verify_error_message(self, expected_message):
         actual_message = self.driver.find_element(*self.error_message).text
         assert actual_message == expected_message, f"Expected '{expected_message}', got '{actual_message}'"
@@ -42,5 +39,5 @@ class LoginPage:
         assert self.driver.current_url.endswith("/login"), "Login was not prevented."
 
     def verify_account_lockout_notification(self):
-        lockout_element = self.driver.find_elements(By.ID, "lockout-notification")
+        lockout_element = self.driver.find_elements(By.PLACEHOLDER, "lockout-notification")
         assert lockout_element and lockout_element[0].is_displayed(), "Account lockout notification not displayed."
