@@ -9,151 +9,142 @@ import yaml
 import os
 from datetime import datetime
 
-
-def send_report(report_content, subject=None, attachment_path=None):
+def send_report(subject=None, body=None, attachment_path=None):
     """
-    Send an email report with optional attachment.
+    Send email report with test results
     
     Args:
-        report_content (str): Content of the email report
-        subject (str): Email subject (optional, uses config default if not provided)
-        attachment_path (str): Path to attachment file (optional)
+        subject (str): Email subject. If None, uses default
+        body (str): Email body content
+        attachment_path (str): Path to attachment file
     
     Returns:
         bool: True if email sent successfully, False otherwise
     """
     try:
-        # Load email configuration
+        # Load configuration
         config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
         with open(config_path) as f:
             config = yaml.safe_load(f)
         
-        email_config = config.get('email', {})
-        
-        smtp_server = email_config.get('smtp_server', 'smtp.gmail.com')
-        smtp_port = email_config.get('smtp_port', 587)
-        sender_email = email_config.get('sender_email')
-        sender_password = email_config.get('sender_password')
-        recipient_emails = email_config.get('recipient_emails', [])
-        default_subject = email_config.get('subject', 'Automation Test Report')
-        
-        if not sender_email or not sender_password:
-            print("Email credentials not configured in config.yaml")
+        # Check if email reporting is enabled
+        if not config.get('reporting', {}).get('email_enabled', False):
+            print("Email reporting is disabled in configuration")
             return False
         
-        if not recipient_emails:
-            print("No recipient emails configured in config.yaml")
+        # Email configuration (should be in environment variables or secure config)
+        smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+        smtp_port = int(os.getenv('SMTP_PORT', '587'))
+        sender_email = os.getenv('SENDER_EMAIL', 'automation@example.com')
+        sender_password = os.getenv('SENDER_PASSWORD', '')
+        
+        recipients = config.get('reporting', {}).get('email_recipients', [])
+        
+        if not recipients:
+            print("No email recipients configured")
             return False
         
         # Create message
         message = MIMEMultipart()
         message['From'] = sender_email
-        message['To'] = ', '.join(recipient_emails)
-        message['Subject'] = subject or f"{default_subject} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        message['To'] = ', '.join(recipients)
         
-        # Add body
-        body = f"""
-        <html>
-            <body>
-                <h2>Automation Test Report</h2>
-                <p><strong>Execution Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                <hr>
-                <pre>{report_content}</pre>
-            </body>
-        </html>
-        """
-        message.attach(MIMEText(body, 'html'))
+        # Set subject
+        if subject is None:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            subject = f"Test Automation Report - {timestamp}"
+        message['Subject'] = subject
         
-        # Add attachment if provided
+        # Set body
+        if body is None:
+            body = "Please find the test automation report attached."
+        message.attach(MIMEText(body, 'plain'))
+        
+        # Attach file if provided
         if attachment_path and os.path.exists(attachment_path):
             with open(attachment_path, 'rb') as attachment:
                 part = MIMEBase('application', 'octet-stream')
                 part.set_payload(attachment.read())
                 encoders.encode_base64(part)
-                part.add_header(
-                    'Content-Disposition',
-                    f'attachment; filename= {os.path.basename(attachment_path)}'
-                )
+                filename = os.path.basename(attachment_path)
+                part.add_header('Content-Disposition', f'attachment; filename= {filename}')
                 message.attach(part)
         
         # Send email
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
-            server.login(sender_email, sender_password)
+            if sender_password:
+                server.login(sender_email, sender_password)
             server.send_message(message)
         
-        print(f"Email report sent successfully to {', '.join(recipient_emails)}")
+        print(f"Email report sent successfully to {', '.join(recipients)}")
         return True
     
     except Exception as e:
         print(f"Failed to send email report: {str(e)}")
         return False
 
-
-def send_test_summary(passed, failed, skipped, total_time, details=None):
+def send_failure_alert(test_name, error_message):
     """
-    Send a formatted test execution summary report.
+    Send immediate alert for test failure
     
     Args:
+        test_name (str): Name of failed test
+        error_message (str): Error message or stack trace
+    
+    Returns:
+        bool: True if alert sent successfully, False otherwise
+    """
+    subject = f"⚠️ Test Failure Alert: {test_name}"
+    body = f"""
+    Test Failure Detected
+    
+    Test Name: {test_name}
+    Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    
+    Error Details:
+    {error_message}
+    
+    Please investigate immediately.
+    """
+    
+    return send_report(subject=subject, body=body)
+
+def send_summary_report(total_tests, passed, failed, skipped, duration, report_path=None):
+    """
+    Send test execution summary report
+    
+    Args:
+        total_tests (int): Total number of tests
         passed (int): Number of passed tests
         failed (int): Number of failed tests
         skipped (int): Number of skipped tests
-        total_time (float): Total execution time in seconds
-        details (str): Additional details about test execution
+        duration (float): Total execution duration in seconds
+        report_path (str): Path to detailed report file
     
     Returns:
-        bool: True if email sent successfully, False otherwise
+        bool: True if report sent successfully, False otherwise
     """
-    total_tests = passed + failed + skipped
     pass_rate = (passed / total_tests * 100) if total_tests > 0 else 0
     
-    summary = f"""
-    TEST EXECUTION SUMMARY
-    =====================
+    subject = f"Test Execution Summary - {datetime.now().strftime('%Y-%m-%d')}"
+    body = f"""
+    Test Automation Execution Summary
     
+    Execution Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    Duration: {duration:.2f} seconds
+    
+    Results:
+    --------
     Total Tests: {total_tests}
-    Passed: {passed}
-    Failed: {failed}
-    Skipped: {skipped}
+    Passed: {passed} ✓
+    Failed: {failed} ✗
+    Skipped: {skipped} ⊘
     Pass Rate: {pass_rate:.2f}%
     
-    Total Execution Time: {total_time:.2f} seconds
+    {'Status: SUCCESS ✓' if failed == 0 else 'Status: FAILURE ✗'}
     
+    Please review the detailed report attached.
     """
     
-    if details:
-        summary += f"\n\nDETAILS:\n{details}"
-    
-    return send_report(
-        report_content=summary,
-        subject=f"Test Execution Summary - {passed}/{total_tests} Passed"
-    )
-
-
-def send_error_notification(error_message, test_name=None):
-    """
-    Send an error notification email.
-    
-    Args:
-        error_message (str): Error message to send
-        test_name (str): Name of the test that failed (optional)
-    
-    Returns:
-        bool: True if email sent successfully, False otherwise
-    """
-    subject = "Test Execution Error"
-    if test_name:
-        subject += f" - {test_name}"
-    
-    content = f"""
-    TEST EXECUTION ERROR
-    ===================
-    
-    Test: {test_name or 'Unknown'}
-    Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-    
-    Error Message:
-    {error_message}
-    """
-    
-    return send_report(report_content=content, subject=subject)
+    return send_report(subject=subject, body=body, attachment_path=report_path)

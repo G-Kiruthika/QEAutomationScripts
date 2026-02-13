@@ -1,25 +1,36 @@
-# Configuration file for Python UI & API Automation Framework
-# Environment-specific settings and test data
+# Configuration file for test automation framework
 
 ui:
-  login:
-    urls:
-      ecommerce_primary: "https://ecommerce.example.com/login"
-      ecommerce_secondary: "https://ecommerce-website.com/login"
-    test_users:
-      valid_user:
-        email: "testuser@example.com"
-        password: "Test@1234"
-      invalid_user:
-        email: "invaliduser@example.com"
-        password: "ValidPass123!"
-
-browser:
-  default: "chrome"
+  base_url: "https://www.saucedemo.com"
+  browser: "chrome"
   headless: false
   implicit_wait: 10
+  explicit_wait: 20
   page_load_timeout: 30
 
-reporting:
-  screenshots_on_failure: true
+api:
+  base_url: "https://api.example.com"
+  timeout: 30
+  headers:
+    Content-Type: "application/json"
+
+test_data:
+  valid_user:
+    username: "standard_user"
+    password: "secret_sauce"
+  invalid_user:
+    username: "invalid_user"
+    password: "wrong_password"
+  locked_user:
+    username: "locked_out_user"
+    password: "secret_sauce"
+
+environment:
+  name: "qa"
   log_level: "INFO"
+
+reporting:
+  email_enabled: true
+  email_recipients:
+    - "qa-team@example.com"
+  report_path: "reports/"
