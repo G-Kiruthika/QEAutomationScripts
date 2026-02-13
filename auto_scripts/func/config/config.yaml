@@ -1,54 +1,32 @@
-# Configuration file for UI and API automation framework
+# Environment Configuration
+environment: test
 
-# Environment settings
-environment:
-  base_url: "https://example.com"
-  timeout: 10
-  implicit_wait: 5
-
-# Browser settings
-browser:
-  type: "chrome"  # Options: chrome, firefox, edge, safari
-  headless: false
-  window_size: "1920x1080"
-
-# Test data for registration tests
+# Test Data
 test_data:
-  registration:
+  user_registration:
     valid_user:
-      username: "testuser123"
-      email: "testuser123@example.com"
-      password: "SecurePass@123"
-    
-    existing_email:
-      username: "existinguser"
-      email: "existing@example.com"
-      password: "SecurePass@123"
-    
-    password_mismatch:
-      username: "mismatchuser"
-      email: "mismatch@example.com"
-      password: "SecurePass@123"
-      confirm_password: "DifferentPass@123"
-    
-    invalid_email:
-      username: "invalidemailuser"
-      email: "invalidemail.com"
-      password: "SecurePass@123"
+      email: "user@example.com"
+      password: "SecurePass123"
+      name: "John Doe"
+    invalid_user:
+      email: "user@example.com"
 
-# Email reporting settings
-email:
-  smtp_server: "smtp.gmail.com"
-  smtp_port: 587
-  sender_email: "automation@example.com"
-  sender_password: "your_password_here"
-  recipient_emails:
-    - "qa-team@example.com"
-  subject: "Automation Test Report"
+# Database Configuration
+database:
+  host: "localhost"
+  port: 5432
+  name: "test_db"
+  user: "test_user"
+  password: "test_password"
 
-# API settings (if needed)
-api:
-  base_url: "https://api.example.com"
-  timeout: 30
-  headers:
-    Content-Type: "application/json"
+# Browser Configuration
+browser:
+  type: "chrome"
+  headless: false
+  implicit_wait: 10
+  page_load_timeout: 30
+
+# Application URLs
+app:
+  base_url: "https://example.com"
+  registration_url: "https://example.com/register"
