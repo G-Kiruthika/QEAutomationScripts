@@ -1,33 +1,34 @@
 from selenium.webdriver.common.by import By
-from auto_scripts.Pages.base_page import BasePage
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-class LoginPage(BasePage):
-    USERNAME_INPUT = (By.ID, "username")
-    PASSWORD_INPUT = (By.ID, "password")
-    LOGIN_BUTTON = (By.ID, "loginBtn")
-    # Added from metadata
-    ADMIN_LOGIN_LOCATOR = (By.ID, "placeholder_admin_login_locator")
-    ADMIN_LOGIN_SUCCESS_LOCATOR = (By.ID, "placeholder_admin_login_success_locator")
+class LoginPage:
+    # Locators from metadata (no duplicates, all required)
+    USERNAME_INPUT = (By.ID, 'username')
+    PASSWORD_INPUT = (By.ID, 'password')
+    LOGIN_BUTTON = (By.ID, 'loginBtn')
+    ERROR_MESSAGE = (By.CSS_SELECTOR, '.error-msg')
 
+    def __init__(self, driver):
+        self.driver = driver
+
+    # Actions from metadata
     def enter_username(self, username):
-        self.send_keys(self.USERNAME_INPUT, username)
+        self.driver.find_element(*self.USERNAME_INPUT).clear()
+        self.driver.find_element(*self.USERNAME_INPUT).send_keys(username)
 
     def enter_password(self, password):
-        self.send_keys(self.PASSWORD_INPUT, password)
+        self.driver.find_element(*self.PASSWORD_INPUT).clear()
+        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
 
     def click_login(self):
-        self.click(self.LOGIN_BUTTON)
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
 
-    def is_login_button_visible(self):
-        return self.is_visible(self.LOGIN_BUTTON)
+    # Validations from metadata
+    def is_error_message_displayed(self):
+        return WebDriverWait(self.driver, 5).until(
+            EC.visibility_of_element_located(self.ERROR_MESSAGE)
+        )
 
-    # Added from metadata
-    def login_as_admin(self, username, password):
-        """Login as admin user using valid credentials."""
-        self.send_keys(self.ADMIN_LOGIN_LOCATOR, username)
-        self.send_keys(self.ADMIN_LOGIN_LOCATOR, password)
-        self.click(self.LOGIN_BUTTON)
-
-    def assert_admin_login_successful(self):
-        """Verify admin login was successful."""
-        return self.is_visible(self.ADMIN_LOGIN_SUCCESS_LOCATOR)
+    def get_error_message_text(self):
+        return self.driver.find_element(*self.ERROR_MESSAGE).text
