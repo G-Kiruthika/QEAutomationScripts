@@ -1,1 +1,58 @@
-{"page_classes": [{"class_name": "LoginPage","file_name": "login_page.py","elements": [{"name": "email_field","locator": "//input[@type='email']"},{"name": "password_field","locator": "//input[@type='password']"},{"name": "login_button","locator": "//button[contains(text(), 'Login')]"},{"name": "error_message","locator": "//div[contains(@class, 'error')]"},{"name": "user_name_header","locator": "//header//span[@class='user-name']"},{"name": "session_token","locator": "//meta[@name='session-token']"}],"actions": [{"name": "navigate_to_login","params": ["url"],"description": "Navigate to the login page"},{"name": "enter_email","params": ["email"],"description": "Enter email address into email field"},{"name": "enter_password","params": ["password"],"description": "Enter password into password field"},{"name": "click_login","params": [],"description": "Click the login button"},{"name": "verify_login_success","params": [],"description": "Verify user is authenticated and redirected to dashboard/home"},{"name": "verify_login_failure","params": [],"description": "Verify error message for failed login"},{"name": "verify_session_created","params": [],"description": "Verify session token and user name in header"},{"name": "verify_remain_on_login","params": [],"description": "Verify user stays on login page after failed login"}]}]}
+{
+  "page_classes": [
+    {
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
+      "elements": [
+        {"name": "email_field", "locator": "//input[@type='email']"},
+        {"name": "password_field", "locator": "//input[@type='password']"},
+        {"name": "login_button", "locator": "//button[contains(text(), 'Login')]"},
+        {"name": "error_message", "locator": "//div[contains(@class, 'error')]"},
+        {"name": "user_name_header", "locator": "//header//span[@class='user-name']"},
+        {"name": "session_token", "locator": "//meta[@name='session-token']"}
+      ],
+      "actions": [
+        {
+          "name": "navigate_to_login",
+          "params": ["url"],
+          "description": "Navigate to the login page"
+        },
+        {
+          "name": "enter_email",
+          "params": ["email"],
+          "description": "Enter email address into email field"
+        },
+        {
+          "name": "enter_password",
+          "params": ["password"],
+          "description": "Enter password into password field"
+        },
+        {
+          "name": "click_login",
+          "params": [],
+          "description": "Click the login button"
+        },
+        {
+          "name": "verify_login_success",
+          "params": [],
+          "description": "Verify user is authenticated and redirected to dashboard/home"
+        },
+        {
+          "name": "verify_login_failure",
+          "params": [],
+          "description": "Verify error message for failed login"
+        },
+        {
+          "name": "verify_session_created",
+          "params": [],
+          "description": "Verify session token and user name in header"
+        },
+        {
+          "name": "verify_remain_on_login",
+          "params": [],
+          "description": "Verify user stays on login page after failed login"
+        }
+      ]
+    }
+  ]
+}

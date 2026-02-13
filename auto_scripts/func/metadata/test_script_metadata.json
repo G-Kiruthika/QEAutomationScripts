@@ -1,1 +1,54 @@
-{"test_scripts": [{"test_case_id": "501","test_case_description": "Test Case TC-POS-001","flow": [{"step_id": 1,"action": "navigate_to_login","page": "LoginPage"},{"step_id": 2,"action": "enter_email","page": "LoginPage"},{"step_id": 3,"action": "enter_password","page": "LoginPage"},{"step_id": 4,"action": "click_login","page": "LoginPage"},{"step_id": 5,"action": "verify_session_created","page": "LoginPage"}],"test_data": {"url": "https://ecommerce.example.com/login","email": "testuser@example.com","password": "Test@1234"}},{"test_case_id": "504","test_case_description": "Test Case TC_LOGIN_006","flow": [{"step_id": 1,"action": "navigate_to_login","page": "LoginPage"},{"step_id": 2,"action": "enter_email","page": "LoginPage"},{"step_id": 3,"action": "enter_password","page": "LoginPage"},{"step_id": 4,"action": "click_login","page": "LoginPage"},{"step_id": 5,"action": "verify_remain_on_login","page": "LoginPage"},{"step_id": 4.1,"action": "verify_login_failure","page": "LoginPage"}],"test_data": {"url": "https://ecommerce-website.com/login","email": "invaliduser@example.com","password": "ValidPass123!"}}],"framework": {"base_classes_required": ["BasePage", "BaseTest"],"core_dependencies": ["selenium", "pytest"],"config_dependencies": ["config.yaml", "test_data.json"],"utils_dependencies": ["error_handler.py", "logger.py"],"external_libraries": ["pytest", "selenium"],"required_imports": ["from kb.pages.login_page import LoginPage","from kb.tests.base_test import BaseTest","from kb.utils.error_handler import ErrorHandler","from kb.utils.logger import Logger"]}}
+{
+  "test_scripts": [
+    {
+      "test_case_id": "501",
+      "test_case_description": "Test Case TC-POS-001",
+      "flow": [
+        {"step_id": 1, "action": "navigate_to_login", "page": "LoginPage"},
+        {"step_id": 2, "action": "enter_email", "page": "LoginPage"},
+        {"step_id": 3, "action": "enter_password", "page": "LoginPage"},
+        {"step_id": 4, "action": "click_login", "page": "LoginPage"},
+        {"step_id": 5, "action": "verify_session_created", "page": "LoginPage"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce.example.com/login",
+        "email": "testuser@example.com",
+        "password": "Test@1234"
+      }
+    },
+    {
+      "test_case_id": "504",
+      "test_case_description": "Test Case TC_LOGIN_006",
+      "flow": [
+        {"step_id": 1, "action": "navigate_to_login", "page": "LoginPage"},
+        {"step_id": 2, "action": "enter_email", "page": "LoginPage"},
+        {"step_id": 3, "action": "enter_password", "page": "LoginPage"},
+        {"step_id": 4, "action": "click_login", "page": "LoginPage"},
+        {"step_id": 5, "action": "verify_remain_on_login", "page": "LoginPage"},
+        {"step_id": 4.1, "action": "verify_login_failure", "page": "LoginPage"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "email": "invaliduser@example.com",
+        "password": "ValidPass123!"
+      }
+    }
+  ],
+  "framework": {
+    "dependencies": [
+      "BasePage",
+      "core/driver_factory.py",
+      "core/selenium_wrapper.py",
+      "config/config.yaml",
+      "selenium",
+      "pytest",
+      "pyyaml",
+      "pages.",
+      "core.driver_factory",
+      "pages.base_page"
+    ],
+    "error_handling": [
+      "utils/send_email_report.py"
+    ]
+  }
+}
