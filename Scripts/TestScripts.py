@@ -92,3 +92,37 @@ class TestFeedbackFunctionality:
         # Step 6: Assert 'Update' is displayed in the dropdown field
         selected_option = self.feedback_page.get_selected_option()
         assert selected_option == 'Update', f"Expected 'Update', got '{selected_option}'"
+
+    def test_HAP_21_TS_003_TC_001(self):
+        """
+        Test Case HAP-21 TS-003 TC-001: MyHP Feedback Dropdown Selection
+        Steps:
+        1. Launch the MyHP app (main screen loads).
+        2. Tap the Profile icon.
+        3. Tap the Send Feedback button.
+        4. Tap 'What’s your feedback related to?' dropdown.
+        5. Select option 'Features' from the dropdown.
+        6. Assert that 'Features' is displayed in the dropdown field.
+        """
+        # Step 1: App launch is assumed (driver already initialized)
+
+        # Step 2: Tap the Profile icon
+        self.profile_page.click_profile()
+
+        # Step 3: Tap the Send Feedback button
+        self.profile_page.click_send_feedback()
+
+        # Step 4: Tap the feedback dropdown
+        self.feedback_page.open_dropdown()
+
+        # Step 5: Select 'Features' from the dropdown
+        self.feedback_page.select_dropdown_option('Features')
+
+        # Step 6: Assert 'Features' is displayed in the dropdown field
+        options = self.driver.find_elements(*self.feedback_page.dropdown_options)
+        selected_option = None
+        for option in options:
+            if option.text.strip() == 'Features':
+                selected_option = option.text.strip()
+                break
+        assert selected_option == 'Features', f"Expected 'Features', got '{selected_option}'"
