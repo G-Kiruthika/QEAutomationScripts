@@ -1,5 +1,7 @@
 # Import necessary modules
 from Pages.LoginPage import LoginPage
+from Pages.ProfilePage import ProfilePage
+from Pages.FeedbackPage import FeedbackPage
 
 class TestLoginFunctionality:
     def __init__(self, driver):
@@ -32,3 +34,29 @@ class TestLoginFunctionality:
         """
         self.login_page.go_to_login_page()
         self.login_page.assert_remember_me_checkbox_absent()
+
+class TestFeedbackFunctionality:
+    def __init__(self, driver):
+        self.driver = driver
+        self.profile_page = ProfilePage(driver)
+        self.feedback_page = FeedbackPage(driver)
+
+    def test_HAP_21_TS_001_TC_001(self):
+        """
+        Test Case HAP-21 TS-001 TC-001: MyHP Feedback Flow
+        Steps:
+        1. Launch the MyHP app (main screen loads).
+        2. Tap the Profile icon.
+        3. Tap the Send Feedback button.
+        4. Select the 4th star rating.
+        5. Deselect the 4th star rating.
+        """
+        # Step 1: App launch is assumed (driver already initialized)
+        # Step 2: Tap the Profile icon
+        self.profile_page.tap_profile_icon()
+        # Step 3: Tap the Send Feedback button
+        self.profile_page.tap_send_feedback()
+        # Step 4: Select the 4th star rating
+        self.feedback_page.select_star_rating(4)
+        # Step 5: Deselect the 4th star rating
+        self.feedback_page.deselect_star_rating(4)
