@@ -2,6 +2,7 @@
 from Pages.LoginPage import LoginPage
 from Pages.ProfilePage import ProfilePage
 from Pages.FeedbackPage import FeedbackPage
+from Pages.MainPage import MainPage
 
 class TestLoginFunctionality:
     def __init__(self, driver):
@@ -60,3 +61,34 @@ class TestFeedbackFunctionality:
         self.feedback_page.select_star_rating(4)
         # Step 5: Deselect the 4th star rating
         self.feedback_page.deselect_star_rating(4)
+
+    def test_HAP_21_TS_002_TC_001(self):
+        """
+        Test Case HAP-21 TS-002 TC-001: MyHP Feedback Flow - Why did you open the app today?
+        Steps:
+        1. Launch the MyHP app (main screen loads).
+        2. Tap the Profile icon.
+        3. Tap the Send Feedback button.
+        4. Tap 'Why did you open the app today?' dropdown.
+        5. Select option 'Update' from the dropdown.
+        6. Assert that 'Update' is displayed in the dropdown field.
+        """
+        # Step 1: Verify main screen loads
+        main_page = MainPage(self.driver)
+        assert main_page.is_loaded(), "Main screen did not load."
+
+        # Step 2: Tap the Profile icon
+        main_page.tap_profile_icon()
+
+        # Step 3: Tap the Send Feedback button
+        self.profile_page.tap_send_feedback()
+
+        # Step 4: Tap 'Why did you open the app today?' dropdown
+        self.feedback_page.open_why_dropdown()
+
+        # Step 5: Select 'Update' from the dropdown
+        self.feedback_page.select_why_option('Update')
+
+        # Step 6: Assert 'Update' is displayed in the dropdown field
+        selected_option = self.feedback_page.get_selected_option()
+        assert selected_option == 'Update', f"Expected 'Update', got '{selected_option}'"
