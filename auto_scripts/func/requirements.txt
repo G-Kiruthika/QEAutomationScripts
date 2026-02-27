@@ -1,1 +1,54 @@
-...
+# Core Selenium and WebDriver dependencies
+selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Testing framework
+pytest==7.4.3
+pytest-html==4.1.1
+pytest-xdist==3.3.1
+pytest-rerunfailures==12.0
+
+# Configuration and data handling
+PyYAML==6.0.1
+jsonschema==4.19.2
+
+# HTTP requests for API testing
+requests==2.31.0
+
+# Reporting and logging
+allure-pytest==2.13.2
+coloredlogs==15.0.1
+
+# Data manipulation and utilities
+pandas==2.1.3
+openpyxl==3.1.2
+
+# Email reporting
+secure-smtplib==0.1.1
+
+# Environment and configuration
+python-dotenv==1.0.0
+
+# Date and time utilities
+python-dateutil==2.8.2
+
+# Image processing for screenshots
+Pillow==10.1.0
+
+# Faker for test data generation
+Faker==20.1.0
+
+# JSON manipulation
+jsonpath-ng==1.6.0
+
+# Retry mechanisms
+tenacity==8.2.3
+
+# Parallel execution
+concurrent-futures==3.1.1
+
+# Development and debugging
+ipdb==0.13.13
+
+# Performance monitoring
+psutil==5.9.6

@@ -1,1 +1,48 @@
-...
+# Configuration file for Python UI Automation Framework
+
+# Browser Configuration
+browser:
+  default: chrome
+  headless: false
+  window_size: "1920,1080"
+  implicit_wait: 10
+  explicit_wait: 30
+  page_load_timeout: 30
+
+# Environment Configuration
+environment:
+  base_url: "https://example.com"
+  test_env: "staging"
+
+# Test Data Configuration
+test_data:
+  default_timeout: 10
+  retry_attempts: 3
+  screenshot_on_failure: true
+
+# Reporting Configuration
+reporting:
+  generate_html_report: true
+  report_path: "reports/"
+  screenshot_path: "screenshots/"
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  file_path: "logs/automation.log"
+  console_output: true
+
+# WebDriver Configuration
+webdriver:
+  chrome:
+    driver_path: "drivers/chromedriver"
+    options:
+      - "--no-sandbox"
+      - "--disable-dev-shm-usage"
+      - "--disable-gpu"
+  firefox:
+    driver_path: "drivers/geckodriver"
+    options:
+      - "--no-sandbox"
+  edge:
+    driver_path: "drivers/msedgedriver"
