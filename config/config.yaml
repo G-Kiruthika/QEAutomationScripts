@@ -1,0 +1,36 @@
+# Environment Configuration
+environment:
+  base_url: "https://example.com"
+  timeout: 10
+  implicit_wait: 5
+
+# Browser Configuration
+browser:
+  name: "chrome"
+  headless: false
+  window_size: "1920,1080"
+  
+# Test Data
+test_data:
+  registration:
+    valid_user:
+      first_name: "John"
+      last_name: "Doe"
+      email: "john.doe@example.com"
+      password: "Password123"
+    duplicate_email_user:
+      first_name: "Jane"
+      last_name: "Smith"
+      email: "john.doe@example.com"
+      password: "Password123"
+
+# Reporting Configuration
+reporting:
+  email_enabled: true
+  email_recipients: ["qa-team@example.com"]
+  report_format: "html"
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  file_path: "logs/test_execution.log"
