@@ -39,7 +39,10 @@
         "email": "john.doe@example.com",
         "password": "Password123",
         "confirm_password": "Password123"
-      }
+      },
+      "tags": ["smoke", "ui", "registration"],
+      "priority": "high",
+      "estimated_duration": "30s"
     },
     {
       "name": "test_registration_with_duplicate_email",
@@ -61,7 +64,42 @@
         "email": "john.doe@example.com",
         "password": "Password123",
         "confirm_password": "Password123"
-      }
+      },
+      "tags": ["regression", "ui", "registration", "validation"],
+      "priority": "medium",
+      "estimated_duration": "25s"
     }
-  ]
+  ],
+  "test_suite_info": {
+    "name": "Registration Test Suite",
+    "description": "Comprehensive test suite for user registration functionality",
+    "version": "1.0.0",
+    "created_date": "2024-01-15",
+    "last_updated": "2024-01-15",
+    "author": "QA Automation Team",
+    "total_test_cases": 2,
+    "estimated_execution_time": "55s",
+    "coverage_areas": [
+      "User Registration",
+      "Form Validation",
+      "Error Handling",
+      "Success Scenarios"
+    ]
+  },
+  "execution_config": {
+    "parallel_execution": false,
+    "retry_on_failure": true,
+    "max_retries": 2,
+    "screenshot_on_failure": true,
+    "video_recording": false,
+    "browser_cleanup": true,
+    "test_data_cleanup": false
+  },
+  "reporting": {
+    "html_report": true,
+    "json_report": true,
+    "email_notification": true,
+    "slack_notification": false,
+    "allure_report": true
+  }
 }

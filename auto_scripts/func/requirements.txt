@@ -1,1 +1,78 @@
-# Complete requirements content as shown above
+# Core Testing Framework
+selenium==4.15.2
+pytest==7.4.3
+pytest-html==4.1.1
+pytest-xdist==3.3.1
+
+# Configuration and Data Handling
+PyYAML==6.0.1
+jsonschema==4.19.2
+
+# API Testing
+requests==2.31.0
+urllib3==2.0.7
+
+# Reporting and Logging
+allure-pytest==2.13.2
+reportlab==4.0.7
+
+# Email Functionality
+secure-smtplib==0.1.1
+
+# Utilities
+faker==19.12.0
+pillow==10.1.0
+openpyxl==3.1.2
+
+# Development and Testing Tools
+black==23.11.0
+flake8==6.1.0
+pytest-cov==4.1.0
+
+# WebDriver Management
+webdriver-manager==4.0.1
+
+# Date and Time Utilities
+python-dateutil==2.8.2
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# JSON and XML Processing
+lxml==4.9.3
+jsonpath-ng==1.6.0
+
+# Parallel Execution
+concurrent-futures==3.1.1
+
+# Screenshot and Image Processing
+opencv-python==4.8.1.78
+
+# Performance Testing (optional)
+locust==2.17.0
+
+# Database Connectivity (optional)
+psycopg2-binary==2.9.9
+SQLAlchemy==2.0.23
+
+# Encryption and Security
+cryptography==41.0.7
+
+# HTTP Client Extensions
+httpx==0.25.2
+
+# Retry Mechanisms
+tenacity==8.2.3
+
+# Configuration Management
+configparser==6.0.0
+
+# File and Path Utilities
+pathlib2==2.3.7
+
+# Memory and Performance Monitoring
+psutil==5.9.6
+
+# Mocking and Testing Utilities
+responses==0.24.1
+pytest-mock==3.12.0

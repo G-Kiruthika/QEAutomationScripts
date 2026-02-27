@@ -1,1 +1,85 @@
-# Complete config content as shown above
+# Test Automation Framework Configuration
+
+# UI Testing Configuration
+ui:
+  browser:
+    default: "chrome"
+    headless: false
+    implicit_wait: 10
+    page_load_timeout: 30
+    chrome_options:
+      - "--no-sandbox"
+      - "--disable-dev-shm-usage"
+      - "--disable-gpu"
+      - "--window-size=1920,1080"
+    firefox_options: []
+  
+  # Application URLs
+  base_url: "https://example.com"
+  registration_url: "https://example.com/register"
+  
+  # Test Data
+  test_users:
+    valid_user:
+      first_name: "John"
+      last_name: "Doe"
+      email: "john.doe@example.com"
+      password: "Password123"
+    duplicate_user:
+      first_name: "Jane"
+      last_name: "Smith"
+      email: "john.doe@example.com"
+      password: "Password123"
+
+# API Testing Configuration
+api:
+  base_url: "https://api.example.com"
+  timeout: 30
+  retry_attempts: 3
+  headers:
+    Content-Type: "application/json"
+    Accept: "application/json"
+
+# Email Reporting Configuration
+email:
+  enabled: true
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "test.automation@example.com"
+  # Note: Use environment variables for sensitive data
+  # sender_password: "${SENDER_PASSWORD}"
+  recipients:
+    - "qa-team@example.com"
+    - "dev-team@example.com"
+  send_on_failure: true
+  send_summary: true
+
+# Test Execution Configuration
+execution:
+  parallel: false
+  max_workers: 4
+  retry_failed_tests: true
+  retry_count: 2
+  screenshot_on_failure: true
+  video_recording: false
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_logging: true
+  log_file: "logs/test_execution.log"
+
+# Environment Configuration
+environment:
+  name: "development"
+  debug: true
+  
+# Database Configuration (if needed)
+database:
+  host: "localhost"
+  port: 5432
+  name: "test_db"
+  # Use environment variables for credentials
+  # username: "${DB_USERNAME}"
+  # password: "${DB_PASSWORD}"
