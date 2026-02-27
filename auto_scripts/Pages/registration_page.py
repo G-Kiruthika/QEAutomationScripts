@@ -1,65 +1,61 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
+from pages.base_page import BasePage
 
-class RegistrationPage:
-    EMAIL_INPUT = (By.ID, 'email_input')
-    PASSWORD_INPUT = (By.ID, 'password_input')
-    NAME_INPUT = (By.ID, 'name_input')
-    REGISTER_BUTTON = (By.ID, 'register_button')
-    ERROR_MESSAGE = (By.ID, 'error_message')
+class RegistrationPage(BasePage):
+    # Locators from metadata - converted to UPPER_CASE with By constants
+    EMAIL_INPUT = (By.ID, "email_input_placeholder")
+    PASSWORD_INPUT = (By.ID, "password_input_placeholder")
+    NAME_INPUT = (By.ID, "name_input_placeholder")
+    REGISTER_BUTTON = (By.ID, "register_button_placeholder")
+    ERROR_MESSAGE = (By.ID, "error_message_placeholder")
 
-    def __init__(self, driver: WebDriver):
-        self.driver = driver
+    def __init__(self, driver):
+        super().__init__(driver)
 
-    def register_user(self, email, password, name):
-        self.driver.find_element(*self.EMAIL_INPUT).send_keys(email)
-        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
-        self.driver.find_element(*self.NAME_INPUT).send_keys(name)
-        self.driver.find_element(*self.REGISTER_BUTTON).click()
-
-    def submit_registration(self):
-        self.driver.find_element(*self.REGISTER_BUTTON).click()
-
-    def validate_registration_success(self):
-        # This method should check for successful registration, e.g., by checking for a redirect or success message
-        # Placeholder: Replace with actual validation logic
-        return 'success' in self.driver.current_url or self.driver.find_elements(By.CLASS_NAME, 'success-message')
-
-    def validate_error_message(self, expected_message=None):
-        error_elem = self.driver.find_element(*self.ERROR_MESSAGE)
-        if expected_message:
-            return error_elem.text == expected_message
-        return error_elem.is_displayed()
-
-    # --- Missing Locators (per metadata) ---
-    EMAIL_INPUT_PLACEHOLDER = (By.ID, 'email_input_placeholder')
-    PASSWORD_INPUT_PLACEHOLDER = (By.ID, 'password_input_placeholder')
-    NAME_INPUT_PLACEHOLDER = (By.ID, 'name_input_placeholder')
-    REGISTER_BUTTON_PLACEHOLDER = (By.ID, 'register_button_placeholder')
-    ERROR_MESSAGE_PLACEHOLDER = (By.ID, 'error_message_placeholder')
-
-    # --- Missing Actions (per metadata) ---
+    # Action methods from metadata using BasePage wrapper methods
     def enter_email(self, email):
-        self.driver.find_element(*self.EMAIL_INPUT_PLACEHOLDER).clear()
-        self.driver.find_element(*self.EMAIL_INPUT_PLACEHOLDER).send_keys(email)
+        """Enter email address in the email input field."""
+        self.enter_text(self.EMAIL_INPUT, email)
 
     def enter_password(self, password):
-        self.driver.find_element(*self.PASSWORD_INPUT_PLACEHOLDER).clear()
-        self.driver.find_element(*self.PASSWORD_INPUT_PLACEHOLDER).send_keys(password)
+        """Enter password in the password input field."""
+        self.enter_text(self.PASSWORD_INPUT, password)
 
     def enter_name(self, name):
-        self.driver.find_element(*self.NAME_INPUT_PLACEHOLDER).clear()
-        self.driver.find_element(*self.NAME_INPUT_PLACEHOLDER).send_keys(name)
+        """Enter name in the name input field."""
+        self.enter_text(self.NAME_INPUT, name)
 
-    # --- Missing Validations (per metadata) ---
+    def submit_registration(self):
+        """Click the registration submit button."""
+        self.click_element(self.REGISTER_BUTTON)
+
+    # Validation methods from metadata that return boolean and use visibility checks
     def validate_registration_page_displayed(self):
-        return self.driver.find_element(*self.REGISTER_BUTTON_PLACEHOLDER).is_displayed()
+        """Validate that the registration page is displayed."""
+        return self.is_element_visible(self.REGISTER_BUTTON)
 
     def validate_fields_accept_input(self):
+        """Validate that all input fields accept input."""
         try:
-            self.driver.find_element(*self.EMAIL_INPUT_PLACEHOLDER).send_keys('test@example.com')
-            self.driver.find_element(*self.PASSWORD_INPUT_PLACEHOLDER).send_keys('password123')
-            self.driver.find_element(*self.NAME_INPUT_PLACEHOLDER).send_keys('Test User')
+            # Test input acceptance without actually submitting
+            self.enter_text(self.EMAIL_INPUT, "test@example.com")
+            self.enter_text(self.PASSWORD_INPUT, "password123")
+            self.enter_text(self.NAME_INPUT, "Test User")
             return True
         except Exception:
             return False
+
+    def validate_registration_success(self):
+        """Validate that registration was successful."""
+        # This should be implemented based on actual success indicators
+        # For now, checking if we're redirected away from registration page
+        try:
+            return not self.is_element_visible(self.REGISTER_BUTTON)
+        except Exception:
+            return False
+
+    def validate_error_message(self, expected_error=None):
+        """Validate error message display and content."""
+        if expected_error:
+            return self.get_element_text(self.ERROR_MESSAGE) == expected_error
+        return self.is_element_visible(self.ERROR_MESSAGE)
