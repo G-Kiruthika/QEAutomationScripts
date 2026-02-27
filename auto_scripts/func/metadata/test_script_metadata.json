@@ -1,56 +1,67 @@
 {
-  "test_suite": "Functional UI Suite",
-  "test_cases": {
-    "C38": {
-      "test_name": "test_registration_with_valid_details",
-      "feature": "user_registration",
-      "target_file": "test_registration.py",
-      "pages_used": ["RegistrationPage"],
+  "framework": {
+    "dependencies": [
+      "pages.base_page",
+      "core.driver_factory",
+      "core.selenium_wrapper",
+      "config.config.yaml",
+      "selenium",
+      "pytest",
+      "pyyaml",
+      "pages.registration_page",
+      "utils.send_email_report"
+    ],
+    "kb_folder_structure": [
+      "pages/",
+      "core/",
+      "config/",
+      "utils/"
+    ]
+  },
+  "test_cases": [
+    {
+      "name": "test_user_registration",
+      "description": "Verify that a new user can successfully register with valid details.",
       "flow": [
-        {"page": "RegistrationPage", "action": "validate_registration_page_displayed"},
-        {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_data.email"},
-        {"page": "RegistrationPage", "action": "enter_password", "data_ref": "user_data.password"},
-        {"page": "RegistrationPage", "action": "enter_name", "data_ref": "user_data.name"},
-        {"page": "RegistrationPage", "action": "submit_registration"},
-        {"page": "RegistrationPage", "assertion": "validate_registration_success"}
+        "navigate_to_registration",
+        "enter_first_name",
+        "enter_last_name",
+        "enter_email",
+        "enter_password",
+        "enter_confirm_password",
+        "click_register_button",
+        "get_success_message"
       ],
+      "expected_result": "User is registered successfully and sees a confirmation message.",
       "test_data": {
-        "user_data": {
-          "email": "user@example.com",
-          "password": "SecurePass123",
-          "name": "John Doe"
-        }
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@example.com",
+        "password": "Password123",
+        "confirm_password": "Password123"
       }
     },
-    "C39": {
-      "test_name": "test_registration_with_duplicate_email",
-      "feature": "user_registration",
-      "target_file": "test_registration.py",
-      "pages_used": ["RegistrationPage"],
+    {
+      "name": "test_registration_with_duplicate_email",
+      "description": "Verify that registration fails if the email address is already registered.",
       "flow": [
-        {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_data.email"},
-        {"page": "RegistrationPage", "action": "submit_registration"},
-        {"page": "RegistrationPage", "assertion": "validate_registration_success"},
-        {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_data.email"},
-        {"page": "RegistrationPage", "action": "submit_registration"},
-        {"page": "RegistrationPage", "assertion": "validate_error_message", "expected_error": "Email already exists."}
+        "navigate_to_registration",
+        "enter_first_name",
+        "enter_last_name",
+        "enter_email",
+        "enter_password",
+        "enter_confirm_password",
+        "click_register_button",
+        "get_error_message"
       ],
+      "expected_result": "Error message is displayed indicating the email is already registered.",
       "test_data": {
-        "user_data": {
-          "email": "user@example.com"
-        }
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "email": "john.doe@example.com",
+        "password": "Password123",
+        "confirm_password": "Password123"
       }
     }
-  },
-  "framework": {
-    "architecture": "python-ui-automation-framework",
-    "type": "ui",
-    "base_classes_required": ["BasePage"],
-    "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
-    "api_dependencies": [],
-    "config_dependencies": ["config/config.yaml"],
-    "utils_dependencies": [],
-    "external_libraries": ["selenium", "pytest", "pyyaml"],
-    "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]
-  }
+  ]
 }

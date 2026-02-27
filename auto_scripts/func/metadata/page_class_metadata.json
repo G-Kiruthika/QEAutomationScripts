@@ -1,26 +1,73 @@
 {
-  "pages": {
-    "RegistrationPage": {
+  "pages": [
+    {
+      "class_name": "RegistrationPage",
       "file_name": "registration_page.py",
-      "locators": {
-        "email_input": {"by": "id", "value": "email_input_placeholder"},
-        "password_input": {"by": "id", "value": "password_input_placeholder"},
-        "name_input": {"by": "id", "value": "name_input_placeholder"},
-        "register_button": {"by": "id", "value": "register_button_placeholder"},
-        "error_message": {"by": "id", "value": "error_message_placeholder"}
-      },
       "actions": [
-        "enter_email(email)",
-        "enter_password(password)",
-        "enter_name(name)",
-        "submit_registration()"
-      ],
-      "validations": [
-        "validate_registration_page_displayed()",
-        "validate_fields_accept_input()",
-        "validate_registration_success()",
-        "validate_error_message(expected_error)"
+        {
+          "name": "navigate_to_registration",
+          "description": "Navigate to the registration page.",
+          "locators": [
+            {"name": "registration_url", "type": "url", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "enter_first_name",
+          "description": "Enter the user's first name.",
+          "locators": [
+            {"name": "first_name_input", "type": "id", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "enter_last_name",
+          "description": "Enter the user's last name.",
+          "locators": [
+            {"name": "last_name_input", "type": "id", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "enter_email",
+          "description": "Enter the user's email address.",
+          "locators": [
+            {"name": "email_input", "type": "id", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "enter_password",
+          "description": "Enter the user's password.",
+          "locators": [
+            {"name": "password_input", "type": "id", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "enter_confirm_password",
+          "description": "Enter the user's confirm password.",
+          "locators": [
+            {"name": "confirm_password_input", "type": "id", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "click_register_button",
+          "description": "Click the Register button to submit the registration form.",
+          "locators": [
+            {"name": "register_button", "type": "id", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "get_success_message",
+          "description": "Get the registration success message.",
+          "locators": [
+            {"name": "success_message", "type": "css", "value": "<placeholder>"}
+          ]
+        },
+        {
+          "name": "get_error_message",
+          "description": "Get the error message if registration fails (e.g., duplicate email).",
+          "locators": [
+            {"name": "error_message", "type": "css", "value": "<placeholder>"}
+          ]
+        }
       ]
     }
-  }
+  ]
 }
