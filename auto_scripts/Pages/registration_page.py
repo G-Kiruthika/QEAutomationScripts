@@ -1,5 +1,5 @@
 from selenium.webdriver.common.by import By
-from auto_scripts.Pages.base_page import BasePage
+from pages.base_page import BasePage
 
 class RegistrationPage(BasePage):
     REGISTRATION_URL = "<placeholder>"
