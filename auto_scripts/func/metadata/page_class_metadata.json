@@ -10,25 +10,16 @@
         "error_message": {"by": "id", "value": "error_message_placeholder"}
       },
       "actions": [
-        "register_user(email, password, name)",
+        "enter_email(email)",
+        "enter_password(password)",
+        "enter_name(name)",
         "submit_registration()"
       ],
       "validations": [
+        "validate_registration_page_displayed()",
+        "validate_fields_accept_input()",
         "validate_registration_success()",
-        "validate_error_message()"
-      ]
-    },
-    "DatabasePage": {
-      "file_name": "database_page.py",
-      "locators": {
-        "user_record": {"by": "db", "value": "user_record_placeholder"},
-        "password_hash": {"by": "db", "value": "password_hash_placeholder"}
-      },
-      "actions": [
-        "retrieve_user_record(email)"
-      ],
-      "validations": [
-        "validate_password_hash()"
+        "validate_error_message(expected_error)"
       ]
     }
   }

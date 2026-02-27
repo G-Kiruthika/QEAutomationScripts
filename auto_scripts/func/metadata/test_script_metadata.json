@@ -1,16 +1,18 @@
 {
   "test_suite": "Functional UI Suite",
   "test_cases": {
-    "C42": {
-      "test_name": "test_register_new_user_and_verify_password_storage",
-      "feature": "User Registration",
+    "C38": {
+      "test_name": "test_registration_with_valid_details",
+      "feature": "user_registration",
       "target_file": "test_registration.py",
-      "pages_used": ["RegistrationPage", "DatabasePage"],
+      "pages_used": ["RegistrationPage"],
       "flow": [
-        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data"},
-        {"page": "RegistrationPage", "assertion": "validate_registration_success"},
-        {"page": "DatabasePage", "action": "retrieve_user_record", "data_ref": "user_data"},
-        {"page": "DatabasePage", "assertion": "validate_password_hash"}
+        {"page": "RegistrationPage", "action": "validate_registration_page_displayed"},
+        {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_data.email"},
+        {"page": "RegistrationPage", "action": "enter_password", "data_ref": "user_data.password"},
+        {"page": "RegistrationPage", "action": "enter_name", "data_ref": "user_data.name"},
+        {"page": "RegistrationPage", "action": "submit_registration"},
+        {"page": "RegistrationPage", "assertion": "validate_registration_success"}
       ],
       "test_data": {
         "user_data": {
@@ -20,31 +22,28 @@
         }
       }
     },
-    "C43": {
-      "test_name": "test_register_with_valid_and_invalid_details",
-      "feature": "User Registration",
+    "C39": {
+      "test_name": "test_registration_with_duplicate_email",
+      "feature": "user_registration",
       "target_file": "test_registration.py",
       "pages_used": ["RegistrationPage"],
       "flow": [
-        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data_valid"},
+        {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_data.email"},
+        {"page": "RegistrationPage", "action": "submit_registration"},
         {"page": "RegistrationPage", "assertion": "validate_registration_success"},
-        {"page": "RegistrationPage", "action": "register_user", "data_ref": "user_data_invalid"},
-        {"page": "RegistrationPage", "assertion": "validate_error_message"}
+        {"page": "RegistrationPage", "action": "enter_email", "data_ref": "user_data.email"},
+        {"page": "RegistrationPage", "action": "submit_registration"},
+        {"page": "RegistrationPage", "assertion": "validate_error_message", "expected_error": "Email already exists."}
       ],
       "test_data": {
-        "user_data_valid": {
-          "email": "user@example.com",
-          "password": "SecurePass123",
-          "name": "John Doe"
-        },
-        "user_data_invalid": {
+        "user_data": {
           "email": "user@example.com"
         }
       }
     }
   },
   "framework": {
-    "architecture": "python-ui-api-automation-framework",
+    "architecture": "python-ui-automation-framework",
     "type": "ui",
     "base_classes_required": ["BasePage"],
     "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"],
