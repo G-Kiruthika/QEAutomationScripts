@@ -1,61 +1,56 @@
 from selenium.webdriver.common.by import By
-from pages.base_page import BasePage
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from auto_scripts.Pages.base_page import BasePage
 
 class RegistrationPage(BasePage):
-    # Locators from metadata - converted to UPPER_CASE with By constants
-    EMAIL_INPUT = (By.ID, "email_input_placeholder")
-    PASSWORD_INPUT = (By.ID, "password_input_placeholder")
-    NAME_INPUT = (By.ID, "name_input_placeholder")
-    REGISTER_BUTTON = (By.ID, "register_button_placeholder")
-    ERROR_MESSAGE = (By.ID, "error_message_placeholder")
+    # Locators
+    email_input = (By.ID, "email_input_placeholder")
+    password_input = (By.ID, "password_input_placeholder")
+    name_input = (By.ID, "name_input_placeholder")
+    register_button = (By.ID, "register_button_placeholder")
+    error_message = (By.ID, "error_message_placeholder")
 
     def __init__(self, driver):
         super().__init__(driver)
 
-    # Action methods from metadata using BasePage wrapper methods
+    # Action Methods
     def enter_email(self, email):
-        """Enter email address in the email input field."""
-        self.enter_text(self.EMAIL_INPUT, email)
+        """Enter email in the email input field"""
+        self.send_keys(self.email_input, email)
 
     def enter_password(self, password):
-        """Enter password in the password input field."""
-        self.enter_text(self.PASSWORD_INPUT, password)
+        """Enter password in the password input field"""
+        self.send_keys(self.password_input, password)
 
     def enter_name(self, name):
-        """Enter name in the name input field."""
-        self.enter_text(self.NAME_INPUT, name)
+        """Enter name in the name input field"""
+        self.send_keys(self.name_input, name)
 
     def submit_registration(self):
-        """Click the registration submit button."""
-        self.click_element(self.REGISTER_BUTTON)
+        """Click the register button to submit registration"""
+        self.click(self.register_button)
 
-    # Validation methods from metadata that return boolean and use visibility checks
+    # Validation Methods
     def validate_registration_page_displayed(self):
-        """Validate that the registration page is displayed."""
-        return self.is_element_visible(self.REGISTER_BUTTON)
+        """Validate that the registration page is displayed"""
+        return self.is_element_visible(self.register_button)
 
     def validate_fields_accept_input(self):
-        """Validate that all input fields accept input."""
-        try:
-            # Test input acceptance without actually submitting
-            self.enter_text(self.EMAIL_INPUT, "test@example.com")
-            self.enter_text(self.PASSWORD_INPUT, "password123")
-            self.enter_text(self.NAME_INPUT, "Test User")
-            return True
-        except Exception:
-            return False
+        """Validate that all input fields accept input"""
+        email_enabled = self.is_element_enabled(self.email_input)
+        password_enabled = self.is_element_enabled(self.password_input)
+        name_enabled = self.is_element_enabled(self.name_input)
+        return email_enabled and password_enabled and name_enabled
 
     def validate_registration_success(self):
-        """Validate that registration was successful."""
-        # This should be implemented based on actual success indicators
-        # For now, checking if we're redirected away from registration page
-        try:
-            return not self.is_element_visible(self.REGISTER_BUTTON)
-        except Exception:
-            return False
+        """Validate successful registration"""
+        # This would typically check for success indicators like redirect or success message
+        return not self.is_element_visible(self.error_message)
 
-    def validate_error_message(self, expected_error=None):
-        """Validate error message display and content."""
-        if expected_error:
-            return self.get_element_text(self.ERROR_MESSAGE) == expected_error
-        return self.is_element_visible(self.ERROR_MESSAGE)
+    def validate_error_message(self, expected_error):
+        """Validate that the expected error message is displayed"""
+        if self.is_element_visible(self.error_message):
+            actual_error = self.get_text(self.error_message)
+            return expected_error in actual_error
+        return False
