@@ -1,0 +1,1 @@
+# Registration Page Object content as shown above
