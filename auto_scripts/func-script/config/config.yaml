@@ -1,0 +1,61 @@
+# Configuration file for UI and API automation framework
+
+# Browser configuration
+browser:
+  name: "chrome"  # Options: chrome, firefox, edge, safari
+  headless: false
+  window_size: "1920,1080"
+  implicit_wait: 10
+  page_load_timeout: 30
+  script_timeout: 30
+
+# Environment configuration
+environment:
+  base_url: "https://example.com"
+  registration_url: "https://example.com/registration"
+  timeout: 30
+  retry_attempts: 3
+
+# API configuration
+api:
+  base_url: "https://api.example.com"
+  timeout: 30
+  headers:
+    Content-Type: "application/json"
+    Accept: "application/json"
+
+# Test execution configuration
+execution:
+  parallel_execution: false
+  retry_on_failure: true
+  max_retries: 2
+  screenshot_on_failure: true
+  video_recording: false
+  browser_cleanup: true
+  test_data_cleanup: false
+
+# Reporting configuration
+reporting:
+  html_report: true
+  json_report: true
+  email_notification: true
+  slack_notification: false
+  allure_report: true
+  report_path: "reports/"
+
+# Email configuration for notifications
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "automation@example.com"
+  sender_password: "your_password_here"
+  recipients:
+    - "qa-team@example.com"
+    - "dev-team@example.com"
+
+# Logging configuration
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file_path: "logs/automation.log"
+  max_file_size: "10MB"
+  backup_count: 5
