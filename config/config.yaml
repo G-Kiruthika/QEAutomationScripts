@@ -1,1 +1,55 @@
-# Configuration content as shown above
+# Test Automation Configuration
+
+# Selenium WebDriver Configuration
+selenium:
+  browser: "chrome"  # chrome, firefox
+  headless: false
+  implicit_wait: 10
+  page_load_timeout: 30
+  window_size:
+    width: 1920
+    height: 1080
+
+# Test Environment URLs
+environment:
+  base_url: "https://example.com"
+  registration_url: "https://example.com/register"
+  login_url: "https://example.com/login"
+
+# Test Data Configuration
+test_data:
+  default_timeout: 10
+  retry_attempts: 2
+  screenshot_on_failure: true
+  video_recording: false
+
+# Reporting Configuration
+reporting:
+  html_report: true
+  json_report: true
+  allure_report: true
+  report_directory: "reports"
+  screenshot_directory: "screenshots"
+
+# Email Notification Configuration
+email:
+  enabled: true
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "your-email@example.com"
+  sender_password: "your-app-password"
+  recipients:
+    - "qa-team@example.com"
+    - "dev-team@example.com"
+
+# Parallel Execution Configuration
+parallel:
+  enabled: false
+  workers: 2
+  browser_cleanup: true
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/automation.log"
