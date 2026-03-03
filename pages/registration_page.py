@@ -1,66 +1,57 @@
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
-
+import yaml
 
 class RegistrationPage(BasePage):
-    """Page Object Model for Registration Page"""
-    
-    # URL
-    REGISTRATION_URL = "registration_url"
+    """Page object for user registration functionality"""
     
     # Locators
-    FIRST_NAME_INPUT = (By.ID, "first_name_input")
-    LAST_NAME_INPUT = (By.ID, "last_name_input")
-    EMAIL_INPUT = (By.ID, "email_input")
-    PASSWORD_INPUT = (By.ID, "password_input")
-    CONFIRM_PASSWORD_INPUT = (By.ID, "confirm_password_input")
+    USERNAME_INPUT = (By.ID, "username")
+    EMAIL_INPUT = (By.ID, "email")
+    PASSWORD_INPUT = (By.ID, "password")
+    CONFIRM_PASSWORD_INPUT = (By.ID, "confirm_password")
     REGISTER_BUTTON = (By.ID, "register_button")
-    SUCCESS_MESSAGE = (By.CSS_SELECTOR, "success_message")
-    ERROR_MESSAGE = (By.CSS_SELECTOR, "error_message")
+    SUCCESS_MESSAGE = (By.CSS_SELECTOR, ".success-message")
+    ERROR_MESSAGE = (By.CSS_SELECTOR, ".error-message")
+    REGISTRATION_FORM = (By.ID, "registration_form")
     
     def __init__(self, driver):
         super().__init__(driver)
+        with open('config/config.yaml') as f:
+            self.config = yaml.safe_load(f)
     
     def navigate_to_registration(self):
-        """Navigate to the registration page"""
-        self.driver.get(self.REGISTRATION_URL)
+        """Navigate to registration page"""
+        registration_url = f"{self.config['base_url']}/register"
+        self.navigate_to(registration_url)
+        self.wait_for_element(self.REGISTRATION_FORM)
     
-    def enter_first_name(self, first_name):
-        """Enter first name in the first name input field"""
-        self.enter_text(self.FIRST_NAME_INPUT, first_name)
-    
-    def enter_last_name(self, last_name):
-        """Enter last name in the last name input field"""
-        self.enter_text(self.LAST_NAME_INPUT, last_name)
-    
-    def enter_email(self, email):
-        """Enter email in the email input field"""
+    def fill_registration_form(self, username, email, password, confirm_password):
+        """Fill out the registration form with provided data"""
+        self.enter_text(self.USERNAME_INPUT, username)
         self.enter_text(self.EMAIL_INPUT, email)
-    
-    def enter_password(self, password):
-        """Enter password in the password input field"""
         self.enter_text(self.PASSWORD_INPUT, password)
-    
-    def enter_confirm_password(self, confirm_password):
-        """Enter confirm password in the confirm password input field"""
         self.enter_text(self.CONFIRM_PASSWORD_INPUT, confirm_password)
     
-    def click_register_button(self):
-        """Click the register button"""
+    def submit_registration(self):
+        """Submit the registration form"""
         self.click_element(self.REGISTER_BUTTON)
     
     def get_success_message(self):
-        """Get the success message text"""
+        """Get success message text"""
         return self.get_text(self.SUCCESS_MESSAGE)
     
     def get_error_message(self):
-        """Get the error message text"""
+        """Get error message text"""
         return self.get_text(self.ERROR_MESSAGE)
     
-    def is_success_message_visible(self):
-        """Check if success message is visible"""
-        return self.is_element_visible(self.SUCCESS_MESSAGE)
+    def is_registration_form_visible(self):
+        """Check if registration form is visible"""
+        return self.is_element_visible(self.REGISTRATION_FORM)
     
-    def is_error_message_visible(self):
-        """Check if error message is visible"""
-        return self.is_element_visible(self.ERROR_MESSAGE)
+    def clear_form(self):
+        """Clear all form fields"""
+        self.driver.find_element(*self.USERNAME_INPUT).clear()
+        self.driver.find_element(*self.EMAIL_INPUT).clear()
+        self.driver.find_element(*self.PASSWORD_INPUT).clear()
+        self.driver.find_element(*self.CONFIRM_PASSWORD_INPUT).clear()

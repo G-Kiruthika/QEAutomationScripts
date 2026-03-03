@@ -1,62 +1,39 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-import yaml
-import os
 
-
-def get_driver(browser="chrome", headless=False):
-    """Factory method to create and return WebDriver instance
+def get_driver(browser_name="chrome", headless=False):
+    """Factory method to create WebDriver instances"""
     
-    Args:
-        browser (str): Browser type ('chrome', 'firefox')
-        headless (bool): Run browser in headless mode
-        
-    Returns:
-        WebDriver: Configured WebDriver instance
-    """
-    
-    # Load configuration
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
-    try:
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
-        browser = config.get('selenium', {}).get('browser', browser)
-        headless = config.get('selenium', {}).get('headless', headless)
-    except FileNotFoundError:
-        pass  # Use default values if config file not found
-    
-    if browser.lower() == "chrome":
-        chrome_options = Options()
+    if browser_name.lower() == "chrome":
+        options = ChromeOptions()
         if headless:
-            chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
+            options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
         
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        service = ChromeService(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
         
-    elif browser.lower() == "firefox":
-        firefox_options = FirefoxOptions()
+    elif browser_name.lower() == "firefox":
+        options = FirefoxOptions()
         if headless:
-            firefox_options.add_argument("--headless")
-        firefox_options.add_argument("--width=1920")
-        firefox_options.add_argument("--height=1080")
+            options.add_argument("--headless")
+        options.add_argument("--width=1920")
+        options.add_argument("--height=1080")
         
         service = FirefoxService(GeckoDriverManager().install())
-        driver = webdriver.Firefox(service=service, options=firefox_options)
+        driver = webdriver.Firefox(service=service, options=options)
         
     else:
-        raise ValueError(f"Unsupported browser: {browser}")
+        raise ValueError(f"Unsupported browser: {browser_name}")
     
-    # Set implicit wait
     driver.implicitly_wait(10)
     driver.maximize_window()
-    
     return driver

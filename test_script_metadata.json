@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "framework_version": "1.0.0",
+    "generated_date": "2024-01-15",
+    "test_suite": "registration_functionality",
+    "author": "QA Automation Framework",
+    "description": "Comprehensive test suite for user registration functionality"
+  },
+  "test_scripts": {
+    "test_registration.py": {
+      "description": "Main registration test suite",
+      "test_cases": [
+        {
+          "name": "test_registration_valid_user",
+          "description": "Test successful user registration with valid data",
+          "priority": "high",
+          "tags": ["smoke", "regression"]
+        },
+        {
+          "name": "test_registration_invalid_email",
+          "description": "Test registration with invalid email format",
+          "priority": "medium",
+          "tags": ["negative", "validation"]
+        },
+        {
+          "name": "test_registration_password_mismatch",
+          "description": "Test registration with mismatched passwords",
+          "priority": "medium",
+          "tags": ["negative", "validation"]
+        },
+        {
+          "name": "test_registration_duplicate_username",
+          "description": "Test registration with existing username",
+          "priority": "medium",
+          "tags": ["negative", "business_logic"]
+        },
+        {
+          "name": "test_registration_empty_fields",
+          "description": "Test registration with empty required fields",
+          "priority": "high",
+          "tags": ["negative", "validation"]
+        },
+        {
+          "name": "test_registration_weak_password",
+          "description": "Test registration with weak password",
+          "priority": "low",
+          "tags": ["negative", "security"]
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "pages": [
+      "base_page",
+      "registration_page"
+    ],
+    "core": [
+      "driver_factory",
+      "selenium_wrapper"
+    ],
+    "utils": [
+      "send_email_report"
+    ],
+    "external": [
+      "selenium",
+      "pytest",
+      "pyyaml"
+    ]
+  },
+  "configuration": {
+    "config_file": "config/config.yaml",
+    "test_data_sources": [
+      "config.yaml"
+    ],
+    "reporting": {
+      "email_enabled": true,
+      "html_reports": true
+    }
+  },
+  "execution": {
+    "root_path": "auto_scripts/func",
+    "test_runner": "pytest",
+    "parallel_execution": false,
+    "browser_support": ["chrome", "firefox"]
+  }
+}
