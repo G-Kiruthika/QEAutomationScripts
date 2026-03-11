@@ -1,39 +1,81 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
+import pytest
+from MobileApps.libs.flows.windows.hpx_rebranding.flow_container import FlowContainer
 
-def get_driver(browser_name="chrome", headless=False):
-    """Factory method to create WebDriver instances"""
+
+pytest.app_info = "DESKTOP"
+pytest.set_info = "HPX"
+
+@pytest.mark.usefixtures("class_setup_fixture_ota_regression")
+class Test_Suite_04_Settings_privacy(object):
+    @pytest.fixture(scope="class", autouse=True)
+    def class_setup(cls, request, windows_test_setup):
+        cls = cls.__class__
+        cls.driver = windows_test_setup
+        cls.fc = FlowContainer(cls.driver)
+        cls.profile = cls.fc.fd["profile"]
+        cls.devicesMFE = cls.fc.fd["devicesMFE"]
+        cls.hpx_settings = cls.fc.fd["hpx_settings"]
+        cls.fc.kill_myhp_process()
+        cls.fc.kill_chrome_process()
+        yield
+        cls.fc.close_myHP()
     
-    if browser_name.lower() == "chrome":
-        options = ChromeOptions()
-        if headless:
-            options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--window-size=1920,1080")
-        
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
-        
-    elif browser_name.lower() == "firefox":
-        options = FirefoxOptions()
-        if headless:
-            options.add_argument("--headless")
-        options.add_argument("--width=1920")
-        options.add_argument("--height=1080")
-        
-        service = FirefoxService(GeckoDriverManager().install())
-        driver = webdriver.Firefox(service=service, options=options)
-        
-    else:
-        raise ValueError(f"Unsupported browser: {browser_name}")
+    @pytest.mark.regressionDryRunPass
+    @pytest.mark.regressionDryRunPassSet2
+    def test_01_verify_click_the_HP_Privacy_Statement_link_C53303841(self):
+        self.fc.launch_myHP_and_skip_fuf()  
+        if "Maximize HP" == self.profile.verify_myhp_maximize():
+           self.profile.maximize_myhp()
+        self.profile.verify_home_device_card()  
+        self.profile.click_devicepage_avatar_btn()
+        self.profile.click_profile_settings_btn()    
+        self.hpx_settings.verify_privacy_statement_link()
+        self.hpx_settings.click_privacy_statement_link()
+        self.devicesMFE.verify_browser_webview_pane()
+        self.hpx_settings.verify_privacy_in_external_browser()
+        self.fc.kill_chrome_process()
+        self.fc.close_myHP()
+
+    @pytest.mark.regressionDryRunPass
+    @pytest.mark.regressionDryRunPassSet1
+    def test_02_verify_visibility_manage_privacy_settings_button_C53303843(self):
+        self.fc.launch_myHP_and_skip_fuf()  
+        if "Maximize HP" == self.profile.verify_myhp_maximize():
+           self.profile.maximize_myhp()
+        self.profile.verify_home_device_card()   
+        self.profile.click_devicepage_avatar_btn()
+        self.profile.click_profile_settings_btn()    
+        self.hpx_settings.verify_manage_privacy_title()
+        self.fc.close_myHP()  
+
+    @pytest.mark.regressionDryRunPass
+    @pytest.mark.regressionDryRunPassSet1
+    def test_03_verify__manage_privacy_settings_C53303844(self):
+        self.fc.launch_myHP_and_skip_fuf()  
+        if "Maximize HP" == self.profile.verify_myhp_maximize():
+           self.profile.maximize_myhp()
+        self.profile.verify_home_device_card()
+        self.profile.click_devicepage_avatar_btn()
+        self.profile.click_profile_settings_btn()    
+        self.hpx_settings.verify_manage_privacy_title()
+        self.hpx_settings.click_manage_privacy_btn()
+        self.hpx_settings.verify_application_privacy_consents()
+        self.fc.close_myHP()  
     
-    driver.implicitly_wait(10)
-    driver.maximize_window()
-    return driver
+    @pytest.mark.regressionDryRunPass
+    @pytest.mark.regressionDryRunPassSet2
+    def test_04_verify_delete_your_account_link_C53303842(self):
+        self.fc.kill_myhp_process()
+        self.fc.kill_chrome_process()
+        self.fc.launch_myHP_and_skip_fuf()
+        if "Maximize HP" == self.profile.verify_myhp_maximize():
+            self.profile.maximize_myhp()
+        logged_in = self.profile.verify_top_profile_icon_signed_in()
+        if not logged_in:
+            self.profile.sign_in_to_hp("qamamobiprod.rcb@gmail.com", "Rcb@12345")
+        self.profile.click_top_profile_icon_signed_in()  
+        self.profile.verify_settings_side_panel()
+        self.profile.click_profile_settings_btn()
+        # After logging only the "Delete your account" link should be visible
+        self.hpx_settings.verify_delete_your_account()            
+        self.fc.close_myHP()
