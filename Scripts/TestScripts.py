@@ -23,6 +23,13 @@ class TestLoginFunctionality:
         result = self.login_page.login_with_invalid_credentials_and_verify_error(username, password, expected_error)
         assert result, f"Expected error message '{expected_error}', but got something else."
 
+    def test_TC_LOGIN_001_pageobject(self):
+        """Test invalid login and error message for TC_LOGIN_001 using Page Object methods"""
+        self.login_page.go_to_login_page()
+        self.login_page.enter_credentials('invalid_user@example.com', 'wrongPassword')
+        self.login_page.submit_login()
+        self.login_page.assert_invalid_login_error()
+
     def test_TC_LOGIN_002(self):
         """
         Test Case TC_LOGIN_002: Navigate to login screen and verify 'Remember Me' checkbox is absent.
