@@ -103,10 +103,59 @@ class LoginPage:
         )
         return self.driver.find_element(*self.USERNAME_RECOVERY_RESULT).text
 
-# Example usage in a test:
-# def test_username_recovery(driver):
+    # TC_LOGIN_001 additions
+    def enter_credentials(self, email: str, password: str):
+        """
+        Enters the provided email and password into the login form fields.
+        :param email: Email address to enter
+        :param password: Password to enter
+        """
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.EMAIL_FIELD),
+            message="Email field not visible."
+        )
+        self.driver.find_element(*self.EMAIL_FIELD).clear()
+        self.driver.find_element(*self.EMAIL_FIELD).send_keys(email)
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.PASSWORD_FIELD),
+            message="Password field not visible."
+        )
+        self.driver.find_element(*self.PASSWORD_FIELD).clear()
+        self.driver.find_element(*self.PASSWORD_FIELD).send_keys(password)
+
+    def submit_login(self):
+        """
+        Clicks the login submit button to attempt login.
+        """
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.element_to_be_clickable(self.LOGIN_SUBMIT_BUTTON),
+            message="Login submit button not clickable."
+        )
+        self.driver.find_element(*self.LOGIN_SUBMIT_BUTTON).click()
+
+    def get_error_message(self) -> str:
+        """
+        Retrieves the error message displayed after a failed login attempt.
+        :return: Error message text
+        """
+        WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.ERROR_MESSAGE),
+            message="Error message not visible after failed login."
+        )
+        return self.driver.find_element(*self.ERROR_MESSAGE).text
+
+    def assert_invalid_login_error(self, expected_message: str = "Invalid username or password. Please try again."):
+        """
+        Asserts that the invalid login error message matches the expected text.
+        :param expected_message: The expected error message
+        """
+        actual_message = self.get_error_message()
+        assert actual_message.strip() == expected_message, f"Expected error message '{expected_message}', but got '{actual_message}'"
+
+# Example usage in a test for TC_LOGIN_001:
+# def test_invalid_login(driver):
 #     login_page = LoginPage(driver)
 #     login_page.go_to_login_page()
-#     login_page.click_forgot_username_link()
-#     result = login_page.recover_username('user@example.com')
-#     assert 'Username retrieved' in result
+#     login_page.enter_credentials('invalid_user@example.com', 'wrongPassword')
+#     login_page.submit_login()
+#     login_page.assert_invalid_login_error()
