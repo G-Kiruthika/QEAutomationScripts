@@ -26,3 +26,20 @@ def test_TC_LOGIN_008_max_length_email_and_valid_password(driver):
     else:
         error_msg = login_page.get_error_message()
         assert error_msg is not None and error_msg != "", "No error message shown for max length email login failure."
+
+# TC_LOGIN_001: Valid login scenario
+def test_TC_LOGIN_001_valid_login(driver):
+    login_page = LoginPage(driver)
+    login_page.navigate()
+    login_page.enter_credentials("user1", "Pass@123")
+    login_page.click_login()
+    assert login_page.is_dashboard_header_displayed(), "Dashboard header not displayed after valid login."
+
+# TC_LOGIN_002: Invalid login scenario
+def test_TC_LOGIN_002_invalid_login(driver):
+    login_page = LoginPage(driver)
+    login_page.navigate()
+    login_page.enter_credentials("invalidUser", "WrongPass")
+    login_page.click_login()
+    error_message = login_page.get_error_message()
+    assert error_message != "", "Error message not displayed for invalid login."
