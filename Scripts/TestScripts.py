@@ -53,3 +53,17 @@ class TestLoginFunctionality:
         self.login_page.click_forgot_username()
         self.login_page.follow_username_recovery_instructions()
         assert self.login_page.is_username_retrieved(), "Username was not retrieved successfully."
+
+    def test_TC_LOGIN_001_pageobject_v2(self):
+        """
+        Test Case TC_LOGIN_001 (v2): Invalid login using Page Object methods, strictly following test steps.
+        Steps:
+        1. Navigate to login screen.
+        2. Enter invalid credentials.
+        3. Submit login.
+        4. Assert error message.
+        """
+        self.login_page.go_to_login_page()
+        self.login_page.enter_credentials('invalid_user@example.com', 'wrongPassword')
+        self.login_page.submit_login()
+        self.login_page.assert_invalid_login_error()
