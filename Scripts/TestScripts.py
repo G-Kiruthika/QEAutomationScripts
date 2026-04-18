@@ -27,19 +27,18 @@ def test_TC_LOGIN_008_max_length_email_and_valid_password(driver):
         error_msg = login_page.get_error_message()
         assert error_msg is not None and error_msg != "", "No error message shown for max length email login failure."
 
-# TC_LOGIN_001: Valid login scenario
-def test_TC_LOGIN_001_valid_login(driver):
+# TC_LOGIN_009: Accessibility checks (screen reader, keyboard navigation, color contrast)
+def test_TC_LOGIN_009_accessibility(driver):
     login_page = LoginPage(driver)
-    login_page.navigate()
-    login_page.enter_credentials("user1", "Pass@123")
-    login_page.click_login()
-    assert login_page.is_dashboard_header_displayed(), "Dashboard header not displayed after valid login."
+    login_page.navigate_to_login()
+    assert login_page.check_screen_reader_compatibility(), "Screen reader compatibility check failed."
+    assert login_page.check_keyboard_navigation(), "Keyboard navigation check failed."
+    assert login_page.check_color_contrast(), "Color contrast check failed."
 
-# TC_LOGIN_002: Invalid login scenario
-def test_TC_LOGIN_002_invalid_login(driver):
+# TC_LOGIN_010: Password masking check
+def test_TC_LOGIN_010_password_masking(driver):
     login_page = LoginPage(driver)
-    login_page.navigate()
-    login_page.enter_credentials("invalidUser", "WrongPass")
-    login_page.click_login()
-    error_message = login_page.get_error_message()
-    assert error_message != "", "Error message not displayed for invalid login."
+    login_page.navigate_to_login()
+    password = "TestPassword123!"
+    login_page.enter_password(password)
+    assert login_page.is_password_masked(), "Password input is not masked as expected."
