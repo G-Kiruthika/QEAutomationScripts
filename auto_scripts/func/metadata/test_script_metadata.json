@@ -1,1 +1,59 @@
-{"test_suite": "Functional UI Suite", "test_cases": {"501": {"test_name": "test_tc_pos_001", "feature": "Login", "target_file": "test_login.py", "pages_used": ["LoginPage"], "flow": [{"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": "url"}, {"page": "LoginPage", "action": "enter_email", "data_ref": "email"}, {"page": "LoginPage", "action": "enter_password", "data_ref": "password"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "assertion": "verify_user_authenticated"}, {"page": "LoginPage", "assertion": "verify_session_created"}], "test_data": {"url": "https://ecommerce.example.com/login", "email": "testuser@example.com", "password": "Test@1234"}}, "504": {"test_name": "test_tc_login_006", "feature": "Login", "target_file": "test_login.py", "pages_used": ["LoginPage"], "flow": [{"page": "LoginPage", "action": "navigate_to_login_page", "data_ref": "url"}, {"page": "LoginPage", "action": "enter_email", "data_ref": "email"}, {"page": "LoginPage", "action": "enter_password", "data_ref": "password"}, {"page": "LoginPage", "action": "click_login_button", "data_ref": null}, {"page": "LoginPage", "assertion": "verify_error_message"}, {"page": "LoginPage", "assertion": "verify_user_remains_on_login_page"}], "test_data": {"url": "https://ecommerce-website.com/login", "email": "invaliduser@example.com", "password": "ValidPass123!"}}}, "framework": {"architecture": "python-ui-api-automation-framework", "type": "ui", "base_classes_required": ["BasePage"], "core_dependencies": ["core/driver_factory.py", "core/selenium_wrapper.py"], "api_dependencies": [], "config_dependencies": ["config/config.yaml"], "utils_dependencies": [], "external_libraries": ["selenium", "pytest", "pyyaml"], "required_imports": ["pages.", "core.driver_factory", "pages.base_page"]}}
+{
+  "test_suite": "Login Functionality Suite",
+  "test_cases": [
+    {
+      "test_case_id": "501",
+      "test_case_description": "Test Case TC-POS-001",
+      "test_flow": [
+        {"action": "navigate_to_login", "page": "LoginPage", "data": {"url": "https://ecommerce.example.com/login"}},
+        {"action": "enter_email", "page": "LoginPage", "data": {"email": "testuser@example.com"}},
+        {"action": "enter_password", "page": "LoginPage", "data": {"password": "Test@1234"}},
+        {"action": "click_login", "page": "LoginPage"},
+        {"action": "is_user_logged_in", "page": "DashboardPage"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce.example.com/login",
+        "email": "testuser@example.com",
+        "password": "Test@1234"
+      },
+      "expected_results": [
+        "Login page is displayed with email and password fields",
+        "Email is accepted and displayed in the field",
+        "Password is masked and accepted",
+        "User is successfully authenticated and redirected to dashboard/home page",
+        "User name is displayed in the header and session token is generated"
+      ]
+    },
+    {
+      "test_case_id": "504",
+      "test_case_description": "Test Case TC_LOGIN_006",
+      "test_flow": [
+        {"action": "navigate_to_login", "page": "LoginPage", "data": {"url": "https://ecommerce-website.com/login"}},
+        {"action": "enter_email", "page": "LoginPage", "data": {"email": "invaliduser@example.com"}},
+        {"action": "enter_password", "page": "LoginPage", "data": {"password": "ValidPass123!"}},
+        {"action": "click_login", "page": "LoginPage"},
+        {"action": "get_error_message", "page": "LoginPage"}
+      ],
+      "test_data": {
+        "url": "https://ecommerce-website.com/login",
+        "email": "invaliduser@example.com",
+        "password": "ValidPass123!"
+      },
+      "expected_results": [
+        "Login page is displayed",
+        "Invalid username is entered",
+        "Password is entered",
+        "Login fails with error message 'Invalid username or password'",
+        "User is not authenticated and stays on login page"
+      ]
+    }
+  ],
+  "framework": {
+    "base_classes_required": ["BasePage", "BaseTestCase"],
+    "core_dependencies": ["selenium.webdriver", "unittest"],
+    "config_dependencies": ["configparser", "os"],
+    "utils_dependencies": ["logging", "traceback"],
+    "external_libraries": ["selenium"],
+    "required_imports": ["from pages.login_page import LoginPage", "from pages.dashboard_page import DashboardPage"]
+  }
+}

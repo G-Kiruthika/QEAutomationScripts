@@ -1,1 +1,98 @@
-{"pages": {"LoginPage": {"file_name": "login_page.py", "locators": {"email_field": {"by": "id", "value": "email-input"}, "password_field": {"by": "id", "value": "password-input"}, "login_button": {"by": "id", "value": "login-btn"}, "error_message": {"by": "css_selector", "value": ".error-msg"}, "user_name_header": {"by": "css_selector", "value": ".header-user-name"}, "session_token": {"by": "custom", "value": "session-token"}}, "actions": ["navigate_to_login_page(url)", "enter_email(email)", "enter_password(password)", "click_login_button()", "verify_error_message(expected_message)", "verify_user_authenticated(expected_user_name)", "verify_session_created()", "verify_user_remains_on_login_page()"], "validations": ["is_login_page_displayed()", "is_email_accepted()", "is_password_accepted()", "is_user_authenticated()", "is_session_created()", "is_error_message_displayed()", "is_user_on_login_page()"]}}}
+{
+  "pages": [
+    {
+      "class_name": "LoginPage",
+      "file_name": "login_page.py",
+      "description": "Represents the e-commerce website login page.",
+      "elements": [
+        {
+          "name": "email_field",
+          "type": "input",
+          "locator": "//input[@type='email']",
+          "locator_strategy": "xpath",
+          "placeholder": true,
+          "description": "Email input field."
+        },
+        {
+          "name": "password_field",
+          "type": "input",
+          "locator": "//input[@type='password']",
+          "locator_strategy": "xpath",
+          "placeholder": true,
+          "description": "Password input field."
+        },
+        {
+          "name": "login_button",
+          "type": "button",
+          "locator": "//button[contains(text(),'Login')]",
+          "locator_strategy": "xpath",
+          "placeholder": true,
+          "description": "Login button."
+        },
+        {
+          "name": "error_message",
+          "type": "label",
+          "locator": "//div[contains(@class,'error-message')]",
+          "locator_strategy": "xpath",
+          "placeholder": true,
+          "description": "Error message label displayed on failed login."
+        }
+      ],
+      "actions": [
+        {
+          "name": "navigate_to_login",
+          "description": "Navigates to the login page.",
+          "parameters": ["url"],
+          "returns": "None"
+        },
+        {
+          "name": "enter_email",
+          "description": "Enters email into the email field.",
+          "parameters": ["email"],
+          "returns": "None"
+        },
+        {
+          "name": "enter_password",
+          "description": "Enters password into the password field.",
+          "parameters": ["password"],
+          "returns": "None"
+        },
+        {
+          "name": "click_login",
+          "description": "Clicks the login button.",
+          "parameters": [],
+          "returns": "None"
+        },
+        {
+          "name": "get_error_message",
+          "description": "Returns the login error message if present.",
+          "parameters": [],
+          "returns": "str"
+        }
+      ]
+    },
+    {
+      "class_name": "DashboardPage",
+      "file_name": "dashboard_page.py",
+      "description": "Represents the user dashboard/home page after successful login.",
+      "elements": [
+        {
+          "name": "user_name_label",
+          "type": "label",
+          "locator": "//span[contains(@class,'user-name')]",
+          "locator_strategy": "xpath",
+          "placeholder": true,
+          "description": "Displays the logged-in user's name."
+        }
+      ],
+      "actions": [
+        {
+          "name": "is_user_logged_in",
+          "description": "Checks if the user is logged in by verifying user name label is displayed.",
+          "parameters": [],
+          "returns": "bool"
+        }
+      ]
+    }
+  ]
+}
