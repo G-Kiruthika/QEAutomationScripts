@@ -1,96 +1,46 @@
 {
   "pages": [
     {
-      "class_name": "LoginPage",
+      "page_name": "LoginPage",
       "file_name": "login_page.py",
-      "description": "Represents the e-commerce website login page.",
       "elements": [
         {
-          "name": "email_field",
-          "type": "input",
-          "locator": "//input[@type='email']",
-          "locator_strategy": "xpath",
-          "placeholder": true,
-          "description": "Email input field."
+          "element_name": "email_field",
+          "locator": "placeholder_locator_email_field"
         },
         {
-          "name": "password_field",
-          "type": "input",
-          "locator": "//input[@type='password']",
-          "locator_strategy": "xpath",
-          "placeholder": true,
-          "description": "Password input field."
+          "element_name": "password_field",
+          "locator": "placeholder_locator_password_field"
         },
         {
-          "name": "login_button",
-          "type": "button",
-          "locator": "//button[contains(text(),'Login')]",
-          "locator_strategy": "xpath",
-          "placeholder": true,
-          "description": "Login button."
+          "element_name": "login_button",
+          "locator": "placeholder_locator_login_button"
         },
         {
-          "name": "error_message",
-          "type": "label",
-          "locator": "//div[contains(@class,'error-message')]",
-          "locator_strategy": "xpath",
-          "placeholder": true,
-          "description": "Error message label displayed on failed login."
-        }
-      ],
-      "actions": [
-        {
-          "name": "navigate_to_login",
-          "description": "Navigates to the login page.",
-          "parameters": ["url"],
-          "returns": "None"
+          "element_name": "error_message",
+          "locator": "placeholder_locator_error_message"
         },
         {
-          "name": "enter_email",
-          "description": "Enters email into the email field.",
-          "parameters": ["email"],
-          "returns": "None"
+          "element_name": "user_name_header",
+          "locator": "placeholder_locator_user_name_header"
         },
         {
-          "name": "enter_password",
-          "description": "Enters password into the password field.",
-          "parameters": ["password"],
-          "returns": "None"
-        },
-        {
-          "name": "click_login",
-          "description": "Clicks the login button.",
-          "parameters": [],
-          "returns": "None"
-        },
-        {
-          "name": "get_error_message",
-          "description": "Returns the login error message if present.",
-          "parameters": [],
-          "returns": "str"
+          "element_name": "session_token",
+          "locator": "placeholder_locator_session_token"
         }
       ]
     },
     {
-      "class_name": "DashboardPage",
+      "page_name": "DashboardPage",
       "file_name": "dashboard_page.py",
-      "description": "Represents the user dashboard/home page after successful login.",
       "elements": [
         {
-          "name": "user_name_label",
-          "type": "label",
-          "locator": "//span[contains(@class,'user-name')]",
-          "locator_strategy": "xpath",
-          "placeholder": true,
-          "description": "Displays the logged-in user's name."
-        }
-      ],
-      "actions": [
+          "element_name": "user_name_header",
+          "locator": "placeholder_locator_user_name_header"
+        },
         {
-          "name": "is_user_logged_in",
-          "description": "Checks if the user is logged in by verifying user name label is displayed.",
-          "parameters": [],
-          "returns": "bool"
+          "element_name": "session_token",
+          "locator": "placeholder_locator_session_token"
         }
       ]
     }

@@ -1,59 +1,105 @@
 {
-  "test_suite": "Login Functionality Suite",
+  "test_suite": "login_functionality",
   "test_cases": [
     {
       "test_case_id": "501",
-      "test_case_description": "Test Case TC-POS-001",
-      "test_flow": [
-        {"action": "navigate_to_login", "page": "LoginPage", "data": {"url": "https://ecommerce.example.com/login"}},
-        {"action": "enter_email", "page": "LoginPage", "data": {"email": "testuser@example.com"}},
-        {"action": "enter_password", "page": "LoginPage", "data": {"password": "Test@1234"}},
-        {"action": "click_login", "page": "LoginPage"},
-        {"action": "is_user_logged_in", "page": "DashboardPage"}
-      ],
-      "test_data": {
-        "url": "https://ecommerce.example.com/login",
-        "email": "testuser@example.com",
-        "password": "Test@1234"
-      },
-      "expected_results": [
-        "Login page is displayed with email and password fields",
-        "Email is accepted and displayed in the field",
-        "Password is masked and accepted",
-        "User is successfully authenticated and redirected to dashboard/home page",
-        "User name is displayed in the header and session token is generated"
+      "test_case_name": "tc_pos_001",
+      "description": "Test Case TC-POS-001",
+      "features": ["login", "authentication", "session"],
+      "target_files": ["login_page.py", "dashboard_page.py"],
+      "pages_used": ["LoginPage", "DashboardPage"],
+      "flow_logic": [
+        {
+          "step_id": 2,
+          "action": "navigate_to_login_page",
+          "test_data": {"url": "https://ecommerce.example.com/login"},
+          "acceptance_criteria": "AC-LOGIN-001"
+        },
+        {
+          "step_id": 3,
+          "action": "enter_email",
+          "test_data": {"email": "testuser@example.com"},
+          "acceptance_criteria": "AC-LOGIN-001"
+        },
+        {
+          "step_id": 4,
+          "action": "enter_password",
+          "test_data": {"password": "Test@1234"},
+          "acceptance_criteria": "AC-LOGIN-001"
+        },
+        {
+          "step_id": 5,
+          "action": "click_login_button",
+          "test_data": {},
+          "acceptance_criteria": "AC-LOGIN-001"
+        },
+        {
+          "step_id": 6,
+          "action": "verify_user_session",
+          "test_data": {},
+          "acceptance_criteria": "AC-LOGIN-001"
+        }
       ]
     },
     {
       "test_case_id": "504",
-      "test_case_description": "Test Case TC_LOGIN_006",
-      "test_flow": [
-        {"action": "navigate_to_login", "page": "LoginPage", "data": {"url": "https://ecommerce-website.com/login"}},
-        {"action": "enter_email", "page": "LoginPage", "data": {"email": "invaliduser@example.com"}},
-        {"action": "enter_password", "page": "LoginPage", "data": {"password": "ValidPass123!"}},
-        {"action": "click_login", "page": "LoginPage"},
-        {"action": "get_error_message", "page": "LoginPage"}
-      ],
-      "test_data": {
-        "url": "https://ecommerce-website.com/login",
-        "email": "invaliduser@example.com",
-        "password": "ValidPass123!"
-      },
-      "expected_results": [
-        "Login page is displayed",
-        "Invalid username is entered",
-        "Password is entered",
-        "Login fails with error message 'Invalid username or password'",
-        "User is not authenticated and stays on login page"
+      "test_case_name": "tc_login_006",
+      "description": "Test Case TC_LOGIN_006",
+      "features": ["login", "error_handling", "authentication"],
+      "target_files": ["login_page.py"],
+      "pages_used": ["LoginPage"],
+      "flow_logic": [
+        {
+          "step_id": 1,
+          "action": "navigate_to_login_page",
+          "test_data": {"url": "https://ecommerce-website.com/login"},
+          "acceptance_criteria": "AC_LOGIN_006"
+        },
+        {
+          "step_id": 2,
+          "action": "enter_username",
+          "test_data": {"username": "invaliduser@example.com"},
+          "acceptance_criteria": "AC_LOGIN_006"
+        },
+        {
+          "step_id": 3,
+          "action": "enter_password",
+          "test_data": {"password": "ValidPass123!"},
+          "acceptance_criteria": "AC_LOGIN_006"
+        },
+        {
+          "step_id": 4,
+          "action": "click_login_button",
+          "test_data": {},
+          "acceptance_criteria": "AC_LOGIN_006"
+        },
+        {
+          "step_id": 5,
+          "action": "verify_error_message",
+          "test_data": {},
+          "acceptance_criteria": "AC_LOGIN_006"
+        }
       ]
     }
   ],
   "framework": {
-    "base_classes_required": ["BasePage", "BaseTestCase"],
-    "core_dependencies": ["selenium.webdriver", "unittest"],
-    "config_dependencies": ["configparser", "os"],
-    "utils_dependencies": ["logging", "traceback"],
-    "external_libraries": ["selenium"],
-    "required_imports": ["from pages.login_page import LoginPage", "from pages.dashboard_page import DashboardPage"]
+    "dependencies": [
+      {
+        "name": "selenium",
+        "type": "python_package",
+        "reason": "UI automation for login and dashboard pages"
+      },
+      {
+        "name": "pytest",
+        "type": "python_package",
+        "reason": "Test case execution and assertions"
+      }
+    ],
+    "metadata": {
+      "pages": ["LoginPage", "DashboardPage"],
+      "files": ["login_page.py", "dashboard_page.py"],
+      "test_script_folder": "auto_scripts/func",
+      "metadata_folder": "auto_scripts/func/metadata"
+    }
   }
 }
